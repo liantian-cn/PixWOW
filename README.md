@@ -39,11 +39,13 @@ uv run --locked pythonw -m pix
 
 ### BAT 与桌面快捷方式
 
-根目录提供五个启动脚本：`PixBlood.bat`、`PixBeastMastery.bat`、`PixHoly.bat`、`PixProtection.bat`、`PixRetribution.bat`。
+`scripts/` 目录提供五个启动脚本：`PixBlood.bat`、`PixBeastMastery.bat`、`PixHoly.bat`、`PixProtection.bat`、`PixRetribution.bat`。
 
-安装 uv 并确保其位于 PATH 后，右键对应 BAT，选择“以管理员身份运行”。脚本通过自身位置定位仓库，使用根目录共享环境执行 `uv run --locked --directory <应用名> python -m pix`，不包含本机绝对路径。控制台显示运行输出，程序退出后暂停，按任意键关闭。
+安装 uv 并确保其位于 PATH 后，右键对应 BAT，选择“以管理员身份运行”。脚本通过自身所在目录的上一级定位仓库，使用根目录共享环境执行 `uv run --locked --directory <应用名> pythonw -m pix`，不包含本机绝对路径。
 
-可为 BAT 创建桌面快捷方式，在快捷方式的“属性 → 高级”中勾选“用管理员身份运行”，并使用对应应用的 `pix/assets/app.ico` 图标。应用本身要求管理员权限；提前提升整个启动窗口可让程序错误保留在同一个控制台中。快捷方式绑定创建时的仓库位置，移动仓库后需更新目标和起始位置。
+脚本通过 PowerShell 在隐藏窗口中启动 uv，随后关闭启动控制台。目录定位、uv 检查或进程创建失败时显示错误并暂停；后台 uv 或应用的运行错误不会在 BAT 窗口中展示。
+
+可为 BAT 创建桌面快捷方式，在快捷方式的“属性 → 高级”中勾选“用管理员身份运行”，将“运行方式”设为“最小化”，并使用对应应用的 `pix/assets/app.ico` 图标。应用本身要求管理员权限。快捷方式绑定创建时的仓库位置，移动仓库后需更新目标和起始位置。
 
 ## 文档与检查
 
