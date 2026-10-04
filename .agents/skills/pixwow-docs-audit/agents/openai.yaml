@@ -1,0 +1,4 @@
+interface:
+  display_name: "PixWOW 文档一致性审查"
+  short_description: "核对布局、键位与循环文档和实际源码，报告有证据的差异及影响"
+  default_prompt: "使用 $pixwow-docs-audit 检查指定子项目的三份 .context 文档与代码是否一致。"

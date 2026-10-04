@@ -1,0 +1,4 @@
+interface:
+  display_name: "PixWOW 像素协议审查"
+  short_description: "检查各项目 Lua 布局编码与 Python 解码及动态刷新是否一致"
+  default_prompt: "使用 $pixwow-pixel-audit 核对指定子项目的 Lua 输出与 Python 像素解码。"

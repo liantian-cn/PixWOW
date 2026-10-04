@@ -1,0 +1,4 @@
+interface:
+  display_name: "PixWOW 排错"
+  short_description: "沿 Lua 显示、截图、解码、循环到按键与宏定位原因并验证修复"
+  default_prompt: "使用 $pixwow-debug 沿完整数据与动作链定位指定子项目的故障原因。"

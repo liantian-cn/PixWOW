@@ -1,0 +1,4 @@
+interface:
+  display_name: "PixWOW 循环开发"
+  short_description: "按项目约定开发循环及配套编码文档，并在修改后执行独立审核"
+  default_prompt: "使用 $pixwow-rotation-develop 开发指定子项目的循环规则，并完成独立审核。"

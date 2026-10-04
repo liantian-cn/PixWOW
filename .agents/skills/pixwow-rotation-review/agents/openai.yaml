@@ -1,0 +1,4 @@
+interface:
+  display_name: "PixWOW 循环独立审核"
+  short_description: "由独立子代理审核循环规则、业务注释、Lua 职责及动态刷新机制"
+  default_prompt: "使用 $pixwow-rotation-review 委派独立子代理审核指定子项目的循环及相关变更。"
