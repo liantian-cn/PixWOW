@@ -94,7 +94,7 @@ insert(UIInitFuncs, function()
     button = CreateFrame("Button", addonName .. "FinishingFrame", UIParent)
     addonTable.FinishingFrame = button
     -- 控制按钮使用原生 UI 单位，不参与像素采样区的分辨率换算。
-    button:SetSize(100, 24)
+    button:SetSize(78, 94)
     button:SetFrameStrata("DIALOG")
     button:SetClampedToScreen(true)
     button:SetMovable(true)
@@ -110,20 +110,20 @@ insert(UIInitFuncs, function()
     end
     local anchor = addonTable.AttackModeFrame
     if anchor then
-        button:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, 0)
+        button:SetPoint("TOPLEFT", anchor, "TOPRIGHT", 0, 0)
     else
         PlaceSaved()
     end
     background = button:CreateTexture(nil, "BACKGROUND")
     background:SetAllPoints(button)
     icon = button:CreateTexture(nil, "ARTWORK")
-    icon:SetSize(18, 18)
-    icon:SetPoint("LEFT", button, "LEFT", 3, 0)
+    icon:SetSize(72, 72)
+    icon:SetPoint("TOP", button, "TOP", 0, -3)
     label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     label:SetFont(GameFontNormal:GetFont(), 12, "")
-    label:SetPoint("LEFT", icon, "RIGHT", 4, 0)
-    label:SetPoint("RIGHT", button, "RIGHT", -3, 0)
-    label:SetJustifyH("LEFT")
+    label:SetPoint("TOPLEFT", icon, "BOTTOMLEFT", 0, -4)
+    label:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 3)
+    label:SetJustifyH("CENTER")
     local dragging = false
     button:SetScript("OnDragStart", function()
     if addonTable.AttackModeFrame then return end
