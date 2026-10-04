@@ -51,6 +51,8 @@ Paths below are relative to the selected application directory:
 
 Preserve these module boundaries. Shared experience lives in the repository-root `.context`; specialization-specific documentation lives in each application's `.context`. This root AGENTS.md is the sole agent instruction entry point.
 
+All applications' `.context/layout.md` files follow the shared [pixel layout document format](.context/development-principles.md#像素布局文档格式), using PixProtection as the format reference while preserving specialization-specific content.
+
 Before changing an application, read its `README.md` and the relevant documents: `.context/layout.md` for pixels and decoding, `.context/keymap.md` for bindings and macro targets, and `.context/rotation.md` before analyzing, comparing, or modifying a rotation. Update those documents alongside behavior changes. Do not recreate child AGENTS.md files or a parallel docs directory.
 
 Each application keeps `README.md`, `CHANGELOG.md`, and `banner.png` at its root. Its `.context` contains `layout.md`, `keymap.md`, `rotation.md`, and `banner.prompt.md`. Keep current rules and explanations there; do not add historical acceptance reports or migration logs. Historical shared experiments are not evidence of current validation.

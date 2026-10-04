@@ -2,7 +2,7 @@
 
 Lua 的 `cells/NNN_name.lua`、本表与 `Context` 属性必须同时更新。此版本与 PixBlood 的职业字段不兼容，插件和 Python 必须配套使用。
 
-## 基本协议
+## 编码约定
 
 - 正式模式 Cell 为 4×4 物理像素，基板高 12 px；位置由现有 Cell、ValueBar、IconTile 实现计算。截图和 Matrix 保持原协议。
 - 布尔通常白=真、黑=假；圣能直接使用灰度字节值。百分比为灰度 / 255 × 100。
@@ -10,78 +10,78 @@ Lua 的 `cells/NNN_name.lua`、本表与 `Context` 属性必须同时更新。�
 - 审判充能使用单个 CellBackplate 承载实心字符，RGB 灰度字节直接表示 0–2 充能，Python 四舍五入返回整数；零充能或缺失数据均为黑色。光环只读取存在性，由 AuraContainer 原生筛选和显隐。
 - 射程布尔代表指定技能射程，不代表精确码数。敌人数只包含射程可观察的姓名板，不能解释为完整的周围敌人数；自动模式计数为 0 时，不强行假定单体。
 
-## 普通区
+## 普通格
 
-| 位置 | 字段 / 文件名后缀 | 类型 | 含义 |
+| 位置 | 字段／文件名后缀 | 类型 | 参数与含义 |
 | --- | --- | --- | --- |
-| 1 | `enable` | Cell / 布尔 | 反应addonTable.ENABLE的状态 |
-| 2 | `in_burst` | Cell / 布尔 | 反应addonTable.InBurst()的状态 |
-| 3 | `delaying` | Cell / 布尔 | 白=延迟中；Python 暂停全部自动动作，包括打断、自保和物品。 |
-| 4 | `player_is_alive` | Cell / 布尔 | 玩家存活 |
-| 5 | `player_health_pct` | Cell / 百分比 | 玩家预测生命百分比；UnitHealthPercent(unit, true, curve)，usePredicted=true |
-| 6 | `power_holy_power` | Cell / 整数 | 圣能；普通整数直接编码为灰度字节，Python 四舍五入读取；秘密值或非法整数明确报错。 |
-| 7 | `force_single_target` | Cell / 布尔 | 白=强制单体，黑=自动；默认自动，配置持久化。强制单体仍允许四件套特殊风暴规则。 |
-| 8 | `player_in_combat` | Cell / 布尔 | 玩家是否处于战斗。 |
-| 9 | `player_is_player_target` | Cell / 布尔 | 玩家的目标是自己 |
-| 10 | `player_is_moving` | Cell / 布尔 | 玩家正在移动 |
-| 11 | `player_in_vehicle` | Cell / 布尔 | 玩家在坐骑/载具上 |
-| 12 | `player_is_targeting_spell` | Cell / 布尔 | 玩家在选取施法目标的状态 |
-| 13 | `player_is_chatting` | Cell / 布尔 | 玩家在聊天 |
-| 14 | `ticket_13_ready` | Cell / 布尔 | 一号饰品可用（SLOT 13）；自动饰品开启、爆发窗口内且目标在 853 射程内时优先使用。 |
-| 15 | `ticket_14_ready` | Cell / 布尔 | 二号饰品可用（SLOT 14）；同上，优先级低于一号饰品，每轮重新读取可用状态。 |
-| 16 | `healthstone_ready` | Cell / 布尔 | 治疗石 item:5512；冷却启用且物品可使用时为白色。 |
-| 17 | `heal_potion_ready` | Cell / 布尔 | 银月城生命药水 item:241304；冷却启用且物品可使用时为白色。 |
-| 18 | `player_has_heal_absorb` | StatusBar / 阈值布尔 | 玩家治疗吸收量严格大于 250000（>250000） |
-| 19 | `player_has_damage_absorb` | StatusBar / 阈值布尔 | 玩家伤害吸收量严格大于 500000（>500000） |
-| 20 | `player_cast_progress` | Cell / 百分比 | 玩家的cast/channel进度 |
-| 21 | `player_is_empowering` | Cell / 布尔 | 玩家是否在蓄力 |
-| 22 | `target_is_exists` | Cell / 布尔 | 目标存在 |
-| 23 | `target_is_alive` | Cell / 布尔 | 目标存活 |
-| 24 | `target_can_attack` | Cell / 布尔 | 目标可攻击 |
-| 25 | `target_can_assist` | Cell / 布尔 | 目标可协助 |
-| 26 | `target_health_pct` | Cell / 百分比 | 目标预测生命百分比；UnitHealthPercent(unit, true, curve)，usePredicted=true |
-| 27 | `target_cast_interruptible` | Cell / 布尔 | 目标可打断 |
-| 28 | `target_cast_progress` | Cell / 百分比 | 目标的cast/channel进度 |
-| 29 | `target_in_melee_range` | Cell / 布尔 | target 在责难 96231 技能射程内；nil 或无单位显示黑色。 |
-| 30 | `target_in_ranged_range` | Cell / 布尔 | target 在最终审判 383328 技能射程内；不是精确 20 码测距。 |
-| 31 | `target_in_interrupt_range` | Cell / 布尔 | target 在责难 96231 技能射程内；nil 或无单位显示黑色。 |
-| 32 | `focus_is_exists` | Cell / 布尔 | 焦点存在 |
-| 33 | `focus_is_alive` | Cell / 布尔 | 焦点存活 |
-| 34 | `focus_can_attack` | Cell / 布尔 | 焦点可攻击 |
-| 35 | `focus_can_assist` | Cell / 布尔 | 焦点可协助 |
-| 36 | `focus_health_pct` | Cell / 百分比 | 焦点预测生命百分比；UnitHealthPercent(unit, true, curve)，usePredicted=true |
-| 37 | `focus_cast_interruptible` | Cell / 布尔 | 焦点可打断 |
-| 38 | `focus_cast_progress` | Cell / 百分比 | 焦点的cast/channel进度 |
-| 39 | `focus_in_melee_range` | Cell / 布尔 | focus 在责难 96231 技能射程内；nil 或无单位显示黑色。 |
-| 40 | `focus_in_ranged_range` | Cell / 布尔 | focus 在最终审判 383328 技能射程内；不是精确 20 码测距。 |
-| 41 | `focus_in_interrupt_range` | Cell / 布尔 | focus 在责难 96231 技能射程内；nil 或无单位显示黑色。 |
-| 42 | `spell_cd_global_cooldown` | Cell / 冷却曲线 | [Global Cooldown]。SPELLID:61304 的冷却时间,ignore_gcd = false |
-| 43 | `spell_cd_rebuke` | Cell / 冷却曲线 | 责难 96231 冷却。 |
-| 44 | `spell_cd_avenging_wrath` | Cell / 冷却曲线 | 复仇之怒 31884 冷却。 |
-| 45 | `spell_cd_execution_sentence` | Cell / 冷却曲线 | 处决宣判 343527 冷却。 |
-| 46 | `spell_cd_wake_of_ashes` | Cell / 冷却曲线 | 灰烬觉醒 255937 冷却。 |
-| 47 | `spell_cd_blade_of_justice` | Cell / 冷却曲线 | 公正之剑 184575 冷却。 |
-| 48 | `spell_charges_judgment` | Cell / 0–2 | 审判 20271；RGB 灰度字节直接表示充能数，Python 四舍五入返回整数；零充能或缺失数据均为黑色。 |
-| 49 | `mouseover_in_melee_range` | Cell / 布尔 | 鼠标指向在责难 96231 技能射程内；保留监控，不用于手动插入。 |
-| 50 | `burst_potion_enabled` | Cell / 布尔 | 独立爆发药水开关；默认关闭，配置持久化，不随爆发窗口联动。 |
-| 51 | `spell_cd_divine_toll` | Cell / 冷却曲线 | 圣洁鸣钟 375576 冷却。 |
-| 52 | `spell_cd_lay_on_hands` | Cell / 冷却曲线 | 圣疗术 633 冷却。 |
-| 53 | `spell_cd_divine_shield` | Cell / 冷却曲线 | 圣盾术 642 冷却。 |
-| 54 | `item_cd_lights_potential` | Cell / 布尔 | 圣光潜力 241308／241309 分别查询非银行库存和冷却；任一有库存、冷却启用且结束即为真；不检查额外可用性 |
-| 55 | `player_has_buff_avenging_wrath` | Cell / 布尔 | 玩家复仇之怒 31884 是否存在。 |
-| 56 | `player_has_buff_divine_purpose` | Cell / 布尔 | 玩家神圣意志 408458 是否存在；按源 JSON 的 ID，不替换成 223819。 |
-| 57 | `player_has_buff_dawnlight` | Cell / 布尔 | 玩家晨光 431522 是否存在；无需层数或剩余时间。 |
-| 58 | `player_has_buff_art_of_war` | Cell / 布尔 | 玩家战争艺术 406086 是否存在。 |
-| 59 | `player_has_buff_divine_arbiter_storm` | Cell / 布尔 | 玩家神圣仲裁风暴 1306162 是否存在。 |
-| 60 | `four_piece_enabled` | Cell / 布尔 | 白=启用四件套规则，黑=关闭；默认开启，配置持久化。 |
-| 61 | `target_in_blade_of_justice_range` | Cell / 布尔 | 目标在公正之剑 184575 技能射程内；不是精确 12 码测距。 |
-| 62 | `target_in_judgment_range` | Cell / 布尔 | 目标在审判 20271 技能射程内。 |
-| 63 | `target_in_hammer_of_justice_range` | Cell / 布尔 | 目标在制裁之锤 853 技能射程内；七个输出技能及自动饰品统一使用，nil 或无目标为黑色。 |
-| 64 | `player_has_dispellable_poison_or_disease` | Cell / 布尔 | 玩家自身存在可驱散的中毒或疾病；AuraContainer 使用 HARMFUL\|RAID_PLAYER_DISPELLABLE 及 Poison、Disease 类型筛选，不检查其他单位。 |
-| 65 | `spell_cd_cleanse_toxins` | Cell / 冷却曲线 | 清毒术 213644 冷却，忽略 GCD；技能未知或不可用为黑色，不视为就绪。 |
-| 66 | `auto_cleanse_enabled` | Cell / 布尔 | 自动清毒开关，默认开启，游戏内配置持久化。 |
-| 67 | `auto_trinket_enabled` | Cell / 布尔 | 自动饰品开关，默认开启，游戏内配置持久化。 |
-| 68 | `player_melee_enemies_count` | Cell / 0–40 | 制裁之锤 853 范围内可观察、存活、可攻击的姓名板敌人数；保留历史字段名，不要求入战；上限 40，灰度=count/40，每 0.2 秒刷新。秘密或 nil 射程不计入。 |
+| 001 | `enable` | Cell / 布尔 | 反应addonTable.ENABLE的状态 |
+| 002 | `in_burst` | Cell / 布尔 | 反应addonTable.InBurst()的状态 |
+| 003 | `delaying` | Cell / 布尔 | 白=延迟中；Python 暂停全部自动动作，包括打断、自保和物品。 |
+| 004 | `player_is_alive` | Cell / 布尔 | 玩家存活 |
+| 005 | `player_health_pct` | Cell / 百分比 | 玩家预测生命百分比；UnitHealthPercent(unit, true, curve)，usePredicted=true |
+| 006 | `power_holy_power` | Cell / 整数 | 圣能；普通整数直接编码为灰度字节，Python 四舍五入读取；秘密值或非法整数明确报错。 |
+| 007 | `force_single_target` | Cell / 布尔 | 白=强制单体，黑=自动；默认自动，配置持久化。强制单体仍允许四件套特殊风暴规则。 |
+| 008 | `player_in_combat` | Cell / 布尔 | 玩家是否处于战斗。 |
+| 009 | `player_is_player_target` | Cell / 布尔 | 玩家的目标是自己 |
+| 010 | `player_is_moving` | Cell / 布尔 | 玩家正在移动 |
+| 011 | `player_in_vehicle` | Cell / 布尔 | 玩家在坐骑/载具上 |
+| 012 | `player_is_targeting_spell` | Cell / 布尔 | 玩家在选取施法目标的状态 |
+| 013 | `player_is_chatting` | Cell / 布尔 | 玩家在聊天 |
+| 014 | `ticket_13_ready` | Cell / 布尔 | 一号饰品可用（SLOT 13）；自动饰品开启、爆发窗口内且目标在 853 射程内时优先使用。 |
+| 015 | `ticket_14_ready` | Cell / 布尔 | 二号饰品可用（SLOT 14）；同上，优先级低于一号饰品，每轮重新读取可用状态。 |
+| 016 | `healthstone_ready` | Cell / 布尔 | 治疗石 item:5512；冷却启用且物品可使用时为白色。 |
+| 017 | `heal_potion_ready` | Cell / 布尔 | 银月城生命药水 item:241304；冷却启用且物品可使用时为白色。 |
+| 018 | `player_has_heal_absorb` | StatusBar / 阈值布尔 | 玩家治疗吸收量严格大于 250000（>250000） |
+| 019 | `player_has_damage_absorb` | StatusBar / 阈值布尔 | 玩家伤害吸收量严格大于 500000（>500000） |
+| 020 | `player_cast_progress` | Cell / 百分比 | 玩家的cast/channel进度 |
+| 021 | `player_is_empowering` | Cell / 布尔 | 玩家是否在蓄力 |
+| 022 | `target_is_exists` | Cell / 布尔 | 目标存在 |
+| 023 | `target_is_alive` | Cell / 布尔 | 目标存活 |
+| 024 | `target_can_attack` | Cell / 布尔 | 目标可攻击 |
+| 025 | `target_can_assist` | Cell / 布尔 | 目标可协助 |
+| 026 | `target_health_pct` | Cell / 百分比 | 目标预测生命百分比；UnitHealthPercent(unit, true, curve)，usePredicted=true |
+| 027 | `target_cast_interruptible` | Cell / 布尔 | 目标可打断 |
+| 028 | `target_cast_progress` | Cell / 百分比 | 目标的cast/channel进度 |
+| 029 | `target_in_melee_range` | Cell / 布尔 | target 在责难 96231 技能射程内；nil 或无单位显示黑色。 |
+| 030 | `target_in_ranged_range` | Cell / 布尔 | target 在最终审判 383328 技能射程内；不是精确 20 码测距。 |
+| 031 | `target_in_interrupt_range` | Cell / 布尔 | target 在责难 96231 技能射程内；nil 或无单位显示黑色。 |
+| 032 | `focus_is_exists` | Cell / 布尔 | 焦点存在 |
+| 033 | `focus_is_alive` | Cell / 布尔 | 焦点存活 |
+| 034 | `focus_can_attack` | Cell / 布尔 | 焦点可攻击 |
+| 035 | `focus_can_assist` | Cell / 布尔 | 焦点可协助 |
+| 036 | `focus_health_pct` | Cell / 百分比 | 焦点预测生命百分比；UnitHealthPercent(unit, true, curve)，usePredicted=true |
+| 037 | `focus_cast_interruptible` | Cell / 布尔 | 焦点可打断 |
+| 038 | `focus_cast_progress` | Cell / 百分比 | 焦点的cast/channel进度 |
+| 039 | `focus_in_melee_range` | Cell / 布尔 | focus 在责难 96231 技能射程内；nil 或无单位显示黑色。 |
+| 040 | `focus_in_ranged_range` | Cell / 布尔 | focus 在最终审判 383328 技能射程内；不是精确 20 码测距。 |
+| 041 | `focus_in_interrupt_range` | Cell / 布尔 | focus 在责难 96231 技能射程内；nil 或无单位显示黑色。 |
+| 042 | `spell_cd_global_cooldown` | Cell / 冷却曲线 | [Global Cooldown]。SPELLID:61304 的冷却时间,ignore_gcd = false |
+| 043 | `spell_cd_rebuke` | Cell / 冷却曲线 | 责难 96231 冷却。 |
+| 044 | `spell_cd_avenging_wrath` | Cell / 冷却曲线 | 复仇之怒 31884 冷却。 |
+| 045 | `spell_cd_execution_sentence` | Cell / 冷却曲线 | 处决宣判 343527 冷却。 |
+| 046 | `spell_cd_wake_of_ashes` | Cell / 冷却曲线 | 灰烬觉醒 255937 冷却。 |
+| 047 | `spell_cd_blade_of_justice` | Cell / 冷却曲线 | 公正之剑 184575 冷却。 |
+| 048 | `spell_charges_judgment` | Cell / 0–2 | 审判 20271；RGB 灰度字节直接表示充能数，Python 四舍五入返回整数；零充能或缺失数据均为黑色。 |
+| 049 | `mouseover_in_melee_range` | Cell / 布尔 | 鼠标指向在责难 96231 技能射程内；保留监控，不用于手动插入。 |
+| 050 | `burst_potion_enabled` | Cell / 布尔 | 独立爆发药水开关；默认关闭，配置持久化，不随爆发窗口联动。 |
+| 051 | `spell_cd_divine_toll` | Cell / 冷却曲线 | 圣洁鸣钟 375576 冷却。 |
+| 052 | `spell_cd_lay_on_hands` | Cell / 冷却曲线 | 圣疗术 633 冷却。 |
+| 053 | `spell_cd_divine_shield` | Cell / 冷却曲线 | 圣盾术 642 冷却。 |
+| 054 | `item_cd_lights_potential` | Cell / 布尔 | 圣光潜力 241308／241309 分别查询非银行库存和冷却；任一有库存、冷却启用且结束即为真；不检查额外可用性 |
+| 055 | `player_has_buff_avenging_wrath` | Cell / 布尔 | 玩家复仇之怒 31884 是否存在。 |
+| 056 | `player_has_buff_divine_purpose` | Cell / 布尔 | 玩家神圣意志 408458 是否存在；按源 JSON 的 ID，不替换成 223819。 |
+| 057 | `player_has_buff_dawnlight` | Cell / 布尔 | 玩家晨光 431522 是否存在；无需层数或剩余时间。 |
+| 058 | `player_has_buff_art_of_war` | Cell / 布尔 | 玩家战争艺术 406086 是否存在。 |
+| 059 | `player_has_buff_divine_arbiter_storm` | Cell / 布尔 | 玩家神圣仲裁风暴 1306162 是否存在。 |
+| 060 | `four_piece_enabled` | Cell / 布尔 | 白=启用四件套规则，黑=关闭；默认开启，配置持久化。 |
+| 061 | `target_in_blade_of_justice_range` | Cell / 布尔 | 目标在公正之剑 184575 技能射程内；不是精确 12 码测距。 |
+| 062 | `target_in_judgment_range` | Cell / 布尔 | 目标在审判 20271 技能射程内。 |
+| 063 | `target_in_hammer_of_justice_range` | Cell / 布尔 | 目标在制裁之锤 853 技能射程内；七个输出技能及自动饰品统一使用，nil 或无目标为黑色。 |
+| 064 | `player_has_dispellable_poison_or_disease` | Cell / 布尔 | 玩家自身存在可驱散的中毒或疾病；AuraContainer 使用 HARMFUL\|RAID_PLAYER_DISPELLABLE 及 Poison、Disease 类型筛选，不检查其他单位。 |
+| 065 | `spell_cd_cleanse_toxins` | Cell / 冷却曲线 | 清毒术 213644 冷却，忽略 GCD；技能未知或不可用为黑色，不视为就绪。 |
+| 066 | `auto_cleanse_enabled` | Cell / 布尔 | 自动清毒开关，默认开启，游戏内配置持久化。 |
+| 067 | `auto_trinket_enabled` | Cell / 布尔 | 自动饰品开关，默认开启，游戏内配置持久化。 |
+| 068 | `player_melee_enemies_count` | Cell / 0–40 | 制裁之锤 853 范围内可观察、存活、可攻击的姓名板敌人数；保留历史字段名，不要求入战；上限 40，灰度=count/40，每 0.2 秒刷新。秘密或 nil 射程不计入。 |
 
 普通区连续占用 1–68 格；审判充能仅占第 48 格。其余旧 DK 专属字段、光环层数条和沸点计时已移除。
 
@@ -91,9 +91,9 @@ Lua 的 `cells/NNN_name.lua`、本表与 `Context` 属性必须同时更新。�
 
 新增宏与 Python 键位对应：`RSHIFT-NUMPAD7` → `/cast [@player]清毒术`；`RSHIFT-NUMPAD8` → `/use 13`；`RSHIFT-NUMPAD9` → `/use 14`。
 
-## IconTile 区（保持原位置）
+## IconTile
 
-| 位置 | 字段 | 含义 |
+| 位置 | 内容 | 参数 |
 | --- | --- | --- |
 | I01 | `player_cast_icon` | 玩家施法／引导图标。 |
 | I02 | `assisted_combat_icon` | 游戏辅助战斗推荐图标；不替代本项目手写循环。 |
