@@ -11,7 +11,6 @@ local type = type
 -- WoW API
 local After = C_Timer.After
 local CreateFrame = CreateFrame
-local GameFontNormal = GameFontNormal
 local IsShiftKeyDown = IsShiftKeyDown
 local UIParent = UIParent
 
@@ -28,7 +27,7 @@ local position = Config("finishing_position")
 local iconPath = "Interface/AddOns/" .. addonName .. "/ui/status/"
 local states
 local options
-local cell, button, icon, label, background
+local cell, button, icon, background
 local events
 
 -- PrintCommandHelp 会被后续文件包装，命令执行时读取当前函数；previousHelp 在原位置捕获旧函数。
@@ -38,14 +37,14 @@ config:set_value(0) -- 每次加载恢复自动，按钮位置单独保存。
 -- 保留原初始化时序；文件头只提前声明。
 states = {
     { value = 0, label = "自动", icon = iconPath .. "finishing_auto.tga", color = { 0.15, 0.65, 0.35 } },
-    { value = 10, label = "持续爆发", icon = iconPath .. "finishing_off.tga", color = { 0.15, 0.45, 0.85 } },
+    { value = 10, label = "残血持续爆发", icon = iconPath .. "finishing_off.tga", color = { 0.15, 0.45, 0.85 } },
     { value = 20, label = "残血不爆发", icon = iconPath .. "finishing_on.tga", color = { 0.95, 0.45, 0.1 } }
 }
 -- 保留原初始化时序；文件头只提前声明。
 options = {}
 for _, state in ipairs(states) do options[#options + 1] = { k = state.value, v = state.label } end
 insert(ConfigRows, {
-    type = "combo", name = "收尾状态", tooltip = "自动：非遭遇战且目标血量低于阈值时不使用狂野怒火。持续爆发：不收尾，狂野怒火仍按原有施放条件使用。残血不爆发：始终禁用狂野怒火，不受血量阈值影响，包括遭遇战；不影响饰品和药水。左击按自动、持续爆发、残血不爆发循环；Shift+左键拖动攻击模式时整体移动。脱战及重载恢复自动。",
+    type = "combo", name = "残血收尾模式", tooltip = "自动：非遭遇战且目标血量低于阈值时不使用狂野怒火。残血持续爆发：不收尾，狂野怒火仍按原有施放条件使用。残血不爆发：始终禁用狂野怒火，不受血量阈值影响，包括遭遇战；不影响饰品和药水。左击按自动、残血持续爆发、残血不爆发循环；Shift+左键拖动攻击模式时整体移动。模式变化时在聊天框打印，脱战及重载恢复自动。",
     bind_config = config, default_value = 0, options = options,
 })
 local function CurrentState()
@@ -57,18 +56,22 @@ local function CycleState()
     local _, index = CurrentState()
     config:set_value(states[index % #states + 1].value)
 end
+-- 初始化已恢复自动；只在有效模式发生变化时打印，周期刷新和重复写入不刷屏。
+local lastMode = 0
 local function Refresh()
     local state = CurrentState()
     local value = state.value
+    if value ~= lastMode then
+        lastMode = value
+        print("残血收尾模式：" .. state.label)
+    end
     if cell then
         local gray = value / 255
         cell:setCellRGBA(gray, gray, gray)
     end
     if button then
         icon:SetTexture(state.icon)
-        label:SetText(state.label)
         background:SetColorTexture(state.color[1] * 0.3, state.color[2] * 0.3, state.color[3] * 0.3, 1)
-        label:SetTextColor(state.color[1], state.color[2], state.color[3], 1)
     end
 end
 config:register_callback(Refresh)
@@ -82,7 +85,7 @@ end
 local previousHelp = addonTable.PrintCommandHelp
 addonTable.PrintCommandHelp = function()
     previousHelp()
-    print("/pix end auto|off|on|toggle — 收尾状态，toggle按自动、持续爆发、残血不爆发循环；残血不爆发始终禁用狂野怒火，不受血量影响")
+    print("/pix end auto|off|on|toggle — 残血收尾模式，toggle按自动、残血持续爆发、残血不爆发循环；残血不爆发始终禁用狂野怒火，不受血量影响")
 end
 
 -- 保留原初始化时序；文件头只提前声明。
@@ -94,7 +97,7 @@ insert(UIInitFuncs, function()
     button = CreateFrame("Button", addonName .. "FinishingFrame", UIParent)
     addonTable.FinishingFrame = button
     -- 控制按钮使用原生 UI 单位，不参与像素采样区的分辨率换算。
-    button:SetSize(66, 82)
+    button:SetSize(66, 66)
     button:SetFrameStrata("DIALOG")
     button:SetClampedToScreen(true)
     button:SetMovable(true)
@@ -119,13 +122,6 @@ insert(UIInitFuncs, function()
     icon = button:CreateTexture(nil, "ARTWORK")
     icon:SetSize(60, 60)
     icon:SetPoint("TOP", button, "TOP", 0, -3)
-    label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    label:SetFont(GameFontNormal:GetFont(), 12, "")
-    label:SetPoint("TOPLEFT", icon, "BOTTOMLEFT", 0, -4)
-    label:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 3)
-    label:SetJustifyH("CENTER")
-    label:SetWordWrap(false)
-    label:SetNonSpaceWrap(false)
     local dragging = false
     button:SetScript("OnDragStart", function()
     if addonTable.AttackModeFrame then return end

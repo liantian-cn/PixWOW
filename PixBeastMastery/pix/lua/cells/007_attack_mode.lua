@@ -11,7 +11,6 @@ local type = type
 -- WoW API
 local After = C_Timer.After
 local CreateFrame = CreateFrame
-local GameFontNormal = GameFontNormal
 local IsShiftKeyDown = IsShiftKeyDown
 local UIParent = UIParent
 
@@ -28,7 +27,7 @@ local position = Config("attack_mode_position")
 local iconPath = "Interface/AddOns/" .. addonName .. "/ui/status/"
 local states
 local options
-local cell, button, icon, label, background
+local cell, button, icon, background
 local events
 
 -- PrintCommandHelp 会被后续文件包装，命令执行时读取当前函数；previousHelp 在原位置捕获旧函数。
@@ -38,13 +37,13 @@ config:set_value(0) -- 每次加载重置状态，按钮位置单独保存。
 states = {
     { value = 0, label = "自动", icon = iconPath .. "attack_auto.tga", color = { 0.15, 0.65, 0.35 } },
     { value = 10, label = "仅单体", icon = iconPath .. "attack_single.tga", color = { 0.15, 0.45, 0.85 } },
-    { value = 20, label = "群体", icon = iconPath .. "attack_aoe.tga", color = { 0.95, 0.45, 0.1 } }
+    { value = 20, label = "仅AOE", icon = iconPath .. "attack_aoe.tga", color = { 0.95, 0.45, 0.1 } }
 }
 -- 保留原初始化时序；文件头只提前声明。
 options = {}
 for _, state in ipairs(states) do options[#options + 1] = { k = state.value, v = state.label } end
 insert(ConfigRows, {
-    type = "combo", name = "攻击模式", tooltip = "左击切换；Shift+左键拖动。脱战恢复默认状态。",
+    type = "combo", name = "单体/AOE输出模式", tooltip = "左击按自动、仅单体、仅AOE循环；Shift+左键拖动。模式变化时在聊天框打印，脱战恢复自动。",
     bind_config = config, default_value = 0, options = options,
 })
 local function CurrentState()
@@ -52,18 +51,22 @@ local function CurrentState()
     for index, state in ipairs(states) do if state.value == value then return state, index end end
     return states[1], 1
 end
+-- 初始化已恢复自动；只在有效模式发生变化时打印，周期刷新和重复写入不刷屏。
+local lastMode = 0
 local function Refresh()
     local state = CurrentState()
     local value = state.value
+    if value ~= lastMode then
+        lastMode = value
+        print("单体/AOE输出模式：" .. state.label)
+    end
     if cell then
         local gray = value / 255
         cell:setCellRGBA(gray, gray, gray)
     end
     if button then
         icon:SetTexture(state.icon)
-        label:SetText(state.label)
         background:SetColorTexture(state.color[1] * 0.3, state.color[2] * 0.3, state.color[3] * 0.3, 1)
-        label:SetTextColor(state.color[1], state.color[2], state.color[3], 1)
     end
 end
 config:register_callback(Refresh)
@@ -73,7 +76,7 @@ CommandHandler.aoe = function(_, arguments) if arguments == "" then config:set_v
 local previousHelp = addonTable.PrintCommandHelp
 addonTable.PrintCommandHelp = function()
     previousHelp()
-    print("/pix auto|single|aoe — 攻击模式：自动、仅单体、群体")
+    print("/pix auto|single|aoe — 单体/AOE输出模式：自动、仅单体、仅AOE")
 end
 
 -- 保留原初始化时序；文件头只提前声明。
@@ -85,7 +88,7 @@ insert(UIInitFuncs, function()
     button = CreateFrame("Button", addonName .. "AttackModeFrame", UIParent)
     addonTable.AttackModeFrame = button
     -- 控制按钮使用原生 UI 单位，不参与像素采样区的分辨率换算。
-    button:SetSize(66, 82)
+    button:SetSize(66, 66)
     button:SetFrameStrata("DIALOG")
     button:SetClampedToScreen(true)
     button:SetMovable(true)
@@ -105,13 +108,6 @@ insert(UIInitFuncs, function()
     icon = button:CreateTexture(nil, "ARTWORK")
     icon:SetSize(60, 60)
     icon:SetPoint("TOP", button, "TOP", 0, -3)
-    label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    label:SetFont(GameFontNormal:GetFont(), 12, "")
-    label:SetPoint("TOPLEFT", icon, "BOTTOMLEFT", 0, -4)
-    label:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 3)
-    label:SetJustifyH("CENTER")
-    label:SetWordWrap(false)
-    label:SetNonSpaceWrap(false)
     local dragging = false
     button:SetScript("OnDragStart", function()
         if IsShiftKeyDown() then dragging = true; button:StartMoving() end
