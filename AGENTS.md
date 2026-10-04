@@ -90,7 +90,7 @@ git diff --check
 
 Run the GUI or capture diagnostic only when the task calls for it. For static validation, use Pyright and syntax checks without starting the application. Each application's working directory selects its own `pix`; never combine the five packages on one import path. Pyright's root configuration defines a separate execution environment for each application. In an application directory, `uv run pyright pix` and `uv run python -m compileall pix` use the shared environment.
 
-No automated test framework, formatter, or linter is configured. Existing `build.py` and `build.ps1` scripts remain in each application pending a separate adaptation: they still require child `pyproject.toml` and `uv.lock` files and cannot currently build with the consolidated layout.
+No automated test framework, formatter, or linter is configured. Build all applications with root `build.ps1` or `uv run --no-project --python 3.13 build.py`. The root scripts discover direct child directories whose names start with case-sensitive `Pix` and contain `pix/__main__.py`; do not add child build scripts or a hardcoded project list. Builds use root locked runtime dependencies and Nuitka 4.2.2 in `build/.venv`, with isolated work and reports under `build/nuitka/<application name>/`. Distribute entire `dist/<application name>/` directories. Icons, assets, and Lua resources are optional; executable versions are not explicitly set. Failed projects retain their previous release while other builds continue; any failure produces a nonzero exit code. Building requires Windows x64 CPython 3.13 and Visual Studio C++ tools with a Windows SDK.
 
 ## Coding Style & Addon Validation
 

@@ -109,7 +109,7 @@ git diff --check
 
 本项目共用 [PixWOW 根目录](../README.md) 的 Python 3.13、依赖、锁文件和 `.venv`。安装依赖在根目录运行 `uv sync --locked`；运行与检查命令在 `PixBeastMastery` 子目录执行，工作目录决定加载哪份 `pix`。
 
-`build.py`、`build.ps1` 仍读取原子目录的 `pyproject.toml` 和 `uv.lock`，需后续适配后才能打包。
+在仓库根目录运行 `./build.ps1` 统一打包，产物位于根目录的 `dist/PixBeastMastery/`，分发时保留整个目录。构建要求与自动发现规则见[根目录构建说明](../README.md#构建全部项目)。
 
 ## 许可与配图
 
