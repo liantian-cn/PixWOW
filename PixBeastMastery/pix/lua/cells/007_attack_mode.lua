@@ -9,7 +9,6 @@ local print = print
 local type = type
 
 -- WoW API
-local GetSpellTexture = C_Spell.GetSpellTexture
 local After = C_Timer.After
 local CreateFrame = CreateFrame
 local GameFontNormal = GameFontNormal
@@ -26,6 +25,7 @@ local Cell = addonTable.Cell
 -- 本地配置
 local config = Config("attack_mode")
 local position = Config("attack_mode_position")
+local iconPath = "Interface/AddOns/" .. addonName .. "/ui/status/"
 local states
 local options
 local cell, button, icon, label, background
@@ -36,9 +36,9 @@ config:set_default(0)
 config:set_value(0) -- 每次加载重置状态，按钮位置单独保存。
 -- 保留原初始化时序；文件头只提前声明。
 states = {
-    { value = 0, label = "自动", icon = 147362, color = { 0.15, 0.65, 0.35 } },
-    { value = 10, label = "单体", icon = 34026, color = { 0.15, 0.45, 0.85 } },
-    { value = 20, label = "AOE", icon = 1264359, color = { 0.95, 0.45, 0.1 } }
+    { value = 0, label = "自动", icon = iconPath .. "attack_auto.tga", color = { 0.15, 0.65, 0.35 } },
+    { value = 10, label = "仅单体", icon = iconPath .. "attack_single.tga", color = { 0.15, 0.45, 0.85 } },
+    { value = 20, label = "群体", icon = iconPath .. "attack_aoe.tga", color = { 0.95, 0.45, 0.1 } }
 }
 -- 保留原初始化时序；文件头只提前声明。
 options = {}
@@ -60,7 +60,7 @@ local function Refresh()
         cell:setCellRGBA(gray, gray, gray)
     end
     if button then
-        icon:SetTexture(GetSpellTexture(state.icon))
+        icon:SetTexture(state.icon)
         label:SetText(state.label)
         background:SetColorTexture(state.color[1] * 0.3, state.color[2] * 0.3, state.color[3] * 0.3, 1)
         label:SetTextColor(state.color[1], state.color[2], state.color[3], 1)
@@ -73,7 +73,7 @@ CommandHandler.aoe = function(_, arguments) if arguments == "" then config:set_v
 local previousHelp = addonTable.PrintCommandHelp
 addonTable.PrintCommandHelp = function()
     previousHelp()
-    print("/pix auto|single|aoe — 攻击模式")
+    print("/pix auto|single|aoe — 攻击模式：自动、仅单体、群体")
 end
 
 -- 保留原初始化时序；文件头只提前声明。
@@ -110,6 +110,8 @@ insert(UIInitFuncs, function()
     label:SetPoint("TOPLEFT", icon, "BOTTOMLEFT", 0, -4)
     label:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 3)
     label:SetJustifyH("CENTER")
+    label:SetWordWrap(false)
+    label:SetNonSpaceWrap(false)
     local dragging = false
     button:SetScript("OnDragStart", function()
         if IsShiftKeyDown() then dragging = true; button:StartMoving() end

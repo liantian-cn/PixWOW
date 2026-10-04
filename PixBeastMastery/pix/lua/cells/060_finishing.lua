@@ -9,7 +9,6 @@ local print = print
 local type = type
 
 -- WoW API
-local GetSpellTexture = C_Spell.GetSpellTexture
 local After = C_Timer.After
 local CreateFrame = CreateFrame
 local GameFontNormal = GameFontNormal
@@ -26,6 +25,7 @@ local Cell = addonTable.Cell
 -- 本地配置
 local config = Config("finishing")
 local position = Config("finishing_position")
+local iconPath = "Interface/AddOns/" .. addonName .. "/ui/status/"
 local states
 local options
 local cell, button, icon, label, background
@@ -37,15 +37,15 @@ config:set_default(0)
 config:set_value(0) -- 每次加载恢复自动，按钮位置单独保存。
 -- 保留原初始化时序；文件头只提前声明。
 states = {
-    { value = 0, label = "收尾：自动", icon = 19574, color = { 0.15, 0.65, 0.35 } },
-    { value = 10, label = "收尾：关闭", icon = 19574, color = { 0.35, 0.38, 0.4 } },
-    { value = 20, label = "收尾：开启", icon = 19574, color = { 0.85, 0.2, 0.2 } }
+    { value = 0, label = "自动", icon = iconPath .. "finishing_auto.tga", color = { 0.15, 0.65, 0.35 } },
+    { value = 10, label = "持续爆发", icon = iconPath .. "finishing_off.tga", color = { 0.15, 0.45, 0.85 } },
+    { value = 20, label = "残血不爆发", icon = iconPath .. "finishing_on.tga", color = { 0.95, 0.45, 0.1 } }
 }
 -- 保留原初始化时序；文件头只提前声明。
 options = {}
 for _, state in ipairs(states) do options[#options + 1] = { k = state.value, v = state.label } end
 insert(ConfigRows, {
-    type = "combo", name = "收尾状态", tooltip = "自动：非遭遇战且目标血量低于阈值时不使用狂野怒火。左击按自动、关闭、开启循环；Shift+左键拖动。脱战及重载恢复自动。",
+    type = "combo", name = "收尾状态", tooltip = "自动：非遭遇战且目标血量低于阈值时不使用狂野怒火。持续爆发：不收尾，狂野怒火仍按原有施放条件使用。残血不爆发：始终禁用狂野怒火，不受血量阈值影响，包括遭遇战；不影响饰品和药水。左击按自动、持续爆发、残血不爆发循环；Shift+左键拖动攻击模式时整体移动。脱战及重载恢复自动。",
     bind_config = config, default_value = 0, options = options,
 })
 local function CurrentState()
@@ -65,7 +65,7 @@ local function Refresh()
         cell:setCellRGBA(gray, gray, gray)
     end
     if button then
-        icon:SetTexture(GetSpellTexture(state.icon))
+        icon:SetTexture(state.icon)
         label:SetText(state.label)
         background:SetColorTexture(state.color[1] * 0.3, state.color[2] * 0.3, state.color[3] * 0.3, 1)
         label:SetTextColor(state.color[1], state.color[2], state.color[3], 1)
@@ -82,7 +82,7 @@ end
 local previousHelp = addonTable.PrintCommandHelp
 addonTable.PrintCommandHelp = function()
     previousHelp()
-    print("/pix end auto|off|on|toggle — 收尾状态，toggle按自动、关闭、开启循环")
+    print("/pix end auto|off|on|toggle — 收尾状态，toggle按自动、持续爆发、残血不爆发循环；残血不爆发始终禁用狂野怒火，不受血量影响")
 end
 
 -- 保留原初始化时序；文件头只提前声明。
@@ -124,6 +124,8 @@ insert(UIInitFuncs, function()
     label:SetPoint("TOPLEFT", icon, "BOTTOMLEFT", 0, -4)
     label:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 3)
     label:SetJustifyH("CENTER")
+    label:SetWordWrap(false)
+    label:SetNonSpaceWrap(false)
     local dragging = false
     button:SetScript("OnDragStart", function()
     if addonTable.AttackModeFrame then return end
