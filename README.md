@@ -37,6 +37,14 @@ uv run --locked pythonw -m pix
 
 五个项目的 Python 包都叫 `pix`，工作目录决定运行哪个项目。不要直接在仓库根目录执行 `pythonw -m pix`。游戏插件安装、专精设置和截图诊断见各项目 README。
 
+### BAT 与桌面快捷方式
+
+根目录提供五个启动脚本：`PixBlood.bat`、`PixBeastMastery.bat`、`PixHoly.bat`、`PixProtection.bat`、`PixRetribution.bat`。
+
+安装 uv 并确保其位于 PATH 后，右键对应 BAT，选择“以管理员身份运行”。脚本通过自身位置定位仓库，使用根目录共享环境执行 `uv run --locked --directory <应用名> python -m pix`，不包含本机绝对路径。控制台显示运行输出，程序退出后暂停，按任意键关闭。
+
+可为 BAT 创建桌面快捷方式，在快捷方式的“属性 → 高级”中勾选“用管理员身份运行”，并使用对应应用的 `pix/assets/app.ico` 图标。应用本身要求管理员权限；提前提升整个启动窗口可让程序错误保留在同一个控制台中。快捷方式绑定创建时的仓库位置，移动仓库后需更新目标和起始位置。
+
 ## 文档与检查
 
 - 共用经验：[字形覆盖](.context/cell-glyph-coverage.md)、[宏快捷键顺序](.context/macro-key-order.md)。
