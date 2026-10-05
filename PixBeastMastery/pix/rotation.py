@@ -149,21 +149,37 @@ class Rotation:
         # => 按顺序执行核心 DPS 规则
         if attack_range:
             focus = ctx.power_focus
-            # 如果 倒刺冷却为 0 且充能大于 0
+            # 如果 倒刺充能至少 1 层，不检查自身冷却
             # => 标记倒刺就绪
-            barbed_ready = ctx.spell_cd_barbed_shot == 0 and ctx.spell_charges_barbed_shot > 0
+            barbed_ready = ctx.spell_charges_barbed_shot >= 1
             thrash_cd = ctx.spell_cd_wild_thrash
-            # 如果 当前为单体，或狂野鞭笞冷却大于 0 秒
-            # => 满足眼镜蛇射击的模式条件
-            single_or_thrash_cooling = not IsAOE or thrash_cd > 0
+            cobra_fangs_stacks = ctx.player_buff_stacks_cobra_fangs
 
-            # 暂停怒火增益期间的高优先级鞭笞，保留代码及增益读取。
-            # if IsAOE and focus >= 35 and thrash_cd == 0 and ctx.player_has_buff_bestial_wrath:
-            #     return Cast("狂野鞭笞", "狂野怒火增益期间优先")
-            # 如果 AOE、狂野怒火冷却为 0、未收尾，且野兽顺劈存在并剩余严格大于 2 秒
-            # => 先检查自动饰品，再施放狂野怒火，高于倒刺射击和常规鞭笞
+            # 如果 AOE、狂野鞭笞冷却为 0，且怒火施放后 4 秒窗口剩余大于 0
+            # => 优先施放狂野鞭笞；不检查集中值，不足时也持续选择该技能
+            if IsAOE and thrash_cd == 0 and ctx.bestial_wrath_cast_remaining > 0:
+                return Cast("狂野鞭笞", "怒火施放后4秒窗口")
+            # 如果 AOE、狂野鞭笞冷却为 0，且集中值至少 35 点
+            # => 施放狂野鞭笞
+            if IsAOE and thrash_cd == 0 and focus >= 35:
+                return Cast("狂野鞭笞")
+            # 如果 AOE、集中值至少 35 点、有野兽顺劈且没有狂野怒火增益
+            # => 优先施放眼镜蛇射击，不检查利牙层数
+            if (IsAOE and focus >= 35 and ctx.player_has_buff_beast_cleave
+                    and not ctx.player_has_buff_bestial_wrath):
+                return Cast("眼镜蛇射击", "顺劈期间无怒火增益")
+            # 如果 倒刺有充能，且怒火冷却严格小于 3 秒；单体和 AOE 均适用
+            # => 提前施放倒刺射击
+            if barbed_ready and ctx.spell_cd_bestial_wrath < 3:
+                return Cast("倒刺射击", "怒火将就绪")
+            # 如果 倒刺有充能，且下一层恢复严格小于 4 秒（满充能读取为 0）
+            # => 提前施放倒刺射击
+            if barbed_ready and ctx.spell_recharge_barbed_shot < 4:
+                return Cast("倒刺射击", "充能将满")
+            # 如果 AOE、狂野怒火冷却为 0、未收尾，且野兽顺劈剩余严格大于 2 秒
+            # => 先检查自动饰品，再施放狂野怒火；不额外检查顺劈存在布尔值
             if (IsAOE and ctx.spell_cd_bestial_wrath == 0 and not Isfinishing
-                    and ctx.player_has_buff_beast_cleave and ctx.player_buff_beast_cleave_remaining > 2):
+                    and ctx.player_buff_beast_cleave_remaining > 2):
                 # 如果 上述 AOE 怒火条件成立且自动饰品开启
                 # => 按上饰品、下饰品顺序检查，不要求爆发窗口
                 if ctx.auto_trinket_enabled:
@@ -175,16 +191,7 @@ class Rotation:
                     # => 本轮使用下饰品，下一轮重新判断全部条件
                     if ctx.ticket_14_ready:
                         return Use("下饰品")
-                return Cast("狂野怒火", "野兽顺劈期间优先")
-            # 如果 倒刺冷却为 0 且有充能，并且（下一层恢复小于 2 秒，或单体时怒火冷却小于 3 秒）
-            # => 提前施放倒刺射击
-            if barbed_ready and (ctx.spell_recharge_barbed_shot < 2
-                                 or (not IsAOE and ctx.spell_cd_bestial_wrath < 3)):
-                return Cast("倒刺射击", "充能将满或单体怒火将就绪")
-            # 如果 AOE、集中值至少 35 点且狂野鞭笞冷却为 0
-            # => 施放狂野鞭笞
-            if IsAOE and focus >= 35 and thrash_cd == 0:
-                return Cast("狂野鞭笞")
+                return Cast("狂野怒火", "野兽顺劈剩余大于2秒")
             # 如果 单体、未收尾且狂野怒火冷却为 0
             # => 先检查自动饰品，再施放狂野怒火；不要求野兽顺劈
             if not IsAOE and not Isfinishing and ctx.spell_cd_bestial_wrath == 0:
@@ -200,22 +207,24 @@ class Rotation:
                     if ctx.ticket_14_ready:
                         return Use("下饰品")
                 return Cast("狂野怒火")
-            # 如果 集中值至少 30 点、杀戮命令冷却为 0 且充能大于 0，并有自然之友增益
-            # => 施放杀戮命令
-            if (focus >= 30 and ctx.spell_cd_kill_command == 0 and ctx.spell_charges_kill_command > 0
-                    and ctx.player_has_buff_natures_ally):
-                return Cast("杀戮命令")
-            # 如果 集中值至少 35 点、有眼镜蛇利牙，且单体或狂野鞭笞仍在冷却
+            # 如果 集中值至少 35 点、有野兽顺劈，且利牙层数大于 0
             # => 优先施放眼镜蛇射击
-            if focus >= 35 and ctx.player_has_buff_cobra_fangs and single_or_thrash_cooling:
+            if focus >= 35 and ctx.player_has_buff_beast_cleave and cobra_fangs_stacks > 0:
                 return Cast("眼镜蛇射击", "眼镜蛇利牙")
-            # 如果 倒刺射击冷却为 0 且充能大于 0，前序输出未命中
+            # 如果 杀戮命令充能至少 1 层、集中值至少 30 点、利牙少于 4 层
+            # 如果 自然之友、猪、熊、龙增益任一存在；不检查杀戮自身冷却
+            # => 施放杀戮命令
+            if (ctx.spell_charges_kill_command >= 1 and focus >= 30 and cobra_fangs_stacks < 4
+                    and (ctx.player_has_buff_natures_ally or ctx.player_has_buff_pack_boar
+                         or ctx.player_has_buff_pack_bear or ctx.player_has_buff_pack_wyvern)):
+                return Cast("杀戮命令")
+            # 如果 倒刺充能至少 1 层，前序输出未命中
             # => 施放倒刺射击
             if barbed_ready:
                 return Cast("倒刺射击")
-            # 如果 集中值至少 35 点，且单体或狂野鞭笞仍在冷却
+            # 如果 集中值至少 35 点，前序输出未命中
             # => 以眼镜蛇射击填充输出
-            if focus >= 35 and single_or_thrash_cooling:
+            if focus >= 35:
                 return Cast("眼镜蛇射击")
 
         # 如果 宠物存在且存活、生命严格低于 70%，治疗宠物冷却为 0；前序动作未命中且已通过战斗／目标门控

@@ -66,8 +66,8 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 043 | `spell_cd_counter_shot` | 冷却 | 反制射击147362 |
 | 044 | `spell_cd_bestial_wrath` | 冷却 | 狂野怒火19574 |
 | 045 | `spell_cd_wild_thrash` | 冷却 | 狂野鞭笞1264359 |
-| 046 | `spell_cd_kill_command` | 冷却 | 杀戮命令34026；同时参考74格充能 |
-| 047 | `spell_cd_barbed_shot` | 冷却 | 倒刺射击217200；同时参考48格充能 |
+| 046 | `spell_cd_kill_command` | 冷却 | 杀戮命令34026冷却字段保留；当前循环以74格充能判断可用，不检查此冷却 |
+| 047 | `spell_cd_barbed_shot` | 冷却 | 倒刺射击217200冷却字段保留；当前循环以48格充能判断可用，不检查此冷却 |
 | 048 | `spell_charges_barbed_shot` | 整数 | 倒刺射击当前充能；灰度字节即数量 |
 | 049 | `mouseover_in_melee_range` / `mouseover_in_interrupt_range` | 布尔 | 鼠标单位在147362射程；两个Context属性复用同一格 |
 | 050 | `burst_potion_enabled` | 布尔 | 自动鲁莽药水开关，默认开启 |
@@ -79,7 +79,7 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 056 | `player_has_buff_natures_ally` | 布尔 | 玩家自然之友（Nature’s Ally）增益1276720 |
 | 057 | `player_has_buff_pack_boar` | 布尔 | 玩家增益472324 |
 | 058 | `player_has_buff_pack_bear` | 布尔 | 玩家增益472325 |
-| 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。`player_has_buff_cobra_fangs`由层数>0派生 |
+| 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。`player_has_buff_cobra_fangs`由层数>0派生；循环直接使用层数>0的眼镜蛇条件和层数<4的杀戮条件 |
 | 060 | `finishing` | 枚举 | 灰度0自动、10残血持续爆发（关闭收尾）、20残血不爆发（始终开启收尾，不受血量阈值影响，包括遭遇战）；默认、脱战及重载恢复自动；自动模式仅在86格为假且目标血量严格低于87格阈值时收尾，10/20强制覆盖；异常枚举按自动处理 |
 | 061 | `power_focus_max` | 整数 | 配置集中值上限100–120，默认100，灰度直接表示点数 |
 | 062 | `spell_recharge_barbed_shot` | 冷却曲线 | 倒刺射击下一层充能剩余时间；满充能由48和75格识别 |
@@ -108,7 +108,7 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 085 | `player_buff_beast_cleave_remaining` | 光环剩余秒数 | 玩家野兽顺劈268877；亮度0/150/180/210/255对应0/15/30/60/240秒，0含不存在或到期，240含永久或上限饱和；原生DurationText绑定更新 |
 | 086 | `encounter_in_progress` | 布尔 | C_InstanceEncounter.IsEncounterInProgress()；遭遇战中白、否则黑，不区分编号，不附加玩家存活、战斗或目标条件；初始化读取、进入世界及状态变化后延后刷新，每秒兜底 |
 | 087 | `finishing_health_threshold` | 整数 | 收尾血量阈值百分数，灰度字节直接表示；默认20，范围0–50，滑块步进5，持久化保存；0表示自动不收尾，Python越界回退20 |
-| 088 | `bestial_wrath_cast_remaining` | 灰度十分之一秒 | 玩家狂野怒火19574成功施放后的本地4秒窗口；仅监听player的UNIT_SPELLCAST_SUCCEEDED，可读ID匹配后开始或重置；秘密、缺失或其他ID忽略。0包含未触发、到期、重载或进入世界清零；不是实际增益剩余时间 |
+| 088 | `bestial_wrath_cast_remaining` | 灰度十分之一秒 | 玩家狂野怒火19574成功施放后的本地4秒窗口；仅监听player的UNIT_SPELLCAST_SUCCEEDED，可读ID匹配后开始或重置；秘密、缺失或其他ID忽略。0包含未触发、到期、重载或进入世界清零；不是实际增益剩余时间；剩余>0用于AOE最高优先级鞭笞，不要求集中值 |
 
 ## IconTile
 
