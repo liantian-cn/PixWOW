@@ -1,5 +1,5 @@
--- 玩家增益 1299389 是否存在。
--- 原生光环容器负责匹配与显隐，不读取秘密光环数据。
+-- 第 59 格灰度字节直接表示眼镜蛇利牙层数；255 及以上饱和为白色。
+-- 原生光环槽管理层数文字，光环消失后露出黑底。
 local addonName, addonTable = ...
 
 -- Lua 内置方法
@@ -9,10 +9,11 @@ local ipairs                  = ipairs
 -- WoW API
 local CreateFrame             = CreateFrame
 local After                   = C_Timer.After
+local GameFontNormal          = GameFontNormal
 
 -- 项目引用
-local Cell                    = addonTable.Cell
-local COLOR                   = addonTable.COLOR
+local CellBackplate           = addonTable.CellBackplate
+local CountFormatter          = addonTable.CountFormatter
 local SIZE                    = addonTable.SIZE
 local FrameLevel              = addonTable.FrameLevel
 local UIInitFuncs             = addonTable.UIInitFuncs
@@ -31,9 +32,9 @@ local function Refresh()
 end
 
 local function Initialize()
-    local cell = Cell:New({ x = X })
-    container = CreateFrame("AuraContainer", nil, cell.Frame, "CustomAuraContainerTemplate")
-    container:SetAllPoints(cell.Frame)
+    local backing = CellBackplate:New({ x = X })
+    container = CreateFrame("AuraContainer", nil, backing.Frame, "CustomAuraContainerTemplate")
+    container:SetAllPoints(backing.Frame)
     container:SetFrameLevel(FrameLevel.AuraContainer)
     container:SetUnit("player")
 
@@ -47,11 +48,18 @@ local function Initialize()
             frame:SetSize(SIZE.CELL, SIZE.CELL)
             frame:SetPoint("TOPLEFT", container, "TOPLEFT")
             frame:SetFrameLevel(FrameLevel.AuraButton)
-            local color = COLOR.WHITE
-            local overlay = frame:CreateTexture(nil, "OVERLAY")
-            overlay:SetAllPoints(frame)
-            overlay:SetTexture("Interface\\Buttons\\WHITE8X8")
-            overlay:SetVertexColor(color:GetRGBA())
+            frame:SetClipsChildren(true)
+            local fontPath = GameFontNormal:GetFont()
+            local text = frame:CreateFontString(nil, "ARTWORK")
+            text:SetFont(fontPath, SIZE.CELL_FONT_SIZE, "")
+            text:SetPoint("CENTER", frame, "CENTER")
+            text:SetJustifyH("CENTER")
+            text:SetJustifyV("MIDDLE")
+            text:SetShadowOffset(0, 0)
+            text:SetShadowColor(0, 0, 0, 0)
+            text:SetTextColor(1, 1, 1, 1)
+            text:SetFixedColor(false)
+            frame:SetApplicationCount(text, { formatter = CountFormatter })
         end,
     })
     Refresh()

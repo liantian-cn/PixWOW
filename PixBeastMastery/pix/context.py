@@ -274,8 +274,15 @@ class Context:
         return self.readBooleanCell(58)
 
     @property
+    def player_buff_stacks_cobra_fangs(self) -> int:
+        """Grayscale count; 0 includes absence, 255 means at least 255."""
+        return int(self.readNumberCell(59) + 0.5)
+
+    @property
     def player_has_buff_cobra_fangs(self) -> bool:
-        return self.readBooleanCell(59)
+        # 如果 眼镜蛇利牙层数大于 0
+        # => 标记利牙存在，供现有循环使用
+        return self.player_buff_stacks_cobra_fangs > 0
 
     @property
     def finishing(self) -> int:

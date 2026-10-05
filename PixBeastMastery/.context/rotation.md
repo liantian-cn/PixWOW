@@ -71,6 +71,8 @@ AOE 无野兽顺劈时不释放狂野怒火。
 
 ## 状态读取
 
+第 59 格通过 AuraContainer 的 SetApplicationCount 绑定共享 CountFormatter，显示玩家眼镜蛇利牙1299389层数。`Context.player_buff_stacks_cobra_fangs`按灰度字节四舍五入读取整数，0包含无光环或无计数，255表示至少255层；`player_has_buff_cobra_fangs`由层数大于0派生。当前循环仍只判断利牙是否存在，不使用层数阈值，也不改变杀戮命令和眼镜蛇射击的优先级。第59格由布尔改为计数，插件与Python必须配套更新，更新插件后执行`/reload`并重启Python；基板尺寸不变。
+
 第 76 格通过原生 AuraContainer 显示玩家野兽顺劈：存在为白色，不存在为黑色。Python 通过 `Context.player_has_buff_beast_cleave` 读取，插件与 Python 必须配套更新。
 
 第 84 格以相同方式显示玩家狂野怒火增益 19574，通过 `Context.player_has_buff_bestial_wrath` 读取。更新插件后需在游戏内 `/reload`，并让 Python 重新定位扩展后的基板。

@@ -74,7 +74,7 @@ cells\055_player_has_buff_pack_wyvern.lua
 cells\056_player_has_buff_natures_ally.lua
 cells\057_player_has_buff_pack_boar.lua
 cells\058_player_has_buff_pack_bear.lua
-cells\059_player_has_buff_cobra_fangs.lua
+cells\059_player_buff_stacks_cobra_fangs.lua
 cells\060_finishing.lua
 cells\061_power_focus_max.lua
 cells\062_spell_recharge_barbed_shot.lua
