@@ -394,6 +394,11 @@ class Context:
         return value if 0 <= value <= 50 else 20
 
     @property
+    def bestial_wrath_cast_remaining(self) -> float:
+        """Seconds remaining in the four-second window after a successful player cast."""
+        return self.readNumberCell(88) / 10.0
+
+    @property
     def power_focus(self) -> int:
         maximum = self.power_focus_max
         if not 100 <= maximum <= 120:
