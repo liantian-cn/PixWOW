@@ -17,7 +17,7 @@
 | `RCTRL-NUMPAD5` | 狂野鞭笞 | `/cast [@target,harm,nodead] 狂野鞭笞` |
 | `RCTRL-NUMPAD6` | 杀戮命令 | `/cast [@target,harm,nodead] 杀戮命令` |
 | `RCTRL-NUMPAD7` | 眼镜蛇射击 | `/cast [@target,harm,nodead] 眼镜蛇射击` |
-| `RCTRL-NUMPAD8` | 鲁莽药水 | `/use item:241288\n/use item:241289` |
+| `RCTRL-NUMPAD8` | 爆发药水 | `/use item:241293\n/use item:241292\n/use item:241288\n/use item:241289` |
 | `RCTRL-NUMPAD9` | 治疗宠物 | `/cast 治疗宠物` |
 | `RCTRL-NUMPAD0` | 召唤/复活宠物 | `/cast [@pet,dead] 复活宠物\n/castsequence [nopet] reset=3 召唤宠物 1,复活宠物` |
 | `RSHIFT-NUMPAD1` | 误导party1 | `/cast [@party1,help,nodead] 误导` |

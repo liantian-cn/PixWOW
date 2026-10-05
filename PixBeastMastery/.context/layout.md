@@ -70,16 +70,16 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 047 | `spell_cd_barbed_shot` | 冷却 | 倒刺射击217200冷却字段保留；当前循环以48格充能判断可用，不检查此冷却 |
 | 048 | `spell_charges_barbed_shot` | 整数 | 倒刺射击当前充能；灰度字节即数量 |
 | 049 | `mouseover_in_melee_range` / `mouseover_in_interrupt_range` | 布尔 | 鼠标单位在147362射程；两个Context属性复用同一格 |
-| 050 | `burst_potion_enabled` | 布尔 | 自动鲁莽药水开关，默认开启 |
+| 050 | `burst_potion_enabled` | 布尔 | 自动爆发药水开关，默认开启 |
 | 051 | `spell_cd_mend_pet` | 冷却 | 治疗宠物136 |
 | 052 | `spell_cd_exhilaration` | 冷却 | 意气风发109304 |
 | 053 | `spell_cd_misdirection` | 冷却 | 误导34477 |
-| 054 | `reckless_potion_ready` | 布尔 | 241288或241289有库存且冷却好 |
+| 054 | `reckless_potion_ready` | 布尔 | 共用爆发药水就绪：241293、241292、241288、241289任一有库存、冷却启用且已结束；保留原属性名，使用宏按此顺序尝试 |
 | 055 | `player_has_buff_pack_wyvern` | 布尔 | 玩家增益471878 |
 | 056 | `player_has_buff_natures_ally` | 布尔 | 玩家自然之友（Nature’s Ally）增益1276720 |
 | 057 | `player_has_buff_pack_boar` | 布尔 | 玩家增益472324 |
 | 058 | `player_has_buff_pack_bear` | 布尔 | 玩家增益472325 |
-| 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。`player_has_buff_cobra_fangs`由层数>0派生；循环直接使用层数>0的眼镜蛇条件和层数<4的杀戮条件 |
+| 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。`player_has_buff_cobra_fangs`由层数>0派生；循环使用层数>2的高优先级AOE眼镜蛇、层数>0的后续眼镜蛇及层数<4的杀戮条件 |
 | 060 | `finishing` | 枚举 | 灰度0自动、10残血持续爆发（关闭收尾）、20残血不爆发（始终开启收尾，不受血量阈值影响，包括遭遇战）；默认、脱战及重载恢复自动；自动模式仅在86格为假且目标血量严格低于87格阈值时收尾，10/20强制覆盖；异常枚举按自动处理 |
 | 061 | `power_focus_max` | 整数 | 配置集中值上限100–120，默认100，灰度直接表示点数 |
 | 062 | `spell_recharge_barbed_shot` | 冷却曲线 | 倒刺射击下一层充能剩余时间；满充能由48和75格识别 |

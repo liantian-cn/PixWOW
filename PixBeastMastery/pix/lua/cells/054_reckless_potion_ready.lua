@@ -1,4 +1,4 @@
--- 两种普通鲁莽药水：有库存且冷却结束。
+-- 共用爆发药水检测：狂放恣意饮剂与鲁莽药水任一有库存且冷却结束。
 local addonName, addonTable = ...
 
 -- Lua 内置方法
@@ -24,7 +24,7 @@ local frame = CreateFrame("Frame")
 local function Refresh()
     if not cell then return end
     local ready = false
-    for _, id in ipairs({ 241288, 241289 }) do
+    for _, id in ipairs({ 241293, 241292, 241288, 241289 }) do
         local start, duration, enabled = GetItemCooldown(id)
         if GetItemCount(id, false, false, false, false) > 0
             and start ~= nil and duration ~= nil and enabled and enabled ~= 0

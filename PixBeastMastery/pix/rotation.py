@@ -15,7 +15,7 @@ class Rotation:
             "狂野鞭笞": "RCTRL-NUMPAD5",
             "杀戮命令": "RCTRL-NUMPAD6",
             "眼镜蛇射击": "RCTRL-NUMPAD7",
-            "鲁莽药水": "RCTRL-NUMPAD8",
+            "爆发药水": "RCTRL-NUMPAD8",
             "治疗宠物": "RCTRL-NUMPAD9",
             "召唤/复活宠物": "RCTRL-NUMPAD0",
             "误导party1": "RSHIFT-NUMPAD1",
@@ -114,12 +114,12 @@ class Rotation:
 
         attack_range = ctx.target_in_interrupt_range
         # 如果 爆发窗口有效且目标在反制射击射程内
-        # => 检查鲁莽药水
+        # => 检查爆发药水
         if ctx.in_burst and attack_range:
-            # 如果 处于上述爆发及射程条件，药水开关开启且鲁莽药水可用
-            # => 使用鲁莽药水
+            # 如果 处于上述爆发及射程条件，药水开关开启且爆发药水可用
+            # => 使用爆发药水
             if ctx.burst_potion_enabled and ctx.reckless_potion_ready:
-                return Use("鲁莽药水")
+                return Use("爆发药水")
 
         # 如果 反制射击范围内可观察敌人数至少 2 个
         # => 自动选择 AOE，否则选择单体；随后应用强制模式
@@ -163,10 +163,10 @@ class Rotation:
             # => 施放狂野鞭笞
             if IsAOE and thrash_cd == 0 and focus >= 35:
                 return Cast("狂野鞭笞")
-            # 如果 AOE、集中值至少 35 点、有野兽顺劈且没有狂野怒火增益
-            # => 优先施放眼镜蛇射击，不检查利牙层数
+            # 如果 AOE、集中值至少 35 点、有野兽顺劈、没有狂野怒火增益且利牙层数大于 2
+            # => 优先施放眼镜蛇射击，恰好 2 层不满足
             if (IsAOE and focus >= 35 and ctx.player_has_buff_beast_cleave
-                    and not ctx.player_has_buff_bestial_wrath):
+                    and not ctx.player_has_buff_bestial_wrath and cobra_fangs_stacks > 2):
                 return Cast("眼镜蛇射击", "顺劈期间无怒火增益")
             # 如果 倒刺有充能，且怒火冷却严格小于 3 秒；单体和 AOE 均适用
             # => 提前施放倒刺射击
@@ -176,10 +176,10 @@ class Rotation:
             # => 提前施放倒刺射击
             if barbed_ready and ctx.spell_recharge_barbed_shot < 4:
                 return Cast("倒刺射击", "充能将满")
-            # 如果 AOE、狂野怒火冷却为 0、未收尾，且野兽顺劈剩余严格大于 2 秒
+            # 如果 AOE、狂野怒火冷却为 0、未收尾，且野兽顺劈剩余严格大于 1 秒
             # => 先检查自动饰品，再施放狂野怒火；不额外检查顺劈存在布尔值
             if (IsAOE and ctx.spell_cd_bestial_wrath == 0 and not Isfinishing
-                    and ctx.player_buff_beast_cleave_remaining > 2):
+                    and ctx.player_buff_beast_cleave_remaining > 1):
                 # 如果 上述 AOE 怒火条件成立且自动饰品开启
                 # => 按上饰品、下饰品顺序检查，不要求爆发窗口
                 if ctx.auto_trinket_enabled:
@@ -191,7 +191,7 @@ class Rotation:
                     # => 本轮使用下饰品，下一轮重新判断全部条件
                     if ctx.ticket_14_ready:
                         return Use("下饰品")
-                return Cast("狂野怒火", "野兽顺劈剩余大于2秒")
+                return Cast("狂野怒火", "野兽顺劈剩余大于1秒")
             # 如果 单体、未收尾且狂野怒火冷却为 0
             # => 先检查自动饰品，再施放狂野怒火；不要求野兽顺劈
             if not IsAOE and not Isfinishing and ctx.spell_cd_bestial_wrath == 0:
