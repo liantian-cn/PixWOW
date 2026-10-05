@@ -79,7 +79,7 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 056 | `player_has_buff_natures_ally` | 布尔 | 玩家自然之友（Nature’s Ally）增益1276720 |
 | 057 | `player_has_buff_pack_boar` | 布尔 | 玩家增益472324 |
 | 058 | `player_has_buff_pack_bear` | 布尔 | 玩家增益472325 |
-| 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。`player_has_buff_cobra_fangs`由层数>0派生；循环使用层数>2的高优先级AOE眼镜蛇、层数>0的后续眼镜蛇及层数<4的杀戮条件 |
+| 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。`player_has_buff_cobra_fangs`由层数>0派生；循环的高优先级AOE眼镜蛇及单体/AOE共用后续眼镜蛇均要求层数>2；杀戮不限制利牙层数 |
 | 060 | `finishing` | 枚举 | 灰度0自动、10残血持续爆发（关闭收尾）、20残血不爆发（始终开启收尾，不受血量阈值影响，包括遭遇战）；默认、脱战及重载恢复自动；自动模式仅在86格为假且目标血量严格低于87格阈值时收尾，10/20强制覆盖；异常枚举按自动处理 |
 | 061 | `power_focus_max` | 整数 | 配置集中值上限100–120，默认100，灰度直接表示点数 |
 | 062 | `spell_recharge_barbed_shot` | 冷却曲线 | 倒刺射击下一层充能剩余时间；满充能由48和75格识别 |

@@ -207,14 +207,14 @@ class Rotation:
                     if ctx.ticket_14_ready:
                         return Use("下饰品")
                 return Cast("狂野怒火")
-            # 如果 集中值至少 35 点、有野兽顺劈，且利牙层数大于 0
+            # 如果 集中值至少 35 点、有野兽顺劈，且利牙层数大于 2；单体和 AOE 共用
             # => 优先施放眼镜蛇射击
-            if focus >= 35 and ctx.player_has_buff_beast_cleave and cobra_fangs_stacks > 0:
+            if focus >= 35 and ctx.player_has_buff_beast_cleave and cobra_fangs_stacks > 2:
                 return Cast("眼镜蛇射击", "眼镜蛇利牙")
-            # 如果 杀戮命令充能至少 1 层、集中值至少 30 点、利牙少于 4 层
+            # 如果 杀戮命令充能至少 1 层、集中值至少 30 点；单体和 AOE 均不限制利牙层数
             # 如果 自然之友、猪、熊、龙增益任一存在；不检查杀戮自身冷却
             # => 施放杀戮命令
-            if (ctx.spell_charges_kill_command >= 1 and focus >= 30 and cobra_fangs_stacks < 4
+            if (ctx.spell_charges_kill_command >= 1 and focus >= 30
                     and (ctx.player_has_buff_natures_ally or ctx.player_has_buff_pack_boar
                          or ctx.player_has_buff_pack_bear or ctx.player_has_buff_pack_wyvern)):
                 return Cast("杀戮命令")
