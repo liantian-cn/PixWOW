@@ -44,7 +44,7 @@ states = {
 options = {}
 for _, state in ipairs(states) do options[#options + 1] = { k = state.value, v = state.label } end
 insert(ConfigRows, {
-    type = "combo", name = "残血收尾模式", tooltip = "自动：非遭遇战且目标血量低于阈值时不使用狂野怒火。残血持续爆发：不收尾，狂野怒火仍按原有施放条件使用。残血不爆发：始终禁用狂野怒火，不受血量阈值影响，包括遭遇战；不影响饰品和药水。左击按自动、残血持续爆发、残血不爆发循环；Shift+左键拖动攻击模式时整体移动。模式变化时在聊天框打印，脱战及重载恢复自动。",
+    type = "combo", name = "残血收尾模式", tooltip = "自动：非遭遇战且目标血量低于阈值时不使用狂野怒火。残血持续爆发：不收尾，狂野怒火仍按原有施放条件使用。残血不爆发：始终禁用狂野怒火，不受血量阈值影响，包括遭遇战。收尾同时禁止怒火前置自动饰品，不影响药水。左击按自动、残血持续爆发、残血不爆发循环；Shift+左键拖动攻击模式时整体移动。模式变化时在聊天框打印，脱战及重载恢复自动。",
     bind_config = config, default_value = 0, options = options,
 })
 local function CurrentState()

@@ -33,7 +33,7 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 011 | `player_in_vehicle` | Cell / 布尔 | 玩家在坐骑/载具上 |
 | 012 | `player_is_targeting_spell` | Cell / 布尔 | 玩家在选取施法目标的状态 |
 | 013 | `player_is_chatting` | Cell / 布尔 | 玩家在聊天 |
-| 014 | `ticket_13_ready` | Cell / 布尔 | 一号饰品可用（SLOT 13）；自动饰品开启、爆发窗口内且目标在 147362 射程内时优先使用。 |
+| 014 | `ticket_13_ready` | Cell / 布尔 | 一号饰品可用（SLOT 13）；到达单体或 AOE 怒火分支且满足全部施放条件时，自动饰品开启则先使用可用饰品再怒火，不要求爆发窗口。 |
 | 015 | `ticket_14_ready` | Cell / 布尔 | 二号饰品可用（SLOT 14）；同上，优先级低于一号饰品，每轮重新读取可用状态。 |
 | 016 | `healthstone_ready` | Cell / 布尔 | 治疗石 item:5512；冷却启用且物品可使用时为白色。 |
 | 017 | `heal_potion_ready` | Cell / 布尔 | 银月城生命药水 item:241304；冷却启用且物品可使用时为白色。 |

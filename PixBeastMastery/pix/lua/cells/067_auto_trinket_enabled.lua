@@ -26,7 +26,7 @@ config:set_default(true)
 insert(ConfigRows, {
     type = "combo",
     name = "自动饰品",
-    tooltip = "爆发窗口内且目标处于反制射击射程时，在输出技能之前依次使用上、下饰品。",
+    tooltip = "满足全部狂野怒火条件且轮到释放时，先按上、下饰品顺序使用可用饰品；不要求爆发窗口，无可用饰品则直接释放怒火。",
     bind_config = config,
     default_value = true,
     options = {

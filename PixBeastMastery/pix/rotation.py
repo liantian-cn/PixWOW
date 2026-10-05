@@ -114,23 +114,12 @@ class Rotation:
 
         attack_range = ctx.target_in_interrupt_range
         # 如果 爆发窗口有效且目标在反制射击射程内
-        # => 依次检查鲁莽药水和自动饰品
+        # => 检查鲁莽药水
         if ctx.in_burst and attack_range:
             # 如果 处于上述爆发及射程条件，药水开关开启且鲁莽药水可用
             # => 使用鲁莽药水
             if ctx.burst_potion_enabled and ctx.reckless_potion_ready:
                 return Use("鲁莽药水")
-            # 如果 处于上述爆发及射程条件，且自动饰品开启
-            # => 按上饰品、下饰品顺序检查
-            if ctx.auto_trinket_enabled:
-                # 如果 上述饰品条件成立且上饰品可用
-                # => 使用上饰品
-                if ctx.ticket_13_ready:
-                    return Use("上饰品")
-                # 如果 上述饰品条件成立、上饰品未使用且下饰品可用
-                # => 使用下饰品
-                if ctx.ticket_14_ready:
-                    return Use("下饰品")
 
         # 如果 反制射击范围内可观察敌人数至少 2 个
         # => 自动选择 AOE，否则选择单体；随后应用强制模式
@@ -171,10 +160,21 @@ class Rotation:
             # 暂停怒火增益期间的高优先级鞭笞，保留代码及增益读取。
             # if IsAOE and focus >= 35 and thrash_cd == 0 and ctx.player_has_buff_bestial_wrath:
             #     return Cast("狂野鞭笞", "狂野怒火增益期间优先")
-            # 如果 AOE、狂野怒火冷却为 0、未收尾，且野兽顺劈存在并剩余严格大于 4 秒
-            # => 优先施放狂野怒火，高于倒刺射击和常规鞭笞
+            # 如果 AOE、狂野怒火冷却为 0、未收尾，且野兽顺劈存在并剩余严格大于 2 秒
+            # => 先检查自动饰品，再施放狂野怒火，高于倒刺射击和常规鞭笞
             if (IsAOE and ctx.spell_cd_bestial_wrath == 0 and not Isfinishing
-                    and ctx.player_has_buff_beast_cleave and ctx.player_buff_beast_cleave_remaining > 4):
+                    and ctx.player_has_buff_beast_cleave and ctx.player_buff_beast_cleave_remaining > 2):
+                # 如果 上述 AOE 怒火条件成立且自动饰品开启
+                # => 按上饰品、下饰品顺序检查，不要求爆发窗口
+                if ctx.auto_trinket_enabled:
+                    # 如果 自动饰品开启且上饰品可用
+                    # => 本轮使用上饰品，下一轮重新判断全部条件
+                    if ctx.ticket_13_ready:
+                        return Use("上饰品")
+                    # 如果 自动饰品开启、上饰品不可用且下饰品可用
+                    # => 本轮使用下饰品，下一轮重新判断全部条件
+                    if ctx.ticket_14_ready:
+                        return Use("下饰品")
                 return Cast("狂野怒火", "野兽顺劈期间优先")
             # 如果 倒刺冷却为 0 且有充能，并且（下一层恢复小于 2 秒，或单体时怒火冷却小于 3 秒）
             # => 提前施放倒刺射击
@@ -186,8 +186,19 @@ class Rotation:
             if IsAOE and focus >= 35 and thrash_cd == 0:
                 return Cast("狂野鞭笞")
             # 如果 单体、未收尾且狂野怒火冷却为 0
-            # => 施放狂野怒火；不要求野兽顺劈
+            # => 先检查自动饰品，再施放狂野怒火；不要求野兽顺劈
             if not IsAOE and not Isfinishing and ctx.spell_cd_bestial_wrath == 0:
+                # 如果 上述单体怒火条件成立且自动饰品开启
+                # => 按上饰品、下饰品顺序检查，不要求爆发窗口
+                if ctx.auto_trinket_enabled:
+                    # 如果 自动饰品开启且上饰品可用
+                    # => 本轮使用上饰品，下一轮重新判断全部条件
+                    if ctx.ticket_13_ready:
+                        return Use("上饰品")
+                    # 如果 自动饰品开启、上饰品不可用且下饰品可用
+                    # => 本轮使用下饰品，下一轮重新判断全部条件
+                    if ctx.ticket_14_ready:
+                        return Use("下饰品")
                 return Cast("狂野怒火")
             # 如果 集中值至少 30 点、杀戮命令冷却为 0 且充能大于 0，并有自然之友增益
             # => 施放杀戮命令
