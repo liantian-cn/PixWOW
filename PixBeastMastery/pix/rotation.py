@@ -200,10 +200,11 @@ class Rotation:
                     if ctx.ticket_14_ready:
                         return Use("下饰品")
                 return Cast("狂野怒火")
-            # 如果 集中值至少 30 点、杀戮命令冷却为 0 且充能大于 0，并有自然之友增益
-            # => 施放杀戮命令
+            # 如果 集中值至少 30 点、杀戮命令冷却为 0 且充能大于 0，并有龙／猪／熊／自然之友任一增益
+            # => 单体和 AOE 均施放杀戮命令
             if (focus >= 30 and ctx.spell_cd_kill_command == 0 and ctx.spell_charges_kill_command > 0
-                    and ctx.player_has_buff_natures_ally):
+                    and (ctx.player_has_buff_pack_wyvern or ctx.player_has_buff_pack_boar
+                         or ctx.player_has_buff_pack_bear or ctx.player_has_buff_natures_ally)):
                 return Cast("杀戮命令")
             # 如果 集中值至少 35 点、有眼镜蛇利牙，且单体或狂野鞭笞仍在冷却
             # => 优先施放眼镜蛇射击
