@@ -93,6 +93,9 @@ cells\031_mouseover_cast_progress.lua
 cells\029_player_buff_beast_cleave_remaining.lua
 cells\019_encounter_in_progress.lua
 cells\018_finishing_health_threshold.lua
+cells\078_player_has_dispellable_poison_or_disease.lua
+cells\079_target_has_dispellable_magic_or_enrage.lua
+cells\080_focus_has_dispellable_magic_or_enrage.lua
 cells\I03_target_cast_icon.lua
 cells\I04_focus_cast_icon.lua
 cells\I05_interrupt_blacklist.lua
