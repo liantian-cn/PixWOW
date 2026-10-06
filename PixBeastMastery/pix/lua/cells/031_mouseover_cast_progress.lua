@@ -22,7 +22,7 @@ local Cell = addonTable.Cell
 local percentCurve = addonTable.CURVE.percent
 
 -- 本地配置
-local X = 83
+local X = 31
 local eventFrame = CreateFrame("Frame")
 local cell
 

@@ -10,7 +10,7 @@ local CreateFrame = CreateFrame
 local After = C_Timer.After
 local EvaluateColorFromBoolean = C_CurveUtil.EvaluateColorFromBoolean
 local UnitExists = UnitExists
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitCanAssist = UnitCanAssist
 
 -- 项目引用
 local Cell = addonTable.Cell
@@ -18,13 +18,13 @@ local COLOR = addonTable.COLOR
 local UIInitFuncs = addonTable.UIInitFuncs
 
 -- 本地配置
-local X = 79
+local X = 41
 local cell
 local eventFrame = CreateFrame("Frame")
 
 local function Update()
     if not cell then return end
-    local stateColor = EvaluateColorFromBoolean(UnitIsDeadOrGhost("mouseover"), COLOR.BLACK, COLOR.WHITE)
+    local stateColor = EvaluateColorFromBoolean(UnitCanAssist("player", "mouseover"), COLOR.WHITE, COLOR.BLACK)
     local color = EvaluateColorFromBoolean(UnitExists("mouseover"), stateColor, COLOR.BLACK)
     cell:setCell(color)
 end

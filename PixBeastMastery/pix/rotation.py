@@ -7,15 +7,15 @@ from pix.context import Context
 class Rotation:
     def __init__(self) -> None:
         self.keymap: dict[str, str] = {
-            "倒刺射击": "RCTRL-NUMPAD1",
+            "target倒刺射击": "RCTRL-NUMPAD1",
             "焦点反制射击": "RCTRL-NUMPAD2",
             "目标反制射击": "RCTRL-NUMPAD3",
             "鼠标指向反制射击": "RSHIFT-NUMPAD0",
             "狂野怒火": "RCTRL-NUMPAD4",
-            "狂野鞭笞": "RCTRL-NUMPAD5",
-            "杀戮命令": "RCTRL-NUMPAD6",
-            "眼镜蛇射击": "RCTRL-NUMPAD7",
-            "鲁莽药水": "RCTRL-NUMPAD8",
+            "target狂野鞭笞": "RCTRL-NUMPAD5",
+            "target杀戮命令": "RCTRL-NUMPAD6",
+            "target眼镜蛇射击": "RCTRL-NUMPAD7",
+            "爆发药水": "RCTRL-NUMPAD8",
             "治疗宠物": "RCTRL-NUMPAD9",
             "召唤/复活宠物": "RCTRL-NUMPAD0",
             "误导party1": "RSHIFT-NUMPAD1",
@@ -27,9 +27,17 @@ class Rotation:
             "意气风发": "RSHIFT-NUMPAD7",
             "上饰品": "RSHIFT-NUMPAD8",
             "下饰品": "RSHIFT-NUMPAD9",
+            "focus倒刺射击": "RCTRL-F1",
+            "focus狂野鞭笞": "RCTRL-F2",
+            "focus杀戮命令": "RCTRL-F3",
+            "focus眼镜蛇射击": "RCTRL-F4",
+            "设置焦点": "RCTRL-F5",
+            "target猎人印记": "RCTRL-F6",
+            "focus猎人印记": "RCTRL-F7",
         }
 
-    def main_rotation(self, ctx: Context) -> Cast | Use | Idle:
+    def check_pause(self, ctx: Context) -> Idle | None:
+        """检查全局暂停条件；返回 Idle 时结束本轮。"""
         # 如果 插件未启用
         # => 不执行动作
         if not ctx.enable:
@@ -38,6 +46,10 @@ class Rotation:
         # => 暂停全部自动动作
         if ctx.delaying:
             return Idle("手动操作延迟中")
+        # 如果 玩家当前目标是自己
+        # => 暂停全部自动动作，切走目标后按正常条件恢复
+        if ctx.player_is_player_target:
+            return Idle("玩家的目标是玩家")
         # 如果 玩家未存活
         # => 不执行动作
         if not ctx.player_is_alive:
@@ -50,7 +62,10 @@ class Rotation:
         # => 等待当前动作结束
         if ctx.player_cast_progress > 0 or ctx.player_is_empowering:
             return Idle("玩家正在施法、引导或蓄力")
+        return None
 
+    def precombat_rotation(self, ctx: Context) -> Cast | Idle | None:
+        """每轮处理宠物恢复、脱战误导及战斗门控。"""
         # 如果 宠物不存在或未存活
         # => 优先恢复宠物，先检查玩家是否站定；此处不要求战斗或目标
         if not ctx.pet_is_exists or not ctx.pet_is_alive:
@@ -70,35 +85,10 @@ class Rotation:
         # => 不执行后续打断、自保、输出或治疗宠物
         if not ctx.player_in_combat:
             return Idle("玩家不在战斗")
-        # 如果 当前目标不存在、未存活或不可攻击（任一成立）
-        # => 不执行后续动作
-        if not (ctx.target_is_exists and ctx.target_is_alive and ctx.target_can_attack):
-            return Idle("目标不可攻击")
+        return None
 
-        # 如果 反制射击冷却为 0
-        # => 按焦点、鼠标指向、目标顺序检查打断
-        if ctx.spell_cd_counter_shot == 0:
-            # 三种打断共用已过进度阈值，按焦点、鼠标指向、目标依次判断。
-            interrupt_progress = ctx.interrupt_progress_threshold
-            # 如果 反制射击就绪，焦点存在、存活、可攻击且不可协助，在打断射程，通过黑名单检查且已过进度严格大于阈值
-            # => 对焦点施放反制射击
-            if (ctx.focus_is_exists and ctx.focus_is_alive and ctx.focus_can_attack
-                    and not ctx.focus_can_assist and ctx.focus_in_interrupt_range
-                    and ctx.focus_cast_interruptible and ctx.focus_cast_progress > interrupt_progress):
-                return Cast("焦点反制射击")
-            # 如果 反制射击就绪、前序焦点未命中，鼠标打断开启；鼠标单位存在、存活、可攻击且不可协助，在射程，通过黑名单检查且进度严格大于阈值
-            # => 对鼠标指向施放反制射击
-            if (ctx.mouseover_interrupt_enabled and ctx.mouseover_is_exists and ctx.mouseover_is_alive
-                    and ctx.mouseover_can_attack and not ctx.mouseover_can_assist
-                    and ctx.mouseover_in_interrupt_range and ctx.mouseover_cast_interruptible
-                    and ctx.mouseover_cast_progress > interrupt_progress):
-                return Cast("鼠标指向反制射击")
-            # 如果 反制射击就绪、前序打断未命中，目标打断开启；有效当前目标不可协助、在射程，通过黑名单检查且进度严格大于阈值
-            # => 对当前目标施放反制射击
-            if (ctx.target_interrupt_enabled and not ctx.target_can_assist and ctx.target_in_interrupt_range
-                    and ctx.target_cast_interruptible and ctx.target_cast_progress > interrupt_progress):
-                return Cast("目标反制射击")
-
+    def defensive_rotation(self, ctx: Context) -> Cast | Use | None:
+        """通过战斗门控后，优先检查自保，不要求有效主目标。"""
         # 如果 自身生命不高于 30% 且治疗石可用
         # => 使用治疗石
         if ctx.player_health_pct <= 30 and ctx.healthstone_ready:
@@ -111,103 +101,279 @@ class Rotation:
         # => 施放意气风发
         if ctx.player_health_pct <= 50 and ctx.spell_cd_exhilaration == 0:
             return Cast("意气风发")
+        return None
 
-        attack_range = ctx.target_in_interrupt_range
-        # 如果 爆发窗口有效且目标在反制射击射程内
-        # => 依次检查鲁莽药水和自动饰品
-        if ctx.in_burst and attack_range:
-            # 如果 处于上述爆发及射程条件，药水开关开启且鲁莽药水可用
-            # => 使用鲁莽药水
-            if ctx.burst_potion_enabled and ctx.reckless_potion_ready:
-                return Use("鲁莽药水")
-            # 如果 处于上述爆发及射程条件，且自动饰品开启
-            # => 按上饰品、下饰品顺序检查
+    def interrupt_rotation(self, ctx: Context) -> Cast | None:
+        """通过战斗门控、自保未命中后，按目标、焦点、鼠标指向顺序打断。"""
+        # 如果 反制射击冷却为 0
+        # => 按目标、焦点、鼠标指向顺序检查打断
+        if ctx.spell_cd_counter_shot == 0:
+            # 三种打断共用已过进度阈值，按目标、焦点、鼠标指向依次判断。
+            interrupt_progress = ctx.interrupt_progress_threshold
+            # 如果 反制射击就绪、目标打断开启；目标存在、存活、可攻击且不可协助，在射程，通过黑名单检查且进度严格大于阈值
+            # => 优先对当前目标施放反制射击
+            if (ctx.target_interrupt_enabled and ctx.target_is_exists and ctx.target_is_alive
+                    and ctx.target_can_attack and not ctx.target_can_assist and ctx.target_in_ranged_range
+                    and ctx.target_cast_interruptible and ctx.target_cast_progress > interrupt_progress):
+                return Cast("目标反制射击")
+            # 如果 反制射击就绪、前序目标未命中，焦点存在、存活、可攻击且不可协助，在打断射程，通过黑名单检查且已过进度严格大于阈值
+            # => 对焦点施放反制射击
+            if (ctx.focus_is_exists and ctx.focus_is_alive and ctx.focus_can_attack
+                    and not ctx.focus_can_assist and ctx.focus_in_ranged_range
+                    and ctx.focus_cast_interruptible and ctx.focus_cast_progress > interrupt_progress):
+                return Cast("焦点反制射击")
+            # 如果 反制射击就绪、前序目标和焦点均未命中，鼠标打断开启；鼠标单位存在、存活、可攻击且不可协助，在射程，通过黑名单检查且进度严格大于阈值
+            # => 对鼠标指向施放反制射击
+            if (ctx.mouseover_interrupt_enabled and ctx.mouseover_is_exists and ctx.mouseover_is_alive
+                    and ctx.mouseover_can_attack and not ctx.mouseover_can_assist
+                    and ctx.mouseover_in_ranged_range and ctx.mouseover_cast_interruptible
+                    and ctx.mouseover_cast_progress > interrupt_progress):
+                return Cast("鼠标指向反制射击")
+        return None
+
+    def aoe_rotation(self, ctx: Context, main_target: str, is_finishing: bool) -> Cast | Use | None:
+        """通过战斗及有效主目标门控后，对主目标按AOE优先级返回首个药水或技能动作。"""
+        # 如果 爆发窗口有效、自动爆发药水开启且药水可用
+        # => 优先使用爆发药水
+        if ctx.in_burst and ctx.burst_potion_enabled and ctx.reckless_potion_ready:
+            return Use("爆发药水")
+
+        focus = ctx.power_focus
+        barbed_charges = ctx.spell_charges_barbed_shot
+        wrath_cd = ctx.spell_cd_bestial_wrath
+        thrash_cd = ctx.spell_cd_wild_thrash
+        cleave_remaining = ctx.player_buff_beast_cleave_remaining
+
+        # 如果 倒刺射击充能至少 2 层
+        # => 施放倒刺射击，满层时避免浪费充能
+        if barbed_charges >= 2:
+            return Cast(f"{main_target}倒刺射击", "满层，避免浪费")
+        # 如果 倒刺射击充能至少 1 层，且下一层恢复时间不超过 4 秒
+        # => 施放倒刺射击，即将满层时避免浪费充能
+        if barbed_charges >= 1 and ctx.spell_recharge_barbed_shot <= 4:
+            return Cast(f"{main_target}倒刺射击", "即将满层，避免浪费")
+        # 如果 倒刺射击充能至少 1 层、狂野怒火冷却不超过 4 秒，且未收尾
+        # => 施放倒刺射击，为狂野怒火提供的充能留出空间
+        if barbed_charges >= 1 and wrath_cd <= 4 and not is_finishing:
+            return Cast(f"{main_target}倒刺射击", "即将由狂野怒火获得充能，避免浪费")
+
+        # 如果 狂野怒火冷却为 0、未收尾，且野兽顺劈剩余至少 2 秒
+        # => 先检查自动饰品，再在顺劈期间施放狂野怒火
+        if wrath_cd == 0 and not is_finishing and cleave_remaining >= 2:
+            # 如果 上述AOE怒火条件成立且自动饰品开启
+            # => 按上饰品、下饰品顺序检查，不要求爆发窗口
             if ctx.auto_trinket_enabled:
-                # 如果 上述饰品条件成立且上饰品可用
-                # => 使用上饰品
+                # 如果 自动饰品开启且上饰品可用
+                # => 本轮使用上饰品，下一轮重新判断全部条件
                 if ctx.ticket_13_ready:
                     return Use("上饰品")
-                # 如果 上述饰品条件成立、上饰品未使用且下饰品可用
-                # => 使用下饰品
+                # 如果 自动饰品开启、上饰品不可用且下饰品可用
+                # => 本轮使用下饰品，下一轮重新判断全部条件
                 if ctx.ticket_14_ready:
                     return Use("下饰品")
+            return Cast("狂野怒火", "狂野怒火CD好")
+
+        # 如果 狂野鞭笞冷却为 0，且集中值至少 35 点
+        # => 施放狂野鞭笞，卡冷却使用
+        if thrash_cd == 0 and focus >= 35:
+            return Cast(f"{main_target}狂野鞭笞", "卡CD打")
+
+        # 如果 狂野怒火冷却不超过 4 秒，且未收尾
+        # => 标记怒火即将就绪，随后保留最后 1 层杀戮命令充能
+        wrath_soon = wrath_cd <= 4 and not is_finishing
+        kill_charges = ctx.spell_charges_kill_command
+        # 如果 杀戮命令充能至少 1 层，且并非“怒火即将就绪且杀戮仅剩 1 层”
+        # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且猎群领袖之嚎存在
+        # => 施放杀戮命令；怒火前保留充能，以 35 点集中值门槛避免影响鞭笞
+        if (kill_charges >= 1 and not (wrath_soon and kill_charges == 1)
+                and focus >= 35 and cleave_remaining >= 1
+                and ctx.player_has_buff_howl_of_the_pack_leader):
+            return Cast(f"{main_target}杀戮命令", "猎群领袖之嚎高亮")
+        # 如果 杀戮命令充能至少 1 层，且并非“怒火即将就绪且杀戮仅剩 1 层”
+        # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且自然之友存在
+        # => 施放杀戮命令；怒火前保留充能，以 35 点集中值门槛避免影响鞭笞
+        if (kill_charges >= 1 and not (wrath_soon and kill_charges == 1)
+                and focus >= 35 and cleave_remaining >= 1
+                and ctx.player_has_buff_natures_ally):
+            return Cast(f"{main_target}杀戮命令", "自然之友高亮")
+
+        # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且利牙层数大于 3
+        # => 在顺劈期间施放 4 层利牙眼镜蛇射击
+        if focus >= 35 and cleave_remaining >= 1 and ctx.player_buff_stacks_cobra_fangs > 3:
+            return Cast(f"{main_target}眼镜蛇射击", "4层利牙")
+
+        # 如果 倒刺射击充能至少 1 层，且前序规则未命中
+        # => 施放兜底倒刺射击
+        if barbed_charges >= 1:
+            return Cast(f"{main_target}倒刺射击", "兜底倒刺")
+        # 如果 集中值至少 35 点、狂野鞭笞冷却严格大于 1 秒，且前序规则未命中
+        # => 施放兜底眼镜蛇射击，鞭笞将在 1 秒内就绪时留出资源
+        if focus >= 35 and thrash_cd > 1:
+            return Cast(f"{main_target}眼镜蛇射击", "兜底眼镜蛇")
+        return None
+
+    def single_target_rotation(self, ctx: Context, main_target: str, is_finishing: bool) -> Cast | Use | None:
+        """通过战斗及有效主目标门控后，对主目标按单体优先级返回首个药水或技能动作。"""
+        # 如果 爆发窗口有效、自动爆发药水开启且药水可用
+        # => 优先使用爆发药水
+        if ctx.in_burst and ctx.burst_potion_enabled and ctx.reckless_potion_ready:
+            return Use("爆发药水")
+
+        focus = ctx.power_focus
+        barbed_charges = ctx.spell_charges_barbed_shot
+        wrath_cd = ctx.spell_cd_bestial_wrath
+
+        # 如果 倒刺射击充能至少 2 层
+        # => 施放倒刺射击，满层时避免浪费充能
+        if barbed_charges >= 2:
+            return Cast(f"{main_target}倒刺射击", "满层，避免浪费")
+        # 如果 倒刺射击充能至少 1 层，且下一层恢复时间不超过 4 秒
+        # => 施放倒刺射击，即将满层时避免浪费充能
+        if barbed_charges >= 1 and ctx.spell_recharge_barbed_shot <= 4:
+            return Cast(f"{main_target}倒刺射击", "即将满层，避免浪费")
+        # 如果 倒刺射击充能至少 1 层、狂野怒火冷却不超过 4 秒，且未收尾
+        # => 施放倒刺射击，为狂野怒火提供的充能留出空间
+        if barbed_charges >= 1 and wrath_cd <= 4 and not is_finishing:
+            return Cast(f"{main_target}倒刺射击", "即将由狂野怒火获得充能，避免浪费")
+
+        # 如果 狂野怒火冷却为 0，且未收尾
+        # => 先检查自动饰品，再施放狂野怒火；单体不要求顺劈
+        if wrath_cd == 0 and not is_finishing:
+            # 如果 上述单体怒火条件成立且自动饰品开启
+            # => 按上饰品、下饰品顺序检查，不要求爆发窗口
+            if ctx.auto_trinket_enabled:
+                # 如果 自动饰品开启且上饰品可用
+                # => 本轮使用上饰品，下一轮重新判断全部条件
+                if ctx.ticket_13_ready:
+                    return Use("上饰品")
+                # 如果 自动饰品开启、上饰品不可用且下饰品可用
+                # => 本轮使用下饰品，下一轮重新判断全部条件
+                if ctx.ticket_14_ready:
+                    return Use("下饰品")
+            return Cast("狂野怒火", "狂野怒火CD好")
+
+        # 如果 狂野怒火冷却不超过 4 秒，且未收尾
+        # => 标记怒火即将就绪，随后保留最后 1 层杀戮命令充能
+        wrath_soon = wrath_cd <= 4 and not is_finishing
+        kill_charges = ctx.spell_charges_kill_command
+        # 如果 杀戮命令充能至少 1 层，且并非“怒火即将就绪且杀戮仅剩 1 层”
+        # 如果 集中值至少 35 点，且猎群领袖之嚎存在
+        # => 施放杀戮命令；怒火前保留充能，以 35 点集中值门槛避免影响鞭笞
+        if (kill_charges >= 1 and not (wrath_soon and kill_charges == 1)
+                and focus >= 35
+                and ctx.player_has_buff_howl_of_the_pack_leader):
+            return Cast(f"{main_target}杀戮命令", "猎群领袖之嚎高亮")
+        # 如果 杀戮命令充能至少 1 层，且并非“怒火即将就绪且杀戮仅剩 1 层”
+        # 如果 集中值至少 35 点，且自然之友存在
+        # => 施放杀戮命令；怒火前保留充能，以 35 点集中值门槛避免影响鞭笞
+        if (kill_charges >= 1 and not (wrath_soon and kill_charges == 1)
+                and focus >= 35
+                and ctx.player_has_buff_natures_ally):
+            return Cast(f"{main_target}杀戮命令", "自然之友高亮")
+
+        # 如果 集中值至少 35 点，且利牙层数大于 3
+        # => 施放 4 层利牙眼镜蛇射击；单体不要求顺劈
+        if focus >= 35 and ctx.player_buff_stacks_cobra_fangs > 3:
+            return Cast(f"{main_target}眼镜蛇射击", "4层利牙")
+
+        # 如果 倒刺射击充能至少 1 层，且前序规则未命中
+        # => 施放兜底倒刺射击
+        if barbed_charges >= 1:
+            return Cast(f"{main_target}倒刺射击", "兜底倒刺")
+        # 如果 集中值至少 35 点，且前序规则未命中
+        # => 施放兜底眼镜蛇射击
+        if focus >= 35:
+            return Cast(f"{main_target}眼镜蛇射击", "兜底眼镜蛇")
+        return None
+
+    def main_rotation(self, ctx: Context) -> Cast | Use | Idle:
+        """按阶段选择首个动作；None 继续，包含 Idle 在内的动作立即返回。"""
+        action = self.check_pause(ctx)
+        if action is not None:
+            return action
+
+        action = self.precombat_rotation(ctx)
+        if action is not None:
+            return action
+
+        action = self.defensive_rotation(ctx)
+        if action is not None:
+            return action
+
+        action = self.interrupt_rotation(ctx)
+        if action is not None:
+            return action
+
+        main_target = None
+        # 如果 当前目标存在、可攻击且不可协助，并在反制射击射程内
+        # => 优先选择当前目标作为主目标；不额外检查存活
+        if (ctx.target_is_exists and ctx.target_can_attack and not ctx.target_can_assist
+                and ctx.target_in_ranged_range):
+            main_target = "target"
+        # 如果 当前目标不合格，焦点存在、可攻击且不可协助，并在反制射击射程内
+        # => 回退选择焦点作为主目标；不额外检查存活
+        elif (ctx.focus_is_exists and ctx.focus_can_attack and not ctx.focus_can_assist
+                and ctx.focus_in_ranged_range):
+            main_target = "focus"
+        # 如果 焦点和当前目标均不合格
+        # => 本轮等待，不继续输出或治疗宠物
+        if main_target is None:
+            return Idle("无有效目标")
+
+        # 如果 主目标为当前目标，且焦点不存在
+        # => 设置当前目标为焦点并结束本轮；已有焦点即使不合格也不覆盖
+        if main_target == "target" and not ctx.focus_is_exists:
+            return Cast("设置焦点")
+        # return Idle(f"{ctx.target_has_debuff_hunters_mark=}")
+        # 如果 目标和焦点都没有自身施加的猎人印记；已通过战斗、主目标及射程门控
+        # => 在药水和输出技能前给主目标补印记，不受输出模式、爆发或收尾限制
+        if not ctx.target_has_debuff_hunters_mark and not ctx.focus_has_debuff_hunters_mark:
+            return Cast(f"{main_target}猎人印记", "目标和焦点均无自身印记")
 
         # 如果 反制射击范围内可观察敌人数至少 2 个
         # => 自动选择 AOE，否则选择单体；随后应用强制模式
-        IsAOE = ctx.player_enemies_count >= 2
+        is_aoe = ctx.player_enemies_count >= 2
         # 如果 攻击模式为 10
         # => 强制单体，覆盖自动人数判断
         if ctx.attack_mode == 10:
-            IsAOE = False
+            is_aoe = False
         # 如果 攻击模式为 20
         # => 强制 AOE，覆盖自动人数判断；其他模式保留自动结果
         elif ctx.attack_mode == 20:
-            IsAOE = True
+            is_aoe = True
 
-        # 如果 不在遭遇战且目标预测生命严格低于收尾阈值
+        # 如果 主目标为焦点
+        # => 使用焦点预测生命；否则使用当前目标预测生命
+        if main_target == "focus":
+            main_target_health_pct = ctx.focus_health_pct
+        else:
+            main_target_health_pct = ctx.target_health_pct
+        # 如果 不在遭遇战且主目标预测生命严格低于收尾阈值
         # => 自动进入收尾；其他情况不收尾，随后应用强制模式
-        Isfinishing = not ctx.encounter_in_progress and ctx.target_health_pct < ctx.finishing_health_threshold
+        is_finishing = not ctx.encounter_in_progress and main_target_health_pct < ctx.finishing_health_threshold
         # 如果 收尾模式为 10
         # => 强制不收尾，覆盖遭遇战及血量判断
         if ctx.finishing == 10:
-            Isfinishing = False
+            is_finishing = False
         # 如果 收尾模式为 20
         # => 强制收尾；其他模式保留自动结果
         elif ctx.finishing == 20:
-            Isfinishing = True
+            is_finishing = True
 
-        # 如果 有效当前目标在反制射击射程内
-        # => 按顺序执行核心 DPS 规则
-        if attack_range:
-            focus = ctx.power_focus
-            # 如果 倒刺冷却为 0 且充能大于 0
-            # => 标记倒刺就绪
-            barbed_ready = ctx.spell_cd_barbed_shot == 0 and ctx.spell_charges_barbed_shot > 0
-            thrash_cd = ctx.spell_cd_wild_thrash
-            # 如果 当前为单体，或狂野鞭笞冷却大于 0 秒
-            # => 满足眼镜蛇射击的模式条件
-            single_or_thrash_cooling = not IsAOE or thrash_cd > 0
+        # debug区域
+        # return Idle(f"野兽顺劈剩余{ctx.player_buff_beast_cleave_remaining=}")
+        # return Idle(f"野性怒火冷却{ctx.spell_cd_bestial_wrath=}, 倒刺层数{ctx.spell_charges_barbed_shot=},倒刺恢复{ctx.spell_recharge_barbed_shot=}")
 
-            # 暂停怒火增益期间的高优先级鞭笞，保留代码及增益读取。
-            # if IsAOE and focus >= 35 and thrash_cd == 0 and ctx.player_has_buff_bestial_wrath:
-            #     return Cast("狂野鞭笞", "狂野怒火增益期间优先")
-            # 如果 AOE、狂野怒火冷却为 0、未收尾，且野兽顺劈存在并剩余严格大于 4 秒
-            # => 优先施放狂野怒火，高于倒刺射击和常规鞭笞
-            if (IsAOE and ctx.spell_cd_bestial_wrath == 0 and not Isfinishing
-                    and ctx.player_has_buff_beast_cleave and ctx.player_buff_beast_cleave_remaining > 4):
-                return Cast("狂野怒火", "野兽顺劈期间优先")
-            # 如果 倒刺冷却为 0 且有充能，并且（下一层恢复小于 2 秒，或单体时怒火冷却小于 3 秒）
-            # => 提前施放倒刺射击
-            if barbed_ready and (ctx.spell_recharge_barbed_shot < 2
-                                 or (not IsAOE and ctx.spell_cd_bestial_wrath < 3)):
-                return Cast("倒刺射击", "充能将满或单体怒火将就绪")
-            # 如果 AOE、集中值至少 35 点且狂野鞭笞冷却为 0
-            # => 施放狂野鞭笞
-            if IsAOE and focus >= 35 and thrash_cd == 0:
-                return Cast("狂野鞭笞")
-            # 如果 单体、未收尾且狂野怒火冷却为 0
-            # => 施放狂野怒火；不要求野兽顺劈
-            if not IsAOE and not Isfinishing and ctx.spell_cd_bestial_wrath == 0:
-                return Cast("狂野怒火")
-            # 如果 集中值至少 30 点、杀戮命令冷却为 0 且充能大于 0，并有自然之友增益
-            # => 施放杀戮命令
-            if (focus >= 30 and ctx.spell_cd_kill_command == 0 and ctx.spell_charges_kill_command > 0
-                    and ctx.player_has_buff_natures_ally):
-                return Cast("杀戮命令")
-            # 如果 集中值至少 35 点、有眼镜蛇利牙，且单体或狂野鞭笞仍在冷却
-            # => 优先施放眼镜蛇射击
-            if focus >= 35 and ctx.player_has_buff_cobra_fangs and single_or_thrash_cooling:
-                return Cast("眼镜蛇射击", "眼镜蛇利牙")
-            # 如果 倒刺射击冷却为 0 且充能大于 0，前序输出未命中
-            # => 施放倒刺射击
-            if barbed_ready:
-                return Cast("倒刺射击")
-            # 如果 集中值至少 35 点，且单体或狂野鞭笞仍在冷却
-            # => 以眼镜蛇射击填充输出
-            if focus >= 35 and single_or_thrash_cooling:
-                return Cast("眼镜蛇射击")
+        # 如果 自动人数判断或强制模式选中 AOE
+        # => 执行完整 AOE 规则；否则执行完整单体规则
+        if is_aoe:
+            action = self.aoe_rotation(ctx, main_target, is_finishing)
+        else:
+            action = self.single_target_rotation(ctx, main_target, is_finishing)
+        if action is not None:
+            return action
 
-        # 如果 宠物存在且存活、生命严格低于 70%，治疗宠物冷却为 0；前序动作未命中且已通过战斗／目标门控
+        # 如果 宠物存在且存活、生命严格低于 70%，治疗宠物冷却为 0；前序动作未命中且已通过战斗／主目标门控
         # => 施放治疗宠物
         if ctx.pet_is_exists and ctx.pet_is_alive and ctx.pet_health_pct < 70 and ctx.spell_cd_mend_pet == 0:
             return Cast("治疗宠物")

@@ -18,7 +18,7 @@ local COLOR = addonTable.COLOR
 local UIInitFuncs = addonTable.UIInitFuncs
 
 -- 本地配置
-local X = 80
+local X = 46
 local cell
 local eventFrame = CreateFrame("Frame")
 

@@ -1,0 +1,30 @@
+{
+  "generator": "Built-in image_gen",
+  "transparent_background": true,
+  "icons": [
+    {
+      "name": "attack_auto",
+      "prompt": "Create ONE square game UI icon, a simple fantasy emblem in a coherent six-icon family. Transparent background with real alpha, no opaque tile, no border frame, no lettering, no numbers, no watermark. Slightly beveled enchanted metal with restrained hand-painted shading, crisp chunky silhouette, minimal details, no particles or surrounding haze. Front view, centered, occupies about 82 percent of canvas width and height, equal transparent margins, readable at only 60x60 pixels on a very dark UI. Color belongs to the emblem itself; subtle lighter edge highlights and dark shaded edges. Subject: Emerald green. A bold single crosshair surrounded by two broad curved arrows forming an automatic cycling ring."
+    },
+    {
+      "name": "attack_single",
+      "prompt": "Create ONE square game UI icon, a simple fantasy emblem in a coherent six-icon family. Transparent background with real alpha, no opaque tile, no border frame, no lettering, no numbers, no watermark. Slightly beveled enchanted metal with restrained hand-painted shading, crisp chunky silhouette, minimal details, no particles or surrounding haze. Front view, centered, occupies about 82 percent of canvas width and height, equal transparent margins, readable at only 60x60 pixels on a very dark UI. Color belongs to the emblem itself; subtle lighter edge highlights and dark shaded edges. Subject: Sapphire blue. One single bold crosshair target, with four sturdy cardinal aiming marks and one prominent center."
+    },
+    {
+      "name": "attack_aoe",
+      "prompt": "Create ONE square game UI icon, a simple fantasy emblem in a coherent six-icon family. Transparent background with real alpha, no opaque tile, no border frame, no lettering, no numbers, no watermark. Slightly beveled enchanted metal with restrained hand-painted shading, crisp chunky silhouette, minimal details, no particles or surrounding haze. Front view, centered, occupies about 82 percent of canvas width and height, equal transparent margins, readable at only 60x60 pixels on a very dark UI. Color belongs to the emblem itself; subtle lighter edge highlights and dark shaded edges. Subject: Amber orange. Exactly three bold target reticles arranged as a compact triangle, clearly conveying multiple enemies."
+    },
+    {
+      "name": "finishing_auto",
+      "prompt": "Create ONE square game UI icon, a simple fantasy emblem in a coherent six-icon family. Transparent background with real alpha, no opaque tile, no border frame, no lettering, no numbers, no watermark. Slightly beveled enchanted metal with restrained hand-painted shading, crisp chunky silhouette, minimal details, no particles or surrounding haze. Front view, centered, occupies about 82 percent of canvas width and height, equal transparent margins, readable at only 60x60 pixels on a very dark UI. Color belongs to the emblem itself; subtle lighter edge highlights and dark shaded edges. Subject: Emerald green. One stylized flame surrounded by two broad curved arrows forming an automatic cycling ring."
+    },
+    {
+      "name": "finishing_off",
+      "prompt": "Create ONE square game UI icon, a simple fantasy emblem in a coherent six-icon family. Transparent background with real alpha, no opaque tile, no border frame, no lettering, no numbers, no watermark. Slightly beveled enchanted metal with restrained hand-painted shading, crisp chunky silhouette, minimal details, no particles or surrounding haze. Front view, centered, occupies about 82 percent of canvas width and height, equal transparent margins, readable at only 60x60 pixels on a very dark UI. Color belongs to the emblem itself; subtle lighter edge highlights and dark shaded edges. Subject: Sapphire blue. One powerful burning flame, with a large unified silhouette and a small bright inner core."
+    },
+    {
+      "name": "finishing_on",
+      "prompt": "Create ONE square game UI icon, a simple fantasy emblem in a coherent six-icon family. Transparent background with real alpha, no opaque tile, no border frame, no lettering, no numbers, no watermark. Slightly beveled enchanted metal with restrained hand-painted shading, crisp chunky silhouette, minimal details, no particles or surrounding haze. Front view, centered, occupies about 82 percent of canvas width and height, equal transparent margins, readable at only 60x60 pixels on a very dark UI. Color belongs to the emblem itself; subtle lighter edge highlights and dark shaded edges. Subject: Amber orange. One stylized flame sealed by a prominent diagonal metal bar, conveying suppressed fire."
+    }
+  ]
+}

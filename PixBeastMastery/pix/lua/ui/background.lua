@@ -88,7 +88,7 @@ local function InitBackgroundFrame()
 end
 insert(UIInitFuncs, InitBackgroundFrame)
 
--- 按共享区域的最大长度调整背景宽度。
+-- 按普通格与图标区的实际最大跨度调整背景宽度。
 local function BackgroundFrameResize()
     local max_length = max(addonTable.GeneralCellLength, addonTable.IconTileLength)
     addonTable.BackgroundFrame:SetSize(SIZE.CELL * (2 + max_length), SIZE.CELL * 3)

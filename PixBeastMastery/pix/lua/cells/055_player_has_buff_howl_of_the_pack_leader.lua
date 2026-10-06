@@ -1,4 +1,4 @@
--- 玩家增益 472325 是否存在。
+-- 猎群领袖之嚎以飞龙、猪、熊三种互斥形态呈现，任一种存在即显示白色。
 -- 原生光环容器负责匹配与显隐，不读取秘密光环数据。
 local addonName, addonTable = ...
 
@@ -18,8 +18,8 @@ local FrameLevel              = addonTable.FrameLevel
 local UIInitFuncs             = addonTable.UIInitFuncs
 
 -- 本地配置
-local X = 58
-local AURA_IDS = { 472325 }
+local X = 55
+local AURA_IDS = { 471878, 472324, 472325 }
 local eventFrame              = CreateFrame("Frame")
 local container
 

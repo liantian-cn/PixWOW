@@ -114,4 +114,6 @@ These skills share [project development and review rules](.agents/skills/pixwow-
 
 ## Commits & Pull Requests
 
+Always work on the `develop` branch and commit changes there. The user will merge `develop` into `main` through the web interface when appropriate; do not merge into `main` yourself.
+
 Use concise imperative commit subjects, optionally prefixed with `docs:` or `chore:`. Follow the file-scoped backup and result-commit rules above. PRs describe behavior changes, relevant issues, and validation performed; include screenshots for visible UI changes.

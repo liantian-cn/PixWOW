@@ -20,7 +20,7 @@ local UIInitFuncs = addonTable.UIInitFuncs
 local Cell = addonTable.Cell
 
 -- 本地配置
-local X = 82
+local X = 39
 local eventFrame = CreateFrame("Frame")
 local cell
 

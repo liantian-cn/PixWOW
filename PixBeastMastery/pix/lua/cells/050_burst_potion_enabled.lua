@@ -26,7 +26,7 @@ config:set_default(true)
 insert(ConfigRows, {
     type = "combo",
     name = "爆发药水",
-    tooltip = "爆发窗口内且目标在反制射击范围时，自动使用鲁莽药水。",
+    tooltip = "爆发窗口内且目标在反制射击范围时，优先使用狂放恣意饮剂，再尝试鲁莽药水。",
     bind_config = config,
     default_value = true,
     options = {
