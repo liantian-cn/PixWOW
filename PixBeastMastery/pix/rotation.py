@@ -301,16 +301,16 @@ class Rotation:
             return action
 
         main_target = None
-        # 如果 焦点存在、可攻击且不可协助，并在反制射击射程内
-        # => 优先选择焦点作为主目标；不额外检查存活
-        if (ctx.focus_is_exists and ctx.focus_can_attack and not ctx.focus_can_assist
-                and ctx.focus_in_interrupt_range):
-            main_target = "focus"
-        # 如果 焦点不合格，当前目标存在、可攻击且不可协助，并在反制射击射程内
-        # => 回退选择当前目标作为主目标；不额外检查存活
-        elif (ctx.target_is_exists and ctx.target_can_attack and not ctx.target_can_assist
+        # 如果 当前目标存在、可攻击且不可协助，并在反制射击射程内
+        # => 优先选择当前目标作为主目标；不额外检查存活
+        if (ctx.target_is_exists and ctx.target_can_attack and not ctx.target_can_assist
                 and ctx.target_in_interrupt_range):
             main_target = "target"
+        # 如果 当前目标不合格，焦点存在、可攻击且不可协助，并在反制射击射程内
+        # => 回退选择焦点作为主目标；不额外检查存活
+        elif (ctx.focus_is_exists and ctx.focus_can_attack and not ctx.focus_can_assist
+                and ctx.focus_in_interrupt_range):
+            main_target = "focus"
         # 如果 焦点和当前目标均不合格
         # => 本轮等待，不继续输出或治疗宠物
         if main_target is None:
