@@ -311,8 +311,8 @@ class Rotation:
             is_finishing = True
 
         # debug区域
-        # print(f"野性怒火冷却{ctx.spell_cd_bestial_wrath=}, 倒刺层数{ctx.spell_charges_barbed_shot=},倒刺恢复{ctx.spell_recharge_barbed_shot=}")
-        # return Idle("DEBUG")
+        # return Idle(f"野兽顺劈剩余{ctx.player_buff_beast_cleave_remaining=}")
+        # return Idle(f"野性怒火冷却{ctx.spell_cd_bestial_wrath=}, 倒刺层数{ctx.spell_charges_barbed_shot=},倒刺恢复{ctx.spell_recharge_barbed_shot=}")
 
         # 如果 自动人数判断或强制模式选中 AOE
         # => 执行完整 AOE 规则；否则执行完整单体规则
