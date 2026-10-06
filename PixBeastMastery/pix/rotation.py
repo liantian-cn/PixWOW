@@ -320,7 +320,7 @@ class Rotation:
         # => 设置当前目标为焦点并结束本轮；已有焦点即使不合格也不覆盖
         if main_target == "target" and not ctx.focus_is_exists:
             return Cast("设置焦点")
-
+        # return Idle(f"{ctx.target_has_debuff_hunters_mark=}")
         # 如果 目标和焦点都没有自身施加的猎人印记；已通过战斗、主目标及射程门控
         # => 在药水和输出技能前给主目标补印记，不受输出模式、爆发或收尾限制
         if not ctx.target_has_debuff_hunters_mark and not ctx.focus_has_debuff_hunters_mark:
