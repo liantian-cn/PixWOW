@@ -1,4 +1,4 @@
--- 第 58 格显示焦点的自身猎人印记减益（257584）：存在为白色，否则为黑色。
+-- 第 58 格显示焦点的自身猎人印记减益（257284）：存在为白色，否则为黑色。
 -- 原生光环容器负责匹配与显隐，不读取秘密光环数据。
 local addonName, addonTable = ...
 
@@ -22,7 +22,7 @@ local UIInitFuncs = addonTable.UIInitFuncs
 -- 本地配置
 local X = 58
 local UNIT_TOKEN = "focus"
-local AURA_ID = 257584
+local AURA_ID = 257284
 local eventFrame = CreateFrame("Frame")
 local container
 

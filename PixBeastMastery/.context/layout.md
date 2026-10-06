@@ -77,8 +77,8 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 054 | `reckless_potion_ready` | 布尔 | 共用爆发药水就绪：241293、241292、241288、241289任一有库存、冷却启用且已结束；保留原属性名，使用宏按此顺序尝试 |
 | 055 | `player_has_buff_howl_of_the_pack_leader` | 布尔 | 猎群领袖之嚎以飞龙471878、猪472324、熊472325三种互斥形态呈现；单个AuraSlot匹配三个ID，任一种存在为白，否则黑 |
 | 056 | `player_has_buff_natures_ally` | 布尔 | 玩家自然之友（Nature’s Ally）增益1276720 |
-| 057 | `target_has_debuff_hunters_mark` | 布尔 | 目标存在自身猎人印记257584；HARMFUL\|PLAYER筛选，无单位或可协助单位为黑 |
-| 058 | `focus_has_debuff_hunters_mark` | 布尔 | 焦点存在自身猎人印记257584；HARMFUL\|PLAYER筛选，无单位或可协助单位为黑 |
+| 057 | `target_has_debuff_hunters_mark` | 布尔 | 目标存在自身猎人印记257284；HARMFUL\|PLAYER筛选，无单位或可协助单位为黑 |
+| 058 | `focus_has_debuff_hunters_mark` | 布尔 | 焦点存在自身猎人印记257284；HARMFUL\|PLAYER筛选，无单位或可协助单位为黑 |
 | 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。`player_has_buff_cobra_fangs`由层数>0派生；单体和AOE的优先眼镜蛇均要求层数>3，AOE另需顺劈剩余≥1秒；杀戮不限制利牙层数 |
 | 060 | `finishing` | 枚举 | 灰度0自动、10残血持续爆发（关闭收尾）、20残血不爆发（始终开启收尾，不受血量阈值影响，包括遭遇战）；默认、脱战及重载恢复自动；自动模式仅在86格为假且主目标预测生命严格低于87格阈值时收尾，10/20强制覆盖；异常枚举按自动处理 |
 | 061 | `power_focus_max` | 整数 | 配置集中值上限100–120，默认100，灰度直接表示点数 |
@@ -129,7 +129,7 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 
 第55格沿用AuraContainer原生光环筛选和显隐，Python只读取该格布尔值；不在Lua中判断三种形态。更新插件与Python后执行`/reload`并重启Python，核对三种形态的出现、切换和消失。
 
-第57、58格复用原空位，分别显示目标和焦点的自身猎人印记257584；原生AuraContainer按HARMFUL|PLAYER筛选，PLAYER来源包含玩家宠物／载具，不匹配其他猎人的印记。白色表示存在，黑底表示不存在；单位不存在或UnitCanAssist("player", unit, true, true)可协助时隐藏容器。初始化、进入世界、对应目标／焦点切换、UNIT_FACTION及UNIT_FLAGS事件后刷新，事件延后下一帧执行；单位资格显隐每秒兜底，日常光环更新交给原生容器。Python沿用现有布尔解析；两格均为false才对主目标补印记，不增加冷却或资源检测格。基板保持360×12；插件与Python须配套更新并重载，实机核对印记添加／移除、单位切换／清空、友方单位、其他猎人的印记及两个宏的施放对象。
+第57、58格复用原空位，分别显示目标和焦点的自身猎人印记257284；原生AuraContainer按HARMFUL|PLAYER筛选，PLAYER来源包含玩家宠物／载具，不匹配其他猎人的印记。白色表示存在，黑底表示不存在；单位不存在或UnitCanAssist("player", unit, true, true)可协助时隐藏容器。初始化、进入世界、对应目标／焦点切换、UNIT_FACTION及UNIT_FLAGS事件后刷新，事件延后下一帧执行；单位资格显隐每秒兜底，日常光环更新交给原生容器。Python沿用现有布尔解析；两格均为false才对主目标补印记，不增加冷却或资源检测格。基板保持360×12；插件与Python须配套更新并重载，实机核对印记添加／移除、单位切换／清空、友方单位、其他猎人的印记及两个宏的施放对象。
 
 第88格按截止时间每0.1秒刷新，匹配怒火施法成功事件后立即刷新；其他技能、打断、切目标和脱战不清除计时，进入世界清零。不监听冷却更新事件；战斗中施法成功事件的ID可读性需实机验证。
 
