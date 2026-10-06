@@ -40,6 +40,10 @@ insert(macroList, { title = "focus猎人印记", key = "RCTRL-F7", text = "/cast
 insert(macroList, { title = "target眼镜蛇射击利牙", key = "RCTRL-F8", text = "/castsequence [@target,harm,nodead] reset=1 眼镜蛇射击,null" }) --
 insert(macroList, { title = "focus眼镜蛇射击利牙", key = "RCTRL-F9", text = "/castsequence [@focus,harm,nodead] reset=1 眼镜蛇射击,null" }) --
 
+insert(macroList, { title = "target宁神射击", key = "RCTRL-F10", text = "/cast [@target,harm,nodead] 宁神射击" })
+insert(macroList, { title = "focus宁神射击", key = "RCTRL-F11", text = "/cast [@focus,harm,nodead] 宁神射击" })
+insert(macroList, { title = "假死", key = "RCTRL-F12", text = "/cast 假死" })
+
 for _, macro in ipairs(macroList) do
     local buttonName = addonName .. "Button" .. macro.title
     local frame = CreateFrame("Button", buttonName, UIParent, "SecureActionButtonTemplate")

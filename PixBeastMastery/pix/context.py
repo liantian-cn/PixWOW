@@ -376,6 +376,18 @@ class Context:
         return self.readBooleanCell(80)
 
     @property
+    def spell_cd_tranquilizing_shot(self) -> float:
+        return self.readSpellCDCell(81)
+
+    @property
+    def spell_cd_feign_death(self) -> float:
+        return self.readSpellCDCell(82)
+
+    @property
+    def tranquilizing_shot_enabled(self) -> bool:
+        return self.readBooleanCell(83)
+
+    @property
     def target_cast_icon(self) -> str | None:
         return self.readIconTile(3)
 
