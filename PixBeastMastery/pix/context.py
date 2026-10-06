@@ -267,6 +267,14 @@ class Context:
         return self.readBooleanCell(56)
 
     @property
+    def target_has_debuff_hunters_mark(self) -> bool:
+        return self.readBooleanCell(57)
+
+    @property
+    def focus_has_debuff_hunters_mark(self) -> bool:
+        return self.readBooleanCell(58)
+
+    @property
     def player_buff_stacks_cobra_fangs(self) -> int:
         """Grayscale count; 0 includes absence, 255 means at least 255."""
         return int(self.readNumberCell(59) + 0.5)

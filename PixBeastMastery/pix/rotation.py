@@ -32,6 +32,8 @@ class Rotation:
             "focus杀戮命令": "RCTRL-F3",
             "focus眼镜蛇射击": "RCTRL-F4",
             "设置焦点": "RCTRL-F5",
+            "target猎人印记": "RCTRL-F6",
+            "focus猎人印记": "RCTRL-F7",
         }
 
     def check_pause(self, ctx: Context) -> Idle | None:
@@ -318,6 +320,11 @@ class Rotation:
         # => 设置当前目标为焦点并结束本轮；已有焦点即使不合格也不覆盖
         if main_target == "target" and not ctx.focus_is_exists:
             return Cast("设置焦点")
+
+        # 如果 目标和焦点都没有自身施加的猎人印记；已通过战斗、主目标及射程门控
+        # => 在药水和输出技能前给主目标补印记，不受输出模式、爆发或收尾限制
+        if not ctx.target_has_debuff_hunters_mark and not ctx.focus_has_debuff_hunters_mark:
+            return Cast(f"{main_target}猎人印记", "目标和焦点均无自身印记")
 
         # 如果 反制射击范围内可观察敌人数至少 2 个
         # => 自动选择 AOE，否则选择单体；随后应用强制模式

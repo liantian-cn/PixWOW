@@ -72,6 +72,8 @@ cells\053_spell_cd_misdirection.lua
 cells\054_reckless_potion_ready.lua
 cells\055_player_has_buff_howl_of_the_pack_leader.lua
 cells\056_player_has_buff_natures_ally.lua
+cells\057_target_has_debuff_hunters_mark.lua
+cells\058_focus_has_debuff_hunters_mark.lua
 cells\059_player_buff_stacks_cobra_fangs.lua
 cells\060_finishing.lua
 cells\061_power_focus_max.lua

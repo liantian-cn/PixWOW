@@ -34,6 +34,8 @@
 | `RCTRL-F3` | focus杀戮命令 | `/cast [@focus,harm,nodead] 杀戮命令` |
 | `RCTRL-F4` | focus眼镜蛇射击 | `/cast [@focus,harm,nodead] 眼镜蛇射击` |
 | `RCTRL-F5` | 设置焦点 | `/focus [@target,exists]` |
+| `RCTRL-F6` | target猎人印记 | `/cast [@target,harm,nodead] 猎人印记` |
+| `RCTRL-F7` | focus猎人印记 | `/cast [@focus,harm,nodead] 猎人印记` |
 
 ## 维护规则
 
