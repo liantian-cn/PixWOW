@@ -4,7 +4,7 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 
 ## 编码约定
 
-正式模式每格4×4物理像素，基板12px高。普通区保留1–88列，加左右检测列总宽360px；基板按至少88列计算，停载位置留空，不重排编号。IconTile仍为8×8，位于基板下方两行。Capture和Matrix协议不变。
+正式模式每格4×4物理像素，基板12px高。普通区连续占用1–77列，加左右检测列总宽316px；基板按普通格与图标区的实际最大跨度计算。IconTile仍为8×8，位于基板下方两行。Capture和Matrix协议不变。
 
 - 布尔：白255为真、黑0为假。
 - 灰度整数：直接读取字节并四舍五入，不除255。
@@ -15,6 +15,8 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 - 目标、焦点、鼠标指向统一使用030、040、049的ranged射程字段，均参考反制射击147362；坦克误导范围单独使用34477。
 - 施法和引导进度均为已经过百分比，灰度/255×100；0表示空闲或刚开始，100表示进度末端，结束后回到0。须同时检查可打断状态及施法图标。
 - 打断进度阈值为灰度整数，默认30、范围10–90；三种打断均要求解码进度严格大于阈值，不再采集或判断剩余秒数。
+
+普通格压缩后，插件与Python须配套更新，执行 `/reload`、重启桌面程序并重新定位。`unused_`文件仅保留源码、不在TOC加载，其内部旧坐标不代表当前布局。
 
 ## 普通格
 
@@ -37,8 +39,8 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 015 | `ticket_14_ready` | Cell / 布尔 | 二号饰品可用（SLOT 14）；同上，优先级低于一号饰品，每轮重新读取可用状态。 |
 | 016 | `healthstone_ready` | Cell / 布尔 | 治疗石 item:5512；冷却启用且物品可使用时为白色。 |
 | 017 | `heal_potion_ready` | Cell / 布尔 | 银月城生命药水 item:241304；冷却启用且物品可使用时为白色。 |
-| 018 | `unused_player_has_heal_absorb.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
-| 019 | `unused_player_has_damage_absorb.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
+| 018 | `finishing_health_threshold` | 整数 | 收尾血量阈值百分数，灰度字节直接表示；默认20，范围0–50，滑块步进5，持久化保存；0表示自动不收尾，Python越界回退20 |
+| 019 | `encounter_in_progress` | 布尔 | C_InstanceEncounter.IsEncounterInProgress()；遭遇战中白、否则黑，不区分编号，不附加玩家存活、战斗或目标条件；初始化读取、进入世界及状态变化后延后刷新，每秒兜底 |
 | 020 | `player_cast_progress` | Cell / 百分比 | 玩家的cast/channel进度 |
 | 021 | `player_is_empowering` | Cell / 布尔 | 玩家是否在蓄力 |
 | 022 | `target_is_exists` | Cell / 布尔 | 目标存在 |
@@ -48,9 +50,9 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 026 | `target_health_pct` | Cell / 百分比 | 目标预测生命百分比；UnitHealthPercent(unit, true, curve)，usePredicted=true |
 | 027 | `target_cast_interruptible` | Cell / 布尔 | 目标可打断 |
 | 028 | `target_cast_progress` | Cell / 百分比 | 目标的cast/channel进度 |
-| 029 | `unused_target_in_melee_range.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
+| 029 | `player_buff_beast_cleave_remaining` | 光环剩余秒数 | 玩家野兽顺劈268877；亮度0/150/180/210/255对应0/15/30/60/240秒，0含不存在或到期，240含永久或上限饱和；原生DurationText绑定更新 |
 | 030 | `target_in_ranged_range` | 布尔 | 单位在反制射击147362射程内；nil或无单位显示黑色。 |
-| 031 | `unused_target_in_interrupt_range.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
+| 031 | `mouseover_cast_progress` | 百分比 | 鼠标单位施法或引导已经过百分比，空闲为0 |
 | 032 | `focus_is_exists` | Cell / 布尔 | 焦点存在 |
 | 033 | `focus_is_alive` | Cell / 布尔 | 焦点存活 |
 | 034 | `focus_can_attack` | Cell / 布尔 | 焦点可攻击 |
@@ -58,15 +60,15 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 036 | `focus_health_pct` | Cell / 百分比 | 焦点预测生命百分比；UnitHealthPercent(unit, true, curve)，usePredicted=true |
 | 037 | `focus_cast_interruptible` | Cell / 布尔 | 焦点可打断 |
 | 038 | `focus_cast_progress` | Cell / 百分比 | 焦点的cast/channel进度 |
-| 039 | `unused_focus_in_melee_range.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
+| 039 | `mouseover_cast_interruptible` | 布尔 | 鼠标单位施法或引导可打断；Context额外检查图标存在且不在黑名单 |
 | 040 | `focus_in_ranged_range` | 布尔 | 单位在反制射击147362射程内；nil或无单位显示黑色。 |
-| 041 | `unused_focus_in_interrupt_range.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
+| 041 | `mouseover_can_assist` | 布尔 | 鼠标单位存在且可协助 |
 | 042 | `spell_cd_global_cooldown` | Cell / 冷却曲线 | [Global Cooldown]。SPELLID:61304 的冷却时间,ignore_gcd = false |
 | 043 | `spell_cd_counter_shot` | 冷却 | 反制射击147362 |
 | 044 | `spell_cd_bestial_wrath` | 冷却 | 狂野怒火19574 |
 | 045 | `spell_cd_wild_thrash` | 冷却 | 狂野鞭笞1264359 |
-| 046 | `unused_spell_cd_kill_command.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
-| 047 | `unused_spell_cd_barbed_shot.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
+| 046 | `mouseover_can_attack` | 布尔 | 鼠标单位存在且可攻击 |
+| 047 | `mouseover_is_alive` | 布尔 | 鼠标单位存在且存活 |
 | 048 | `spell_charges_barbed_shot` | 整数 | 倒刺射击当前充能；灰度字节即数量 |
 | 049 | `mouseover_in_ranged_range` | 布尔 | 鼠标单位在反制射击147362射程内；供鼠标指向打断使用。 |
 | 050 | `burst_potion_enabled` | 布尔 | 自动爆发药水开关，默认开启 |
@@ -79,7 +81,7 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 057 | `target_has_debuff_hunters_mark` | 布尔 | 目标存在自身猎人印记257284；HARMFUL\|PLAYER筛选，无单位或可协助单位为黑 |
 | 058 | `focus_has_debuff_hunters_mark` | 布尔 | 焦点存在自身猎人印记257284；HARMFUL\|PLAYER筛选，无单位或可协助单位为黑 |
 | 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。单体和AOE的优先眼镜蛇均要求层数>3，AOE另需顺劈剩余≥1秒；杀戮不限制利牙层数 |
-| 060 | `finishing` | 枚举 | 灰度0自动、10残血持续爆发（关闭收尾）、20残血不爆发（始终开启收尾，不受血量阈值影响，包括遭遇战）；默认、脱战及重载恢复自动；自动模式仅在86格为假且主目标预测生命严格低于87格阈值时收尾，10/20强制覆盖；异常枚举按自动处理 |
+| 060 | `finishing` | 枚举 | 灰度0自动、10残血持续爆发（关闭收尾）、20残血不爆发（始终开启收尾，不受血量阈值影响，包括遭遇战）；默认、脱战及重载恢复自动；自动模式仅在19格为假且主目标预测生命严格低于18格阈值时收尾，10/20强制覆盖；异常枚举按自动处理 |
 | 061 | `power_focus_max` | 整数 | 配置集中值上限100–120，默认100，灰度直接表示点数 |
 | 062 | `spell_recharge_barbed_shot` | 冷却曲线 | 倒刺射击下一层充能剩余时间；满充能由48和75格识别 |
 | 063 | `pet_is_exists` | 布尔 | 宠物存在 |
@@ -95,21 +97,10 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 073 | `mouseover_interrupt_enabled` | 布尔 | 鼠标指向打断开关，默认是，持久化保存 |
 | 074 | `spell_charges_kill_command` | 整数 | 杀戮命令当前充能 |
 | 075 | `spell_max_charges_barbed_shot` | 整数 | 倒刺射击最大充能；0表示缺失 |
-| 076 | `unused_player_has_buff_beast_cleave.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
+| 076 | `mouseover_is_exists` | 布尔 | 鼠标单位存在 |
 | 077 | `interrupt_progress_threshold` | 整数 | 共用打断进度阈值，默认30，范围10–90，步长1；Python对越界值回退30 |
-| 078 | `mouseover_is_exists` | 布尔 | 鼠标单位存在 |
-| 079 | `mouseover_is_alive` | 布尔 | 鼠标单位存在且存活 |
-| 080 | `mouseover_can_attack` | 布尔 | 鼠标单位存在且可攻击 |
-| 081 | `mouseover_can_assist` | 布尔 | 鼠标单位存在且可协助 |
-| 082 | `mouseover_cast_interruptible` | 布尔 | 鼠标单位施法或引导可打断；Context额外检查图标存在且不在黑名单 |
-| 083 | `mouseover_cast_progress` | 百分比 | 鼠标单位施法或引导已经过百分比，空闲为0 |
-| 084 | `unused_player_has_buff_bestial_wrath.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
-| 085 | `player_buff_beast_cleave_remaining` | 光环剩余秒数 | 玩家野兽顺劈268877；亮度0/150/180/210/255对应0/15/30/60/240秒，0含不存在或到期，240含永久或上限饱和；原生DurationText绑定更新 |
-| 086 | `encounter_in_progress` | 布尔 | C_InstanceEncounter.IsEncounterInProgress()；遭遇战中白、否则黑，不区分编号，不附加玩家存活、战斗或目标条件；初始化读取、进入世界及状态变化后延后刷新，每秒兜底 |
-| 087 | `finishing_health_threshold` | 整数 | 收尾血量阈值百分数，灰度字节直接表示；默认20，范围0–50，滑块步进5，持久化保存；0表示自动不收尾，Python越界回退20 |
-| 088 | `unused_bestial_wrath_cast_remaining.lua` | 停载留空 | 保留原位置；文件不在TOC中加载，Context不再读取。 |
 
-主目标选择复用目标和焦点的存在、可攻击、可协助与030／040远程射程字段，按目标→焦点判断；不额外检查存活。自动收尾随主目标使用第026或036格预测生命，编码及基板尺寸不变。
+主目标选择复用目标和焦点的存在、可攻击、可协助与030／040远程射程字段，按目标→焦点判断；不额外检查存活。自动收尾随主目标使用第026或036格预测生命，生命编码不变。
 
 ## IconTile
 
@@ -128,14 +119,14 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 
 第55格沿用AuraContainer原生光环筛选和显隐，Python只读取该格布尔值；不在Lua中判断三种形态。更新插件与Python后执行`/reload`并重启Python，核对三种形态的出现、切换和消失。
 
-第57、58格复用原空位，分别显示目标和焦点的自身猎人印记257284；原生AuraContainer按HARMFUL|PLAYER筛选，PLAYER来源包含玩家宠物／载具，不匹配其他猎人的印记。白色表示存在，黑底表示不存在；单位不存在或UnitCanAssist("player", unit, true, true)可协助时隐藏容器。初始化、进入世界、对应目标／焦点切换、UNIT_FACTION及UNIT_FLAGS事件后刷新，事件延后下一帧执行；单位资格显隐每秒兜底，日常光环更新交给原生容器。Python沿用现有布尔解析；两格均为false才对主目标补印记，不增加冷却或资源检测格。基板保持360×12；插件与Python须配套更新并重载，实机核对印记添加／移除、单位切换／清空、友方单位、其他猎人的印记及两个宏的施放对象。
+第57、58格复用原空位，分别显示目标和焦点的自身猎人印记257284；原生AuraContainer按HARMFUL|PLAYER筛选，PLAYER来源包含玩家宠物／载具，不匹配其他猎人的印记。白色表示存在，黑底表示不存在；单位不存在或UnitCanAssist("player", unit, true, true)可协助时隐藏容器。初始化、进入世界、对应目标／焦点切换、UNIT_FACTION及UNIT_FLAGS事件后刷新，事件延后下一帧执行；单位资格显隐每秒兜底，日常光环更新交给原生容器。Python沿用现有布尔解析；两格均为false才对主目标补印记，不增加冷却或资源检测格。基板为316×12；插件与Python须配套更新并重载，实机核对印记添加／移除、单位切换／清空、友方单位、其他猎人的印记及两个宏的施放对象。
 
 
 冷却、充能恢复、射程、施法进度、可打断状态和施法图标保留0.1秒刷新；鼠标单位变化触发刷新，单位状态每秒兜底；充能数量由事件更新并每秒兜底；资源/生命保留对应事件刷新并每秒兜底，光环由AuraContainer原生绑定。
 
 敌人数按姓名板及进出战斗事件刷新，每秒兜底。坦克编号在进入地图、队伍/职责、连接、生命状态及进出战斗时更新，每1秒兜底；误导射程每0.1秒刷新。
 
-攻击模式与收尾按钮的设置、命令、显示分别完全位于007和060文件中。两者脱战/重载恢复自动，位置单独持久化；087管理收尾血量阈值，与上限和消耗品开关一样保存在PixBeastMasteryDB中，脱战/重载不重置。
+攻击模式与收尾按钮的设置、命令、显示分别完全位于007和060文件中。两者脱战/重载恢复自动，位置单独持久化；018管理收尾血量阈值，与上限和消耗品开关一样保存在PixBeastMasteryDB中，脱战/重载不重置。
 
 两个控制按钮均使用66×66原生 UI 单位，不参与像素采样区的分辨率换算：只显示60×60图标，四边各留3，不创建文字区域。收尾按钮左上角以零偏移锚定攻击模式按钮右上角，形成左右布局；Shift+左键拖动攻击模式时整体移动并保存位置，攻击模式按钮不存在时收尾才独立拖动。007、060采样格的位置与编码不变。两个按钮的三态深色背景依次使用相同的绿、蓝、橙配色，图标从 `ui/status/` 加载六张独立的128×128不透明TGA纹理，以60×60显示；采用兼具可爱感的WoW风格手绘暗底插画，两个自动状态使用金色循环箭头。输出自动为黑龙头、仅单体为一条完整的大黑龙、仅AOE为三只黑龙宝宝；收尾自动为棕熊头、残血持续爆发为发怒棕熊、残血不爆发为蜷睡棕熊。同名PNG为生成源图，根目录 `assets/status-icons/wow-v3/` 保存当前素材与生成提示词。
 
@@ -147,6 +138,6 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 
 编码或采样条件变更后，需要核对受影响的游戏内表现；语法和 Python 静态检查不能代替客户端验收。
 
-配置格 007、050、060、061、067、072、073、077、087 保留配置回调，并每秒刷新输出。069 小队状态、070 已学误导保留事件更新并每秒兜底。I05–I19 每秒只重绘已选图标，不重复请求全部法术数据。
+配置格 007、018、050、060、061、067、072、073、077 保留配置回调，并每秒刷新输出。069 小队状态、070 已学误导保留事件更新并每秒兜底。I05–I19 每秒只重绘已选图标，不重复请求全部法术数据。
 
 布尔异常、计数显示与图标比较采用[共用 API 与解析约定](../../.context/wow-api-notes.md)。当前计数显示路线已有用户使用确认；修改编码、字体或采样条件后，应检查受影响的游戏内表现。

@@ -22,7 +22,7 @@ local UIInitFuncs             = addonTable.UIInitFuncs
 local AuraRemaining           = addonTable.CURVE.AuraRemaining
 
 -- 本地配置
-local X = 85
+local X = 29
 local AURA_IDS = { 268877 }
 local CHARACTER = "█"
 local eventFrame              = CreateFrame("Frame")

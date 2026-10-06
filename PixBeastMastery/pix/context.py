@@ -306,42 +306,42 @@ class Context:
 
     @property
     def mouseover_is_exists(self) -> bool:
-        return self.readBooleanCell(78)
+        return self.readBooleanCell(76)
 
     @property
     def mouseover_is_alive(self) -> bool:
-        return self.readBooleanCell(79)
+        return self.readBooleanCell(47)
 
     @property
     def mouseover_can_attack(self) -> bool:
-        return self.readBooleanCell(80)
+        return self.readBooleanCell(46)
 
     @property
     def mouseover_can_assist(self) -> bool:
-        return self.readBooleanCell(81)
+        return self.readBooleanCell(41)
 
     @property
     def mouseover_cast_interruptible(self) -> bool:
-        if not self.readBooleanCell(82):
+        if not self.readBooleanCell(39):
             return False
         icon = self.mouseover_cast_icon
         return icon is not None and icon not in self.interrupt_blacklist
 
     @property
     def mouseover_cast_progress(self) -> float:
-        return self.readPercentCell(83)
+        return self.readPercentCell(31)
 
     @property
     def player_buff_beast_cleave_remaining(self) -> float:
-        return self.readAuraDurationCell(85)
+        return self.readAuraDurationCell(29)
 
     @property
     def encounter_in_progress(self) -> bool:
-        return self.readBooleanCell(86)
+        return self.readBooleanCell(19)
 
     @property
     def finishing_health_threshold(self) -> int:
-        value = int(self.readNumberCell(87) + 0.5)
+        value = int(self.readNumberCell(18) + 0.5)
         return value if 0 <= value <= 50 else 20
 
     @property

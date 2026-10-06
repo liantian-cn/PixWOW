@@ -39,7 +39,7 @@ insert(ConfigRows, {
 })
 config:register_callback(Refresh)
 insert(UIInitFuncs, function()
-    cell = Cell:New({ x = 87 })
+    cell = Cell:New({ x = 18 })
     Refresh()
 end)
 

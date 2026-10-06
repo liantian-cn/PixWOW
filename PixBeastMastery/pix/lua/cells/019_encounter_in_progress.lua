@@ -1,4 +1,4 @@
--- 单位状态直接交给布尔颜色消费者。
+-- 游戏是否正在进行遭遇战，不附加玩家存活、战斗或目标条件。
 local addonName, addonTable = ...
 
 -- Lua 内置方法
@@ -9,8 +9,7 @@ local random = math.random
 local CreateFrame = CreateFrame
 local After = C_Timer.After
 local EvaluateColorFromBoolean = C_CurveUtil.EvaluateColorFromBoolean
-local UnitExists = UnitExists
-local UnitCanAssist = UnitCanAssist
+local IsEncounterInProgress = C_InstanceEncounter.IsEncounterInProgress
 
 -- 项目引用
 local Cell = addonTable.Cell
@@ -18,14 +17,13 @@ local COLOR = addonTable.COLOR
 local UIInitFuncs = addonTable.UIInitFuncs
 
 -- 本地配置
-local X = 81
+local X = 19
 local cell
 local eventFrame = CreateFrame("Frame")
 
 local function Update()
     if not cell then return end
-    local stateColor = EvaluateColorFromBoolean(UnitCanAssist("player", "mouseover"), COLOR.WHITE, COLOR.BLACK)
-    local color = EvaluateColorFromBoolean(UnitExists("mouseover"), stateColor, COLOR.BLACK)
+    local color = EvaluateColorFromBoolean(IsEncounterInProgress(), COLOR.WHITE, COLOR.BLACK)
     cell:setCell(color)
 end
 
@@ -35,10 +33,7 @@ local function Initialize()
 end
 
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-eventFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-eventFrame:RegisterUnitEvent("UNIT_FLAGS", "mouseover")
-eventFrame:RegisterUnitEvent("UNIT_FACTION", "mouseover")
-eventFrame:RegisterUnitEvent("UNIT_HEALTH", "mouseover")
+eventFrame:RegisterEvent("ENCOUNTER_STATE_CHANGED")
 eventFrame:SetScript("OnEvent", function()
     After(0, Update)
 end)
