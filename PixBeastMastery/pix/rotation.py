@@ -30,6 +30,7 @@ class Rotation:
         }
 
     def main_rotation(self, ctx: Context) -> Cast | Use | Idle:
+
         # 如果 插件未启用
         # => 不执行动作
         if not ctx.enable:
@@ -144,6 +145,10 @@ class Rotation:
         # => 强制收尾；其他模式保留自动结果
         elif ctx.finishing == 20:
             Isfinishing = True
+
+        # debug区域
+        # print(f"野性怒火冷却{ctx.spell_cd_bestial_wrath=}, 倒刺层数{ctx.spell_charges_barbed_shot=},倒刺恢复{ctx.spell_recharge_barbed_shot=}")
+        # return Idle("DEBUG")
 
         # 如果 有效当前目标在反制射击射程内
         # => 按顺序执行核心 DPS 规则
