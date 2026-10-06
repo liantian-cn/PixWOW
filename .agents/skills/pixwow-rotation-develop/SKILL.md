@@ -17,6 +17,7 @@ description: 开发或修改 PixWOW 子项目的 rotation 业务规则及必要�
 
 ## 实现与同步
 
+- 按[Rotation 函数拆分建议](../../../.context/development-principles.md#rotation-函数拆分)适当拆分 `main_rotation`。推荐参考 `check_pause`、`precombat_rotation`、`defensive_rotation`、`interrupt_rotation`、`aoe_rotation`、`single_target_rotation` 六类职责，不强制套用；允许分类方法传参，入口保留适量非战斗、辅助逻辑及模式计算。拆分时核对门控、首个动作返回和各专精已确认的调用顺序。
 - 新增或修改 cells Lua 时执行[Lua cells 文件头规范](../../../.context/code-quality.md#lua-cells-文件头)：按规定分组、本地化稳定引用，并核对动态访问例外的生命周期。风格整理保持行为不变，不扩大到未授权文件。
 - 按既有模块边界做最小改动，业务判断保留在 Python。每个业务分支按共用规范写条件与结果注释，包括嵌套分支和辅助函数。
 - 保留项目专属约定：血 DK 的目标/焦点规则和 F12 预留；兽王已确认的狂野怒火/野兽顺劈规则；奶骑五单位模型、评分及显式目标宏；防骑的射程和打断黑名单差异；惩戒的套装消耗与单多目标定义。详细条件以当前源码、项目文档及新确认需求为准，不在 skill 中固化可变数值。
