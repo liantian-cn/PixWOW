@@ -174,11 +174,6 @@ class Rotation:
         # => 施放狂野鞭笞，卡冷却使用
         if thrash_cd == 0 and focus >= 35:
             return Cast("狂野鞭笞", "卡CD打")
-        # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且利牙层数大于 3
-        # => 在顺劈期间施放 4 层利牙眼镜蛇射击
-        if focus >= 35 and cleave_remaining >= 1 and ctx.player_buff_stacks_cobra_fangs > 3:
-            return Cast("眼镜蛇射击", "4层利牙")
-
         # 如果 狂野怒火冷却不超过 4 秒，且未收尾
         # => 标记怒火即将就绪，随后保留最后 1 层杀戮命令充能
         wrath_soon = wrath_cd <= 4 and not is_finishing
@@ -197,6 +192,11 @@ class Rotation:
                 and focus >= 35 and cleave_remaining >= 1
                 and ctx.player_has_buff_natures_ally):
             return Cast("杀戮命令", "自然之友高亮")
+
+        # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且利牙层数大于 3
+        # => 在顺劈期间施放 4 层利牙眼镜蛇射击
+        if focus >= 35 and cleave_remaining >= 1 and ctx.player_buff_stacks_cobra_fangs > 3:
+            return Cast("眼镜蛇射击", "4层利牙")
 
         # 如果 倒刺射击充能至少 1 层，且前序规则未命中
         # => 施放兜底倒刺射击
@@ -253,11 +253,6 @@ class Rotation:
                     return Use("下饰品")
             return Cast("狂野怒火", "狂野怒火CD好")
 
-        # 如果 集中值至少 35 点，且利牙层数大于 3
-        # => 施放 4 层利牙眼镜蛇射击；单体不要求顺劈
-        if focus >= 35 and ctx.player_buff_stacks_cobra_fangs > 3:
-            return Cast("眼镜蛇射击", "4层利牙")
-
         # 如果 狂野怒火冷却不超过 4 秒，且未收尾
         # => 标记怒火即将就绪，随后保留最后 1 层杀戮命令充能
         wrath_soon = wrath_cd <= 4 and not is_finishing
@@ -276,6 +271,11 @@ class Rotation:
                 and focus >= 35
                 and ctx.player_has_buff_natures_ally):
             return Cast("杀戮命令", "自然之友高亮")
+
+        # 如果 集中值至少 35 点，且利牙层数大于 3
+        # => 施放 4 层利牙眼镜蛇射击；单体不要求顺劈
+        if focus >= 35 and ctx.player_buff_stacks_cobra_fangs > 3:
+            return Cast("眼镜蛇射击", "4层利牙")
 
         # 如果 倒刺射击充能至少 1 层，且前序规则未命中
         # => 施放兜底倒刺射击
