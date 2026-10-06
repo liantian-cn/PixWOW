@@ -46,6 +46,10 @@ class Rotation:
         # => 暂停全部自动动作
         if ctx.delaying:
             return Idle("手动操作延迟中")
+        # 如果 玩家当前目标是自己
+        # => 暂停全部自动动作，切走目标后按正常条件恢复
+        if ctx.player_is_player_target:
+            return Idle("玩家的目标是玩家")
         # 如果 玩家未存活
         # => 不执行动作
         if not ctx.player_is_alive:
@@ -109,20 +113,20 @@ class Rotation:
             # 如果 反制射击就绪、目标打断开启；目标存在、存活、可攻击且不可协助，在射程，通过黑名单检查且进度严格大于阈值
             # => 优先对当前目标施放反制射击
             if (ctx.target_interrupt_enabled and ctx.target_is_exists and ctx.target_is_alive
-                    and ctx.target_can_attack and not ctx.target_can_assist and ctx.target_in_interrupt_range
+                    and ctx.target_can_attack and not ctx.target_can_assist and ctx.target_in_ranged_range
                     and ctx.target_cast_interruptible and ctx.target_cast_progress > interrupt_progress):
                 return Cast("目标反制射击")
             # 如果 反制射击就绪、前序目标未命中，焦点存在、存活、可攻击且不可协助，在打断射程，通过黑名单检查且已过进度严格大于阈值
             # => 对焦点施放反制射击
             if (ctx.focus_is_exists and ctx.focus_is_alive and ctx.focus_can_attack
-                    and not ctx.focus_can_assist and ctx.focus_in_interrupt_range
+                    and not ctx.focus_can_assist and ctx.focus_in_ranged_range
                     and ctx.focus_cast_interruptible and ctx.focus_cast_progress > interrupt_progress):
                 return Cast("焦点反制射击")
             # 如果 反制射击就绪、前序目标和焦点均未命中，鼠标打断开启；鼠标单位存在、存活、可攻击且不可协助，在射程，通过黑名单检查且进度严格大于阈值
             # => 对鼠标指向施放反制射击
             if (ctx.mouseover_interrupt_enabled and ctx.mouseover_is_exists and ctx.mouseover_is_alive
                     and ctx.mouseover_can_attack and not ctx.mouseover_can_assist
-                    and ctx.mouseover_in_interrupt_range and ctx.mouseover_cast_interruptible
+                    and ctx.mouseover_in_ranged_range and ctx.mouseover_cast_interruptible
                     and ctx.mouseover_cast_progress > interrupt_progress):
                 return Cast("鼠标指向反制射击")
         return None
@@ -304,12 +308,12 @@ class Rotation:
         # 如果 当前目标存在、可攻击且不可协助，并在反制射击射程内
         # => 优先选择当前目标作为主目标；不额外检查存活
         if (ctx.target_is_exists and ctx.target_can_attack and not ctx.target_can_assist
-                and ctx.target_in_interrupt_range):
+                and ctx.target_in_ranged_range):
             main_target = "target"
         # 如果 当前目标不合格，焦点存在、可攻击且不可协助，并在反制射击射程内
         # => 回退选择焦点作为主目标；不额外检查存活
         elif (ctx.focus_is_exists and ctx.focus_can_attack and not ctx.focus_can_assist
-                and ctx.focus_in_interrupt_range):
+                and ctx.focus_in_ranged_range):
             main_target = "focus"
         # 如果 焦点和当前目标均不合格
         # => 本轮等待，不继续输出或治疗宠物

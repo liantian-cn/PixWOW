@@ -99,14 +99,6 @@ class Context:
         return self.readBooleanCell(17)
 
     @property
-    def player_has_heal_absorb(self) -> bool:
-        return self.readBooleanCell(18)
-
-    @property
-    def player_has_damage_absorb(self) -> bool:
-        return self.readBooleanCell(19)
-
-    @property
     def player_cast_progress(self) -> float:
         return self.readPercentCell(20)
 
@@ -146,16 +138,8 @@ class Context:
         return self.readPercentCell(28)
 
     @property
-    def target_in_melee_range(self) -> bool:
-        return self.readBooleanCell(29)
-
-    @property
     def target_in_ranged_range(self) -> bool:
         return self.readBooleanCell(30)
-
-    @property
-    def target_in_interrupt_range(self) -> bool:
-        return self.readBooleanCell(31)
 
     @property
     def focus_is_exists(self) -> bool:
@@ -189,16 +173,8 @@ class Context:
         return self.readPercentCell(38)
 
     @property
-    def focus_in_melee_range(self) -> bool:
-        return self.readBooleanCell(39)
-
-    @property
     def focus_in_ranged_range(self) -> bool:
         return self.readBooleanCell(40)
-
-    @property
-    def focus_in_interrupt_range(self) -> bool:
-        return self.readBooleanCell(41)
 
     @property
     def spell_cd_global_cooldown(self) -> float:
@@ -217,23 +193,11 @@ class Context:
         return self.readSpellCDCell(45)
 
     @property
-    def spell_cd_kill_command(self) -> float:
-        return self.readSpellCDCell(46)
-
-    @property
-    def spell_cd_barbed_shot(self) -> float:
-        return self.readSpellCDCell(47)
-
-    @property
     def spell_charges_barbed_shot(self) -> int:
         return int(self.readNumberCell(48) + 0.5)
 
     @property
-    def mouseover_in_melee_range(self) -> bool:
-        return self.readBooleanCell(49)
-
-    @property
-    def mouseover_in_interrupt_range(self) -> bool:
+    def mouseover_in_ranged_range(self) -> bool:
         return self.readBooleanCell(49)
 
     @property
@@ -278,12 +242,6 @@ class Context:
     def player_buff_stacks_cobra_fangs(self) -> int:
         """Grayscale count; 0 includes absence, 255 means at least 255."""
         return int(self.readNumberCell(59) + 0.5)
-
-    @property
-    def player_has_buff_cobra_fangs(self) -> bool:
-        # 如果 眼镜蛇利牙层数大于 0
-        # => 标记利牙存在，供现有循环使用
-        return self.player_buff_stacks_cobra_fangs > 0
 
     @property
     def finishing(self) -> int:
@@ -342,10 +300,6 @@ class Context:
         return int(self.readNumberCell(75) + 0.5)
 
     @property
-    def player_has_buff_beast_cleave(self) -> bool:
-        return self.readBooleanCell(76)
-
-    @property
     def interrupt_progress_threshold(self) -> int:
         value = int(self.readNumberCell(77) + 0.5)
         return value if 10 <= value <= 90 else 30
@@ -378,10 +332,6 @@ class Context:
         return self.readPercentCell(83)
 
     @property
-    def player_has_buff_bestial_wrath(self) -> bool:
-        return self.readBooleanCell(84)
-
-    @property
     def player_buff_beast_cleave_remaining(self) -> float:
         return self.readAuraDurationCell(85)
 
@@ -393,11 +343,6 @@ class Context:
     def finishing_health_threshold(self) -> int:
         value = int(self.readNumberCell(87) + 0.5)
         return value if 0 <= value <= 50 else 20
-
-    @property
-    def bestial_wrath_cast_remaining(self) -> float:
-        """Seconds remaining in the four-second window after a successful player cast."""
-        return self.readNumberCell(88) / 10.0
 
     @property
     def power_focus(self) -> int:
@@ -417,14 +362,6 @@ class Context:
     def player_enemies_count(self) -> int:
         """Observable living, attackable, in-combat nameplates in Counter Shot range."""
         return int(self.matrix.getCell(68).ratio * 40 + 0.5)
-
-    @property
-    def player_cast_icon(self) -> str | None:
-        return self.readIconTile(1)
-
-    @property
-    def assisted_combat_icon(self) -> str | None:
-        return self.readIconTile(2)
 
     @property
     def target_cast_icon(self) -> str | None:

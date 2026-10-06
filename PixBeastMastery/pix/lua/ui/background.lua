@@ -88,9 +88,9 @@ local function InitBackgroundFrame()
 end
 insert(UIInitFuncs, InitBackgroundFrame)
 
--- 按共享区域的最大长度调整背景宽度。
+-- 保留至少 88 个普通列，停载闲置格后仍保持 360×12 物理像素。
 local function BackgroundFrameResize()
-    local max_length = max(addonTable.GeneralCellLength, addonTable.IconTileLength)
+    local max_length = max(88, addonTable.GeneralCellLength, addonTable.IconTileLength)
     addonTable.BackgroundFrame:SetSize(SIZE.CELL * (2 + max_length), SIZE.CELL * 3)
 end
 addonTable.BackgroundFrameResize = BackgroundFrameResize
