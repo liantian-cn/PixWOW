@@ -37,6 +37,8 @@ insert(macroList, { title = "focus眼镜蛇射击", key = "RCTRL-F4", text = "/c
 insert(macroList, { title = "设置焦点", key = "RCTRL-F5", text = "/focus [@target,exists]" })
 insert(macroList, { title = "target猎人印记", key = "RCTRL-F6", text = "/cast [@target,harm,nodead] 猎人印记" })
 insert(macroList, { title = "focus猎人印记", key = "RCTRL-F7", text = "/cast [@focus,harm,nodead] 猎人印记" })
+insert(macroList, { title = "target眼镜蛇射击利牙", key = "RCTRL-F8", text = "/castsequence [@target,harm,nodead] reset=0.3 眼镜蛇射击,0" })
+insert(macroList, { title = "focus眼镜蛇射击利牙", key = "RCTRL-F9", text = "/castsequence [@focus,harm,nodead] reset=0.3 眼镜蛇射击,0" })
 
 for _, macro in ipairs(macroList) do
     local buttonName = addonName .. "Button" .. macro.title
