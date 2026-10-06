@@ -70,10 +70,8 @@ cells\051_spell_cd_mend_pet.lua
 cells\052_spell_cd_exhilaration.lua
 cells\053_spell_cd_misdirection.lua
 cells\054_reckless_potion_ready.lua
-cells\055_player_has_buff_pack_wyvern.lua
+cells\055_player_has_buff_howl_of_the_pack_leader.lua
 cells\056_player_has_buff_natures_ally.lua
-cells\057_player_has_buff_pack_boar.lua
-cells\058_player_has_buff_pack_bear.lua
 cells\059_player_buff_stacks_cobra_fangs.lua
 cells\060_finishing.lua
 cells\061_power_focus_max.lua

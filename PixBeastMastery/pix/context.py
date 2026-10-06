@@ -257,21 +257,14 @@ class Context:
         return self.readBooleanCell(54)
 
     @property
-    def player_has_buff_pack_wyvern(self) -> bool:
+    def player_has_buff_howl_of_the_pack_leader(self) -> bool:
+        # 猎群领袖之嚎：飞龙、猪、熊任一种形态存在。
         return self.readBooleanCell(55)
 
     @property
     def player_has_buff_natures_ally(self) -> bool:
         # 玩家是否存在自然之友（Nature’s Ally，1276720）增益。
         return self.readBooleanCell(56)
-
-    @property
-    def player_has_buff_pack_boar(self) -> bool:
-        return self.readBooleanCell(57)
-
-    @property
-    def player_has_buff_pack_bear(self) -> bool:
-        return self.readBooleanCell(58)
 
     @property
     def player_buff_stacks_cobra_fangs(self) -> int:

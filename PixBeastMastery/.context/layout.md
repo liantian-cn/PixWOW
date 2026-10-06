@@ -75,11 +75,10 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 052 | `spell_cd_exhilaration` | 冷却 | 意气风发109304 |
 | 053 | `spell_cd_misdirection` | 冷却 | 误导34477 |
 | 054 | `reckless_potion_ready` | 布尔 | 共用爆发药水就绪：241293、241292、241288、241289任一有库存、冷却启用且已结束；保留原属性名，使用宏按此顺序尝试 |
-| 055 | `player_has_buff_pack_wyvern` | 布尔 | 玩家增益471878 |
+| 055 | `player_has_buff_howl_of_the_pack_leader` | 布尔 | 猎群领袖之嚎以飞龙471878、猪472324、熊472325三种互斥形态呈现；单个AuraSlot匹配三个ID，任一种存在为白，否则黑 |
 | 056 | `player_has_buff_natures_ally` | 布尔 | 玩家自然之友（Nature’s Ally）增益1276720 |
-| 057 | `player_has_buff_pack_boar` | 布尔 | 玩家增益472324 |
-| 058 | `player_has_buff_pack_bear` | 布尔 | 玩家增益472325 |
-| 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。`player_has_buff_cobra_fangs`由层数>0派生；循环的高优先级AOE眼镜蛇及单体/AOE共用后续眼镜蛇均要求层数>2；杀戮不限制利牙层数 |
+| 057–058 | 保留空位 | 无输出 | 原猪、熊形态已合并到055；后续编号和基板尺寸不变 |
+| 059 | `player_buff_stacks_cobra_fangs` | 灰度整数 | 玩家眼镜蛇利牙1299389层数；SetApplicationCount绑定共享CountFormatter，灰度字节直接表示层数，Python四舍五入读取；0包含无光环或无计数，255表示至少255层。`player_has_buff_cobra_fangs`由层数>0派生；单体和AOE的优先眼镜蛇均要求层数>3，AOE另需顺劈剩余≥1秒；杀戮不限制利牙层数 |
 | 060 | `finishing` | 枚举 | 灰度0自动、10残血持续爆发（关闭收尾）、20残血不爆发（始终开启收尾，不受血量阈值影响，包括遭遇战）；默认、脱战及重载恢复自动；自动模式仅在86格为假且目标血量严格低于87格阈值时收尾，10/20强制覆盖；异常枚举按自动处理 |
 | 061 | `power_focus_max` | 整数 | 配置集中值上限100–120，默认100，灰度直接表示点数 |
 | 062 | `spell_recharge_barbed_shot` | 冷却曲线 | 倒刺射击下一层充能剩余时间；满充能由48和75格识别 |
@@ -108,7 +107,7 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 085 | `player_buff_beast_cleave_remaining` | 光环剩余秒数 | 玩家野兽顺劈268877；亮度0/150/180/210/255对应0/15/30/60/240秒，0含不存在或到期，240含永久或上限饱和；原生DurationText绑定更新 |
 | 086 | `encounter_in_progress` | 布尔 | C_InstanceEncounter.IsEncounterInProgress()；遭遇战中白、否则黑，不区分编号，不附加玩家存活、战斗或目标条件；初始化读取、进入世界及状态变化后延后刷新，每秒兜底 |
 | 087 | `finishing_health_threshold` | 整数 | 收尾血量阈值百分数，灰度字节直接表示；默认20，范围0–50，滑块步进5，持久化保存；0表示自动不收尾，Python越界回退20 |
-| 088 | `bestial_wrath_cast_remaining` | 灰度十分之一秒 | 玩家狂野怒火19574成功施放后的本地4秒窗口；仅监听player的UNIT_SPELLCAST_SUCCEEDED，可读ID匹配后开始或重置；秘密、缺失或其他ID忽略。0包含未触发、到期、重载或进入世界清零；不是实际增益剩余时间；剩余>0用于AOE最高优先级鞭笞，不要求集中值 |
+| 088 | `bestial_wrath_cast_remaining` | 灰度十分之一秒 | 玩家狂野怒火19574成功施放后的本地4秒窗口；仅监听player的UNIT_SPELLCAST_SUCCEEDED，可读ID匹配后开始或重置；秘密、缺失或其他ID忽略。0包含未触发、到期、重载或进入世界清零；不是实际增益剩余时间；保留采集与解码，当前循环不使用 |
 
 ## IconTile
 
@@ -124,6 +123,8 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 黑名单默认ID为1216571、1223204、1241214、1238063、1228176、384194、1294815、1246687、371984、1295125。匹配沿用Matrix的内区裁剪和指纹算法；黑底表示无图标。可打断判断必须有当前施法图标，并且不在黑名单中。
 
 ## 刷新与解析约定
+
+第55格沿用AuraContainer原生光环筛选和显隐，Python只读取该格布尔值；不在Lua中判断三种形态。更新插件与Python后执行`/reload`并重启Python，核对三种形态的出现、切换和消失。第57、58格留空，原文件不再由TOC加载。
 
 第88格按截止时间每0.1秒刷新，匹配怒火施法成功事件后立即刷新；其他技能、打断、切目标和脱战不清除计时，进入世界清零。不监听冷却更新事件；战斗中施法成功事件的ID可读性需实机验证。
 
