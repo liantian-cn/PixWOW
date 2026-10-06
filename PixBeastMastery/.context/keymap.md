@@ -13,7 +13,7 @@
 | `RCTRL-NUMPAD2` | 焦点反制射击 | `/cast [@focus,harm,nodead] 反制射击` |
 | `RCTRL-NUMPAD3` | 目标反制射击 | `/cast [@target,harm,nodead] 反制射击` |
 | `RSHIFT-NUMPAD0` | 鼠标指向反制射击 | `/cast [@mouseover,harm,nodead] 反制射击` |
-| `RCTRL-NUMPAD4` | 狂野怒火 | `/cast 狂野怒火` |
+| `RCTRL-NUMPAD4` | 狂野怒火 | `/target focus\n/cast 狂野怒火` |
 | `RCTRL-NUMPAD5` | target狂野鞭笞 | `/cast [@target,harm,nodead] 狂野鞭笞` |
 | `RCTRL-NUMPAD6` | target杀戮命令 | `/cast [@target,harm,nodead] 杀戮命令` |
 | `RCTRL-NUMPAD7` | target眼镜蛇射击 | `/cast [@target,harm,nodead] 眼镜蛇射击` |

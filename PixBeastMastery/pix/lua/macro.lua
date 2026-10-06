@@ -13,7 +13,7 @@ insert(macroList, { title = "target倒刺射击", key = "RCTRL-NUMPAD1", text = 
 insert(macroList, { title = "焦点反制射击", key = "RCTRL-NUMPAD2", text = "/cast [@focus,harm,nodead] 反制射击" })
 insert(macroList, { title = "目标反制射击", key = "RCTRL-NUMPAD3", text = "/cast [@target,harm,nodead] 反制射击" })
 insert(macroList, { title = "鼠标指向反制射击", key = "RSHIFT-NUMPAD0", text = "/cast [@mouseover,harm,nodead] 反制射击" })
-insert(macroList, { title = "狂野怒火", key = "RCTRL-NUMPAD4", text = "/cast 狂野怒火" })
+insert(macroList, { title = "狂野怒火", key = "RCTRL-NUMPAD4", text = "/target focus\n/cast 狂野怒火" })
 insert(macroList, { title = "target狂野鞭笞", key = "RCTRL-NUMPAD5", text = "/cast [@target,harm,nodead] 狂野鞭笞" })
 insert(macroList, { title = "target杀戮命令", key = "RCTRL-NUMPAD6", text = "/cast [@target,harm,nodead] 杀戮命令" })
 insert(macroList, { title = "target眼镜蛇射击", key = "RCTRL-NUMPAD7", text = "/cast [@target,harm,nodead] 眼镜蛇射击" })
