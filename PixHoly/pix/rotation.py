@@ -72,7 +72,19 @@ class Rotation:
             if member["has_spirit_of_redemption"]:
                 continue
             scored = member.copy()
-            score = member["health_pct"] - member["heal_absorb_pct"]
+            health = member["health_pct"]
+            # 如果 成员职业为死亡骑士（6）且职责为坦克（1）
+            # => 按血 DK 分段映射预测血量，再参与统一生命评分
+            if member["class_id"] == 6 and member["role"] == 1:
+                # 如果 血 DK 预测血量至少为 60%
+                # => 基础评分按 100 计算
+                if health >= 60:
+                    health = 100.0
+                # 如果 血 DK 预测血量严格大于 1% 且小于 60%
+                # => 将 1%–60% 均匀映射到 1–100；不超过 1% 时保留原值
+                elif health > 1:
+                    health = 1 + (health - 1) * 99 / 59
+            score = health - member["heal_absorb_pct"]
             # 如果 玩家正在普通读条且该成员就是当前读条目标
             # => 按施法种类预估本次治疗对评分的增量
             if ctx.player_cast_state == 1 and member["unit"] == ctx.player_cast_target:
