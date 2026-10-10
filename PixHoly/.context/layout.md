@@ -141,7 +141,7 @@ Cell 为 4×4 物理像素，IconTile 为 8×8，基板高 12px。普通属性�
 
 每条20px黑白内容，左右各2px红色分隔，完整占24px。Python调用 `getValueBar(x, 5)`；红色不计入黑白分母，每个内容像素约5个百分点。
 数据取详细治疗计算器的 `GetHealAbsorbs()` 与 `GetMaximumHealth()`，表示计算后的治疗吸收比例。
-伤害吸收只编码是否存在；rotation 对血 DK 应用固定20个百分点的映射前血量加成，其他成员不加成，详见 [rotation.md](rotation.md)。
+伤害吸收存在性单独监控，不加入生命评分。
 
 ## IconTile
 
