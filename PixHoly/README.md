@@ -47,7 +47,7 @@ uv run pythonw -m pix
 
 Lua 显示五人状态，Python 解码后按生命评分动态选择治疗对象，发送对应单位的技能宏。治疗、驱散和读条预测的详细规则见 [.context/rotation.md](.context/rotation.md)。
 
-治疗吸收条内容为5个Cell、共20px，完整占6个Cell，精度约5个百分点。伤害吸收只显示是否存在；血 DK 有盾时先加20个百分点血量，再按80%视为满血的规则计算评分，详见 [.context/rotation.md](.context/rotation.md)。
+治疗吸收条内容为5个Cell、共20px，完整占6个Cell，精度约5个百分点。伤害吸收只显示是否存在；血 DK 有盾时先加20个百分点血量，再按90%视为满血的规则计算评分，详见 [.context/rotation.md](.context/rotation.md)。
 
 ## 文档导航
 
