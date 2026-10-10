@@ -364,6 +364,30 @@ class Context:
         return int(self.matrix.getCell(68).ratio * 40 + 0.5)
 
     @property
+    def player_has_dispellable_poison_or_disease(self) -> bool:
+        return self.readBooleanCell(78)
+
+    @property
+    def target_has_dispellable_magic_or_enrage(self) -> bool:
+        return self.readBooleanCell(79)
+
+    @property
+    def focus_has_dispellable_magic_or_enrage(self) -> bool:
+        return self.readBooleanCell(80)
+
+    @property
+    def spell_cd_tranquilizing_shot(self) -> float:
+        return self.readSpellCDCell(81)
+
+    @property
+    def spell_cd_feign_death(self) -> float:
+        return self.readSpellCDCell(82)
+
+    @property
+    def tranquilizing_shot_enabled(self) -> bool:
+        return self.readBooleanCell(83)
+
+    @property
     def target_cast_icon(self) -> str | None:
         return self.readIconTile(3)
 

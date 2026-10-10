@@ -7,6 +7,9 @@ from pix.context import Context
 class Rotation:
     def __init__(self) -> None:
         self.keymap: dict[str, str] = {
+            "target宁神射击": "RCTRL-F10",
+            "focus宁神射击": "RCTRL-F11",
+            "假死": "RCTRL-F12",
             "target倒刺射击": "RCTRL-NUMPAD1",
             "焦点反制射击": "RCTRL-NUMPAD2",
             "目标反制射击": "RCTRL-NUMPAD3",
@@ -34,6 +37,8 @@ class Rotation:
             "设置焦点": "RCTRL-F5",
             "target猎人印记": "RCTRL-F6",
             "focus猎人印记": "RCTRL-F7",
+            "target眼镜蛇射击利牙": "RCTRL-F8",  # 有防连发机制的
+            "focus眼镜蛇射击利牙": "RCTRL-F9",  # 有防连发机制的
         }
 
     def check_pause(self, ctx: Context) -> Idle | None:
@@ -101,6 +106,11 @@ class Rotation:
         # => 施放意气风发
         if ctx.player_health_pct <= 50 and ctx.spell_cd_exhilaration == 0:
             return Cast("意气风发")
+        # 如果 前序自保未命中、假死冷却为 0、玩家未移动，且自身有可驱散的中毒或疾病任一种
+        # => 在打断前施放假死，不要求目标，不自动取消假死
+        if (ctx.spell_cd_feign_death == 0 and not ctx.player_is_moving
+                and ctx.player_has_dispellable_poison_or_disease):
+            return Cast("假死", "自身有中毒或疾病")
         return None
 
     def interrupt_rotation(self, ctx: Context) -> Cast | None:
@@ -129,6 +139,25 @@ class Rotation:
                     and ctx.mouseover_in_ranged_range and ctx.mouseover_cast_interruptible
                     and ctx.mouseover_cast_progress > interrupt_progress):
                 return Cast("鼠标指向反制射击")
+        return None
+
+    def dispel_rotation(self, ctx: Context) -> Cast | None:
+        """通过战斗门控且自保、打断未命中后，按目标、焦点顺序尝试宁神射击。"""
+        # 如果 自动宁神开启且宁神射击冷却为 0
+        # => 独立于 DPS 主目标，依次检查当前目标和焦点
+        if ctx.tranquilizing_shot_enabled and ctx.spell_cd_tranquilizing_shot == 0:
+            # 如果 目标存在、存活、可攻击且不可协助，在普通技能射程内，并有魔法或激怒增益
+            # => 优先对目标施放宁神射击
+            if (ctx.target_is_exists and ctx.target_is_alive and ctx.target_can_attack
+                    and not ctx.target_can_assist and ctx.target_in_ranged_range
+                    and ctx.target_has_dispellable_magic_or_enrage):
+                return Cast("target宁神射击", "目标有魔法或激怒")
+            # 如果 前序目标未命中，焦点存在、存活、可攻击且不可协助，在普通技能射程内，并有魔法或激怒增益
+            # => 对焦点施放宁神射击
+            if (ctx.focus_is_exists and ctx.focus_is_alive and ctx.focus_can_attack
+                    and not ctx.focus_can_assist and ctx.focus_in_ranged_range
+                    and ctx.focus_has_dispellable_magic_or_enrage):
+                return Cast("focus宁神射击", "焦点有魔法或激怒")
         return None
 
     def aoe_rotation(self, ctx: Context, main_target: str, is_finishing: bool) -> Cast | Use | None:
@@ -178,6 +207,11 @@ class Rotation:
         if thrash_cd == 0 and focus >= 35:
             return Cast(f"{main_target}狂野鞭笞", "卡CD打")
 
+        # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且利牙层数大于 3
+        # => 在顺劈期间施放 4 层利牙眼镜蛇射击
+        if focus >= 35 and cleave_remaining >= 1 and ctx.player_buff_stacks_cobra_fangs > 3:
+            return Cast(f"{main_target}眼镜蛇射击利牙", "4层利牙")
+
         # 如果 狂野怒火冷却不超过 4 秒，且未收尾
         # => 标记怒火即将就绪，随后保留最后 1 层杀戮命令充能
         wrath_soon = wrath_cd <= 4 and not is_finishing
@@ -197,10 +231,10 @@ class Rotation:
                 and ctx.player_has_buff_natures_ally):
             return Cast(f"{main_target}杀戮命令", "自然之友高亮")
 
-        # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且利牙层数大于 3
-        # => 在顺劈期间施放 4 层利牙眼镜蛇射击
-        if focus >= 35 and cleave_remaining >= 1 and ctx.player_buff_stacks_cobra_fangs > 3:
-            return Cast(f"{main_target}眼镜蛇射击", "4层利牙")
+        # # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且利牙层数大于 3
+        # # => 在顺劈期间施放 4 层利牙眼镜蛇射击
+        # if focus >= 35 and cleave_remaining >= 1 and ctx.player_buff_stacks_cobra_fangs > 3:
+        #     return Cast(f"{main_target}眼镜蛇射击", "4层利牙")
 
         # 如果 倒刺射击充能至少 1 层，且前序规则未命中
         # => 施放兜底倒刺射击
@@ -252,6 +286,11 @@ class Rotation:
                     return Use("下饰品")
             return Cast("狂野怒火", "狂野怒火CD好")
 
+        # 如果 集中值至少 35 点，且利牙层数大于 3
+        # => 施放 4 层利牙眼镜蛇射击；单体不要求顺劈
+        if focus >= 35 and ctx.player_buff_stacks_cobra_fangs > 3:
+            return Cast(f"{main_target}眼镜蛇射击利牙", "4层利牙")
+
         # 如果 狂野怒火冷却不超过 4 秒，且未收尾
         # => 标记怒火即将就绪，随后保留最后 1 层杀戮命令充能
         wrath_soon = wrath_cd <= 4 and not is_finishing
@@ -271,10 +310,10 @@ class Rotation:
                 and ctx.player_has_buff_natures_ally):
             return Cast(f"{main_target}杀戮命令", "自然之友高亮")
 
-        # 如果 集中值至少 35 点，且利牙层数大于 3
-        # => 施放 4 层利牙眼镜蛇射击；单体不要求顺劈
-        if focus >= 35 and ctx.player_buff_stacks_cobra_fangs > 3:
-            return Cast(f"{main_target}眼镜蛇射击", "4层利牙")
+        # # 如果 集中值至少 35 点，且利牙层数大于 3
+        # # => 施放 4 层利牙眼镜蛇射击；单体不要求顺劈
+        # if focus >= 35 and ctx.player_buff_stacks_cobra_fangs > 3:
+        #     return Cast(f"{main_target}眼镜蛇射击利牙", "4层利牙")
 
         # 如果 倒刺射击充能至少 1 层，且前序规则未命中
         # => 施放兜底倒刺射击
@@ -301,6 +340,10 @@ class Rotation:
             return action
 
         action = self.interrupt_rotation(ctx)
+        if action is not None:
+            return action
+
+        action = self.dispel_rotation(ctx)
         if action is not None:
             return action
 

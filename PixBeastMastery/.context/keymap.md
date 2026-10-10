@@ -36,6 +36,13 @@
 | `RCTRL-F5` | 设置焦点 | `/focus [@target,exists]` |
 | `RCTRL-F6` | target猎人印记 | `/cast [@target,harm,nodead] 猎人印记` |
 | `RCTRL-F7` | focus猎人印记 | `/cast [@focus,harm,nodead] 猎人印记` |
+| `RCTRL-F8` | target眼镜蛇射击利牙 | `/castsequence [@target,harm,nodead] reset=1 眼镜蛇射击,null` |
+| `RCTRL-F9` | focus眼镜蛇射击利牙 | `/castsequence [@focus,harm,nodead] reset=1 眼镜蛇射击,null` |
+| `RCTRL-F10` | target宁神射击 | `/cast [@target,harm,nodead] 宁神射击` |
+| `RCTRL-F11` | focus宁神射击 | `/cast [@focus,harm,nodead] 宁神射击` |
+| `RCTRL-F12` | 假死 | `/cast 假死` |
+
+4层利牙优先分支使用RCTRL-F8／F9的专用序列宏处理防连发；兜底眼镜蛇仍使用RCTRL-NUMPAD7／RCTRL-F4的普通施法宏。两类动作均显式指定当前主目标。
 
 ## 维护规则
 
