@@ -164,7 +164,7 @@ class Rotation:
         """通过战斗及有效主目标门控后，对主目标按AOE优先级返回首个药水或技能动作。"""
         # 如果 爆发窗口有效、自动爆发药水开启且药水可用
         # => 优先使用爆发药水
-        if ctx.in_burst and ctx.burst_potion_enabled and ctx.reckless_potion_ready:
+        if ctx.burst_potion_enabled and ctx.reckless_potion_ready:
             return Use("爆发药水")
 
         focus = ctx.power_focus
@@ -252,7 +252,7 @@ class Rotation:
         """通过战斗及有效主目标门控后，对主目标按单体优先级返回首个药水或技能动作。"""
         # 如果 爆发窗口有效、自动爆发药水开启且药水可用
         # => 优先使用爆发药水
-        if ctx.in_burst and ctx.burst_potion_enabled and ctx.reckless_potion_ready:
+        if ctx.burst_potion_enabled and ctx.reckless_potion_ready:
             return Use("爆发药水")
 
         focus = ctx.power_focus
