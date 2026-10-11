@@ -74,6 +74,7 @@ cells\063_pet_is_exists.lua
 cells\064_pet_is_alive.lua
 cells\065_pet_health_pct.lua
 cells\066_party_tank_index.lua
+cells\067_auto_trinket_enabled.lua
 cells\068_player_enemies_count.lua
 cells\069_player_in_party.lua
 cells\070_spell_known_misdirection.lua
@@ -98,7 +99,7 @@ cells\080_focus_has_dispellable_magic_or_enrage.lua
 cells\081_spell_cd_tranquilizing_shot.lua
 cells\082_spell_cd_feign_death.lua
 cells\083_tranquilizing_shot_enabled.lua
-cells\067_bestial_wrath_delay_remaining.lua
+cells\084_bestial_wrath_delay_remaining.lua
 cells\I03_target_cast_icon.lua
 cells\I04_focus_cast_icon.lua
 cells\I05_interrupt_blacklist.lua

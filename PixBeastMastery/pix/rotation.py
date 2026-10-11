@@ -162,10 +162,11 @@ class Rotation:
 
     def aoe_rotation(self, ctx: Context, main_target: str, is_finishing: bool) -> Cast | Use | None:
         """通过战斗及有效主目标门控后，对主目标按AOE优先级返回首个药水或技能动作。"""
+
         focus = ctx.power_focus
         barbed_charges = ctx.spell_charges_barbed_shot
         # 如果 实际冷却或手动延后尚未结束
-        # => 取两者较大剩余秒数，同时约束怒火及其前置药水、饰品、提前倒刺和杀戮留充能
+        # => 取两者较大剩余秒数，同时约束怒火及其前置饰品、提前倒刺和杀戮留充能
         wrath_cd = max(ctx.spell_cd_bestial_wrath, ctx.bestial_wrath_delay_remaining)
         thrash_cd = ctx.spell_cd_wild_thrash
         cleave_remaining = ctx.player_buff_beast_cleave_remaining
@@ -184,20 +185,23 @@ class Rotation:
             return Cast(f"{main_target}倒刺射击", "即将由狂野怒火获得充能，避免浪费")
 
         # 如果 狂野怒火冷却与手动延后均为 0、未收尾，且野兽顺劈剩余至少 2 秒
-        # => 先检查药水和饰品，再在顺劈期间施放狂野怒火；不要求爆发窗口
+        # => 先检查自动饰品，再在顺劈期间施放狂野怒火
         if wrath_cd == 0 and not is_finishing and cleave_remaining >= 2:
-            # 如果 上述AOE怒火条件成立、药水开关开启且药水可用
-            # => 使用药水宏，并在宏尾尝试上、下饰品；下一轮重新判断全部条件
+            # 如果 上述AOE怒火条件成立且自动饰品开启
+            # => 按上饰品、下饰品顺序检查，不要求爆发窗口
+            if ctx.auto_trinket_enabled:
+                # 如果 自动饰品开启且上饰品可用
+                # => 本轮使用上饰品，下一轮重新判断全部条件
+                if ctx.ticket_13_ready:
+                    return Use("上饰品")
+                # 如果 自动饰品开启、上饰品不可用且下饰品可用
+                # => 本轮使用下饰品，下一轮重新判断全部条件
+                if ctx.ticket_14_ready:
+                    return Use("下饰品")
+            # 如果 爆发窗口有效、自动爆发药水开启且药水可用
+            # => 优先使用爆发药水
             if ctx.burst_potion_enabled and ctx.reckless_potion_ready:
                 return Use("爆发药水")
-            # 如果 未使用药水且上饰品可用
-            # => 本轮使用上饰品，下一轮重新判断全部条件
-            if ctx.ticket_13_ready:
-                return Use("上饰品")
-            # 如果 未使用药水、上饰品不可用且下饰品可用
-            # => 本轮使用下饰品，下一轮重新判断全部条件
-            if ctx.ticket_14_ready:
-                return Use("下饰品")
             return Cast("狂野怒火", "狂野怒火CD好")
 
         # 如果 狂野鞭笞冷却为 0，且集中值至少 35 点
@@ -246,10 +250,11 @@ class Rotation:
 
     def single_target_rotation(self, ctx: Context, main_target: str, is_finishing: bool) -> Cast | Use | None:
         """通过战斗及有效主目标门控后，对主目标按单体优先级返回首个药水或技能动作。"""
+
         focus = ctx.power_focus
         barbed_charges = ctx.spell_charges_barbed_shot
         # 如果 实际冷却或手动延后尚未结束
-        # => 取两者较大剩余秒数，同时约束怒火及其前置药水、饰品、提前倒刺和杀戮留充能
+        # => 取两者较大剩余秒数，同时约束怒火及其前置饰品、提前倒刺和杀戮留充能
         wrath_cd = max(ctx.spell_cd_bestial_wrath, ctx.bestial_wrath_delay_remaining)
 
         # 如果 倒刺射击充能至少 2 层
@@ -266,20 +271,23 @@ class Rotation:
             return Cast(f"{main_target}倒刺射击", "即将由狂野怒火获得充能，避免浪费")
 
         # 如果 狂野怒火冷却与手动延后均为 0，且未收尾
-        # => 先检查药水和饰品，再施放狂野怒火；单体不要求顺劈，不要求爆发窗口
+        # => 先检查自动饰品，再施放狂野怒火；单体不要求顺劈
         if wrath_cd == 0 and not is_finishing:
-            # 如果 上述单体怒火条件成立、药水开关开启且药水可用
-            # => 使用药水宏，并在宏尾尝试上、下饰品；下一轮重新判断全部条件
+            # 如果 上述单体怒火条件成立且自动饰品开启
+            # => 按上饰品、下饰品顺序检查，不要求爆发窗口
+            if ctx.auto_trinket_enabled:
+                # 如果 自动饰品开启且上饰品可用
+                # => 本轮使用上饰品，下一轮重新判断全部条件
+                if ctx.ticket_13_ready:
+                    return Use("上饰品")
+                # 如果 自动饰品开启、上饰品不可用且下饰品可用
+                # => 本轮使用下饰品，下一轮重新判断全部条件
+                if ctx.ticket_14_ready:
+                    return Use("下饰品")
+            # 如果 爆发窗口有效、自动爆发药水开启且药水可用
+            # => 优先使用爆发药水
             if ctx.burst_potion_enabled and ctx.reckless_potion_ready:
                 return Use("爆发药水")
-            # 如果 未使用药水且上饰品可用
-            # => 本轮使用上饰品，下一轮重新判断全部条件
-            if ctx.ticket_13_ready:
-                return Use("上饰品")
-            # 如果 未使用药水、上饰品不可用且下饰品可用
-            # => 本轮使用下饰品，下一轮重新判断全部条件
-            if ctx.ticket_14_ready:
-                return Use("下饰品")
             return Cast("狂野怒火", "狂野怒火CD好")
 
         # 如果 集中值至少 35 点，且利牙层数大于 3

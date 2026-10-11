@@ -17,7 +17,7 @@ insert(macroList, { title = "狂野怒火", key = "RCTRL-NUMPAD4", text = "/cast
 insert(macroList, { title = "target狂野鞭笞", key = "RCTRL-NUMPAD5", text = "/cast [@target,harm,nodead] 狂野鞭笞\n/cast !自动射击" })
 insert(macroList, { title = "target杀戮命令", key = "RCTRL-NUMPAD6", text = "/cast [@target,harm,nodead] 杀戮命令\n/cast !自动射击" })
 insert(macroList, { title = "target眼镜蛇射击", key = "RCTRL-NUMPAD7", text = "/cast [@target,harm,nodead] 眼镜蛇射击\n/cast !自动射击" })
-insert(macroList, { title = "爆发药水", key = "RCTRL-NUMPAD8", text = "/use item:241293\n/use item:241292\n/use item:241288\n/use item:241289\n/use 13\n/use 14" })
+insert(macroList, { title = "爆发药水", key = "RCTRL-NUMPAD8", text = "/use item:241293\n/use item:241292\n/use item:241288\n/use item:241289" })
 insert(macroList, { title = "治疗宠物", key = "RCTRL-NUMPAD9", text = "/cast 治疗宠物" })
 insert(macroList, { title = "召唤/复活宠物", key = "RCTRL-NUMPAD0", text = "/cast [@pet,dead] 复活宠物\n/castsequence [nopet] reset=3 召唤宠物 1,复活宠物" })
 insert(macroList, { title = "误导party1", key = "RSHIFT-NUMPAD1", text = "/cast [@party1,help,nodead] 误导" })

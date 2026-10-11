@@ -17,7 +17,7 @@
 | `RCTRL-NUMPAD5` | target狂野鞭笞 | `/cast [@target,harm,nodead] 狂野鞭笞` |
 | `RCTRL-NUMPAD6` | target杀戮命令 | `/cast [@target,harm,nodead] 杀戮命令` |
 | `RCTRL-NUMPAD7` | target眼镜蛇射击 | `/cast [@target,harm,nodead] 眼镜蛇射击` |
-| `RCTRL-NUMPAD8` | 爆发药水 | `/use item:241293\n/use item:241292\n/use item:241288\n/use item:241289\n/use 13\n/use 14` |
+| `RCTRL-NUMPAD8` | 爆发药水 | `/use item:241293\n/use item:241292\n/use item:241288\n/use item:241289` |
 | `RCTRL-NUMPAD9` | 治疗宠物 | `/cast 治疗宠物` |
 | `RCTRL-NUMPAD0` | 召唤/复活宠物 | `/cast [@pet,dead] 复活宠物\n/castsequence [nopet] reset=3 召唤宠物 1,复活宠物` |
 | `RSHIFT-NUMPAD1` | 误导party1 | `/cast [@party1,help,nodead] 误导` |
@@ -45,8 +45,6 @@
 4层利牙优先分支使用RCTRL-F8／F9的专用序列宏处理防连发；兜底眼镜蛇仍使用RCTRL-NUMPAD7／RCTRL-F4的普通施法宏。两类动作均显式指定当前主目标。
 
 ## 维护规则
-
-爆发药水宏在药水后尝试13、14槽饰品，实际能否同时使用取决于冷却。独立上、下饰品宏和键位保留：药水关闭或不可用时仍在满足全部怒火条件后检查饰品；饰品不再设面板开关。
 
 手动怒火延后不新增原生绑定或自动动作。玩家可自行创建动作条宏 `/pix bwdelay`（使用配置，默认5秒），或指定 `/pix bwdelay 3` 至 `/pix bwdelay 15`；`/pix bwdelay 0` 取消。每次从当前时间重设截止时间，允许缩短、不累加；非法参数不改变已有计时。第三按钮左键触发配置时长、右键取消。该计时不拦截玩家手动施放狂野怒火。
 

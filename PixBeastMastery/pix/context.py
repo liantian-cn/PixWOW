@@ -268,6 +268,10 @@ class Context:
         return int(self.readNumberCell(66) + 0.5)
 
     @property
+    def auto_trinket_enabled(self) -> bool:
+        return self.readBooleanCell(67)
+
+    @property
     def player_in_party(self) -> bool:
         return self.readBooleanCell(69)
 
@@ -386,7 +390,7 @@ class Context:
     @property
     def bestial_wrath_delay_remaining(self) -> float:
         """手动怒火延后剩余秒数；Lua 向上取整编码十分之一秒。"""
-        return int(self.readNumberCell(67) + 0.5) / 10
+        return int(self.readNumberCell(84) + 0.5) / 10
 
     @property
     def target_cast_icon(self) -> str | None:
