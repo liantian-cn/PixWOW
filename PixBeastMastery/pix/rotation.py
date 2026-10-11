@@ -169,7 +169,9 @@ class Rotation:
 
         focus = ctx.power_focus
         barbed_charges = ctx.spell_charges_barbed_shot
-        wrath_cd = ctx.spell_cd_bestial_wrath
+        # 如果 实际冷却或手动延后尚未结束
+        # => 取两者较大剩余秒数，同时约束怒火及其前置饰品、提前倒刺和杀戮留充能
+        wrath_cd = max(ctx.spell_cd_bestial_wrath, ctx.bestial_wrath_delay_remaining)
         thrash_cd = ctx.spell_cd_wild_thrash
         cleave_remaining = ctx.player_buff_beast_cleave_remaining
 
@@ -181,12 +183,12 @@ class Rotation:
         # => 施放倒刺射击，即将满层时避免浪费充能
         if barbed_charges >= 1 and ctx.spell_recharge_barbed_shot <= 4:
             return Cast(f"{main_target}倒刺射击", "即将满层，避免浪费")
-        # 如果 倒刺射击充能至少 1 层、狂野怒火冷却不超过 4 秒，且未收尾
+        # 如果 倒刺射击充能至少 1 层、怒火实际冷却与手动延后的较大值不超过 4 秒，且未收尾
         # => 施放倒刺射击，为狂野怒火提供的充能留出空间
         if barbed_charges >= 1 and wrath_cd <= 4 and not is_finishing:
             return Cast(f"{main_target}倒刺射击", "即将由狂野怒火获得充能，避免浪费")
 
-        # 如果 狂野怒火冷却为 0、未收尾，且野兽顺劈剩余至少 2 秒
+        # 如果 狂野怒火冷却与手动延后均为 0、未收尾，且野兽顺劈剩余至少 2 秒
         # => 先检查自动饰品，再在顺劈期间施放狂野怒火
         if wrath_cd == 0 and not is_finishing and cleave_remaining >= 2:
             # 如果 上述AOE怒火条件成立且自动饰品开启
@@ -212,7 +214,7 @@ class Rotation:
         if focus >= 35 and cleave_remaining >= 1 and ctx.player_buff_stacks_cobra_fangs > 3:
             return Cast(f"{main_target}眼镜蛇射击利牙", "4层利牙")
 
-        # 如果 狂野怒火冷却不超过 4 秒，且未收尾
+        # 如果 怒火实际冷却与手动延后的较大值不超过 4 秒，且未收尾
         # => 标记怒火即将就绪，随后保留最后 1 层杀戮命令充能
         wrath_soon = wrath_cd <= 4 and not is_finishing
         kill_charges = ctx.spell_charges_kill_command
@@ -255,7 +257,9 @@ class Rotation:
 
         focus = ctx.power_focus
         barbed_charges = ctx.spell_charges_barbed_shot
-        wrath_cd = ctx.spell_cd_bestial_wrath
+        # 如果 实际冷却或手动延后尚未结束
+        # => 取两者较大剩余秒数，同时约束怒火及其前置饰品、提前倒刺和杀戮留充能
+        wrath_cd = max(ctx.spell_cd_bestial_wrath, ctx.bestial_wrath_delay_remaining)
 
         # 如果 倒刺射击充能至少 2 层
         # => 施放倒刺射击，满层时避免浪费充能
@@ -265,12 +269,12 @@ class Rotation:
         # => 施放倒刺射击，即将满层时避免浪费充能
         if barbed_charges >= 1 and ctx.spell_recharge_barbed_shot <= 4:
             return Cast(f"{main_target}倒刺射击", "即将满层，避免浪费")
-        # 如果 倒刺射击充能至少 1 层、狂野怒火冷却不超过 4 秒，且未收尾
+        # 如果 倒刺射击充能至少 1 层、怒火实际冷却与手动延后的较大值不超过 4 秒，且未收尾
         # => 施放倒刺射击，为狂野怒火提供的充能留出空间
         if barbed_charges >= 1 and wrath_cd <= 4 and not is_finishing:
             return Cast(f"{main_target}倒刺射击", "即将由狂野怒火获得充能，避免浪费")
 
-        # 如果 狂野怒火冷却为 0，且未收尾
+        # 如果 狂野怒火冷却与手动延后均为 0，且未收尾
         # => 先检查自动饰品，再施放狂野怒火；单体不要求顺劈
         if wrath_cd == 0 and not is_finishing:
             # 如果 上述单体怒火条件成立且自动饰品开启
@@ -291,7 +295,7 @@ class Rotation:
         if focus >= 35 and ctx.player_buff_stacks_cobra_fangs > 3:
             return Cast(f"{main_target}眼镜蛇射击利牙", "4层利牙")
 
-        # 如果 狂野怒火冷却不超过 4 秒，且未收尾
+        # 如果 怒火实际冷却与手动延后的较大值不超过 4 秒，且未收尾
         # => 标记怒火即将就绪，随后保留最后 1 层杀戮命令充能
         wrath_soon = wrath_cd <= 4 and not is_finishing
         kill_charges = ctx.spell_charges_kill_command

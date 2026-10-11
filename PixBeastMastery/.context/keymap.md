@@ -46,6 +46,8 @@
 
 ## 维护规则
 
+手动怒火延后不新增原生绑定或自动动作。玩家可自行创建动作条宏 `/pix bwdelay`（使用配置，默认5秒），或指定 `/pix bwdelay 3` 至 `/pix bwdelay 15`；`/pix bwdelay 0` 取消。每次从当前时间重设截止时间，允许缩短、不累加；非法参数不改变已有计时。第三按钮左键触发配置时长、右键取消。该计时不拦截玩家手动施放狂野怒火。
+
 `reloadUI` 是 Lua 的固定辅助绑定，不加入 Python 循环映射。动作名、组合键和宏目标须同时维护于 Python、Lua 与本表；修改后重载插件并重启桌面程序。共用候选顺序见 [宏快捷键顺序](../../.context/macro-key-order.md)，项目现有绑定以本表和代码为准。
 
 循环条件见 [rotation.md](rotation.md)，像素字段见 [layout.md](layout.md)。

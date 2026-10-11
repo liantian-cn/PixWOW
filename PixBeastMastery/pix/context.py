@@ -388,6 +388,11 @@ class Context:
         return self.readBooleanCell(83)
 
     @property
+    def bestial_wrath_delay_remaining(self) -> float:
+        """手动怒火延后剩余秒数；Lua 向上取整编码十分之一秒。"""
+        return int(self.readNumberCell(84) + 0.5) / 10
+
+    @property
     def target_cast_icon(self) -> str | None:
         return self.readIconTile(3)
 
