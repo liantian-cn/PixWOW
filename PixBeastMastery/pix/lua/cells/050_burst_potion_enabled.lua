@@ -26,7 +26,7 @@ config:set_default(true)
 insert(ConfigRows, {
     type = "combo",
     name = "爆发药水",
-    tooltip = "爆发窗口内且目标在反制射击范围时，优先使用狂放恣意饮剂，再尝试鲁莽药水。",
+    tooltip = "满足全部狂野怒火条件且轮到释放时，先用药水并尝试上、下饰品；不要求爆发窗口。优先狂放恣意饮剂，再尝试鲁莽药水。关闭药水不影响自动饰品。",
     bind_config = config,
     default_value = true,
     options = {
