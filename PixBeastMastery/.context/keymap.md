@@ -36,8 +36,17 @@
 | `RCTRL-F5` | 设置焦点 | `/focus [@target,exists]` |
 | `RCTRL-F6` | target猎人印记 | `/cast [@target,harm,nodead] 猎人印记` |
 | `RCTRL-F7` | focus猎人印记 | `/cast [@focus,harm,nodead] 猎人印记` |
+| `RCTRL-F8` | target眼镜蛇射击利牙 | `/castsequence [@target,harm,nodead] reset=1 眼镜蛇射击,null` |
+| `RCTRL-F9` | focus眼镜蛇射击利牙 | `/castsequence [@focus,harm,nodead] reset=1 眼镜蛇射击,null` |
+| `RCTRL-F10` | target宁神射击 | `/cast [@target,harm,nodead] 宁神射击` |
+| `RCTRL-F11` | focus宁神射击 | `/cast [@focus,harm,nodead] 宁神射击` |
+| `RCTRL-F12` | 假死 | `/cast 假死` |
+
+4层利牙优先分支使用RCTRL-F8／F9的专用序列宏处理防连发；兜底眼镜蛇仍使用RCTRL-NUMPAD7／RCTRL-F4的普通施法宏。两类动作均显式指定当前主目标。
 
 ## 维护规则
+
+手动怒火延后不新增原生绑定或自动动作。玩家可自行创建动作条宏 `/pix bwdelay`（使用配置，默认5秒），或指定 `/pix bwdelay 3` 至 `/pix bwdelay 15`；`/pix bwdelay 0` 取消。每次从当前时间重设截止时间，允许缩短、不累加；非法参数不改变已有计时。第三按钮左键触发配置时长、右键取消。该计时不拦截玩家手动施放狂野怒火。
 
 `reloadUI` 是 Lua 的固定辅助绑定，不加入 Python 循环映射。动作名、组合键和宏目标须同时维护于 Python、Lua 与本表；修改后重载插件并重启桌面程序。共用候选顺序见 [宏快捷键顺序](../../.context/macro-key-order.md)，项目现有绑定以本表和代码为准。
 
