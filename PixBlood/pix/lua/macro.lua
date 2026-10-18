@@ -18,7 +18,7 @@ insert(macroList, { title = "target死神印记", key = "RCTRL-NUMPAD4", text = 
 insert(macroList, { title = "符文刃舞", key = "RCTRL-NUMPAD5", text = "/cast 符文刃舞" })
 insert(macroList, { title = "target精髓分裂", key = "RCTRL-NUMPAD6", text = "/cast [@target] 精髓分裂" })
 insert(macroList, { title = "target死神的抚摩", key = "RCTRL-NUMPAD7", text = "/cast [@target] 死神的抚摩" })
-insert(macroList, { title = "圣光潜力", key = "RCTRL-NUMPAD8", text = "/cast item:241308\n/cast item:241309" })
+insert(macroList, { title = "圣光潜力", key = "RCTRL-NUMPAD8", text = "/cast item:271886\n/cast item:271887\n/cast item:241308\n/cast item:241309" })
 insert(macroList, { title = "血液沸腾", key = "RCTRL-NUMPAD9", text = "/cast 血液沸腾" })
 insert(macroList, { title = "枯萎凋零", key = "RCTRL-NUMPAD0", text = "/cast [@player] 枯萎凋零" })
 insert(macroList, { title = "target心脏打击", key = "RSHIFT-NUMPAD1", text = "/cast [@target] 心脏打击" })

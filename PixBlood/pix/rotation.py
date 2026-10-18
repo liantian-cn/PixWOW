@@ -153,9 +153,9 @@ class Rotation:
             if focus_ranged:
                 return Cast("focus死神的抚摩", "第1条：补充白骨之盾")
 
-        # 如果 圣光潜力药水可用
+        # 如果 新爆发药水或圣光潜力任一可用
         # 如果 独立爆发药水开关开启
-        # => 使用 圣光潜力药水
+        # => 通过原圣光潜力宏优先尝试新爆发药水
         if ctx.item_cd_lights_potential and ctx.burst_potion_enabled:
             return Use("圣光潜力")
 

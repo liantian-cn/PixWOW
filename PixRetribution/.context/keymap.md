@@ -16,7 +16,7 @@
 | `RCTRL-NUMPAD5` | 处决宣判 | `/cast [@target,harm,nodead] 处决宣判` |
 | `RCTRL-NUMPAD6` | 灰烬觉醒 | `/cast 灰烬觉醒` |
 | `RCTRL-NUMPAD7` | 公正之剑 | `/cast [@target,harm,nodead] 公正之剑` |
-| `RCTRL-NUMPAD8` | 圣光潜力 | `/use item:241308\n/use item:241309` |
+| `RCTRL-NUMPAD8` | 圣光潜力 | `/use item:271886\n/use item:271887\n/use item:241308\n/use item:241309` |
 | `RCTRL-NUMPAD9` | 审判 | `/cast [@target,harm,nodead] 审判` |
 | `RCTRL-NUMPAD0` | 神圣风暴 | `/cast 神圣风暴` |
 | `RSHIFT-NUMPAD1` | 圣洁鸣钟 | `/cast [@target,harm,nodead] 圣洁鸣钟` |
@@ -35,4 +35,4 @@
 
 循环条件见 [rotation.md](rotation.md)，像素字段见 [layout.md](layout.md)。
 
-圣光潜力宏保留 241308 和 241309 两个品阶；第 054 格分别检查两者的非银行库存与冷却，任一就绪即可触发宏。共享冷却不意味着 GetItemCount 会合并两个物品 ID 的库存。
+共用爆发药水宏沿用“圣光潜力”动作名和原键位，按 271886→271887→241308→241309 尝试；第 054 格分别检查四个 ID 的非银行库存与冷却，任一就绪即可触发宏。旧圣光潜力两个品阶的相对顺序不变；共享冷却不意味着 GetItemCount 会合并不同物品 ID 的库存。

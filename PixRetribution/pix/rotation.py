@@ -115,8 +115,8 @@ class Rotation:
                 and ctx.spell_cd_cleanse_toxins == 0):
             return Cast("清毒术")
 
-        # 如果 独立爆发药水开关开启，且圣光潜力药水可用
-        # => 使用 圣光潜力药水
+        # 如果 独立爆发药水开关开启，且新爆发药水或圣光潜力任一可用
+        # => 通过原圣光潜力宏优先尝试新爆发药水
         if ctx.burst_potion_enabled and ctx.item_cd_lights_potential:
             return Use("圣光潜力")
 

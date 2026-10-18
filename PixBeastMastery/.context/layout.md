@@ -75,7 +75,7 @@ Lua Cell、Context和本表必须同步更新。插件与Python必须配套使�
 | 051 | `spell_cd_mend_pet` | 冷却 | 治疗宠物136 |
 | 052 | `spell_cd_exhilaration` | 冷却 | 意气风发109304 |
 | 053 | `spell_cd_misdirection` | 冷却 | 误导34477 |
-| 054 | `reckless_potion_ready` | 布尔 | 共用爆发药水就绪：241293、241292、241288、241289任一有库存、冷却启用且已结束；保留原属性名，使用宏按此顺序尝试 |
+| 054 | `reckless_potion_ready` | 布尔 | 共用爆发药水就绪：271886、271887、241293、241292、241288、241289任一有非银行库存、冷却启用且已结束；保留原属性名，使用宏按此顺序尝试 |
 | 055 | `player_has_buff_howl_of_the_pack_leader` | 布尔 | 猎群领袖之嚎以飞龙471878、猪472324、熊472325三种互斥形态呈现；单个AuraSlot匹配三个ID，任一种存在为白，否则黑 |
 | 056 | `player_has_buff_natures_ally` | 布尔 | 玩家自然之友（Nature’s Ally）增益1276720 |
 | 057 | `target_has_debuff_hunters_mark` | 布尔 | 目标存在自身猎人印记257284；HARMFUL\|PLAYER筛选，无单位或可协助单位为黑 |

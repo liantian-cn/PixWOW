@@ -68,7 +68,7 @@ Lua cell、TOC、Context 与本表配套使用。普通格为 001–064，IconTi
 | 051 | `spell_charges_death_and_decay` | CellBackplate / 整数灰度 | 枯萎凋零 [43265] 充能0–2；秘密值经string.format生成灰度文字，无辅助StatusBar；RGB字节=计数；Python int(mean+0.5)；0含缺失 |
 | 052 | `player_buff_stacks_blood_debt` | CellBackplate / 整数灰度 | 血债 [1310372] 层数；RGB字节=计数；Python int(mean+0.5)；0含缺失，255表示至少255 |
 | 053 | `mouseover_in_melee_range` | Cell / 布尔 | 每0.1秒查询mouseover存在与灵界打击49998射程；不存在、普通nil或超出范围清黑 |
-| 054 | `item_cd_lights_potential` | Cell / 布尔 | 圣光潜力 241308／241309 分别查询非银行库存和冷却；任一有库存、冷却启用且结束即为真；不检查额外可用性 |
+| 054 | `item_cd_lights_potential` | Cell / 布尔 | 共用爆发药水 271886、271887、241308、241309 分别查询非银行库存和冷却；任一有库存、冷却启用且结束即为真；不检查额外可用性，保留原字段名；宏按此顺序尝试 |
 | 055 | `player_has_dance_of_midnight` | Cell / 原生AuraContainer | 玩家有午夜舞步buff, buff的spell id 有[1264351, 1264405, 1264568, 1264407] |
 | 056 | `player_has_buff_boiling_point` | Cell / 原生AuraContainer | 玩家有沸点buff, buff的spell id 有[1265790, 1265982, 1265968] |
 | 057 | `player_has_buff_death_and_decay` | Cell / 原生AuraContainer | 玩家有枯萎凋零buff, buff的spell id 有[188290] |

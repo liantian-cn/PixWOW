@@ -26,7 +26,7 @@ config:set_default(false)
 insert(ConfigRows, {
     type = "combo",
     name = "爆发药水",
-    tooltip = "独立控制轮转使用圣光潜力，不随爆发开关联动。",
+    tooltip = "独立控制轮转使用爆发药水，优先尝试物品271886、271887，再尝试圣光潜力，不随爆发开关联动。",
     bind_config = config,
     default_value = false,
     options = {

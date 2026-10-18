@@ -67,7 +67,7 @@ Lua 的 `cells/NNN_name.lua`、本表与 `Context` 属性必须同时更新。�
 | 051 | `spell_cd_divine_toll` | Cell / 冷却曲线 | 圣洁鸣钟 375576 冷却。 |
 | 052 | `spell_cd_lay_on_hands` | Cell / 冷却曲线 | 圣疗术 633 冷却。 |
 | 053 | `spell_cd_divine_shield` | Cell / 冷却曲线 | 圣盾术 642 冷却。 |
-| 054 | `item_cd_lights_potential` | Cell / 布尔 | 圣光潜力 241308／241309 分别查询非银行库存和冷却；任一有库存、冷却启用且结束即为真；不检查额外可用性 |
+| 054 | `item_cd_lights_potential` | Cell / 布尔 | 共用爆发药水 271886、271887、241308、241309 分别查询非银行库存和冷却；任一有库存、冷却启用且结束即为真；不检查额外可用性，保留原字段名；宏按此顺序尝试 |
 | 055 | `player_has_buff_avenging_wrath` | Cell / 布尔 | 玩家复仇之怒 31884 是否存在。 |
 | 056 | `player_has_buff_divine_purpose` | Cell / 布尔 | 玩家神圣意志 408458 是否存在；按源 JSON 的 ID，不替换成 223819。 |
 | 057 | `player_has_buff_dawnlight` | Cell / 布尔 | 玩家晨光 431522 是否存在；无需层数或剩余时间。 |

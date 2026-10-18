@@ -16,7 +16,7 @@
 | `RCTRL-NUMPAD5` | 符文刃舞 | `/cast 符文刃舞` |
 | `RCTRL-NUMPAD6` | target精髓分裂 | `/cast [@target] 精髓分裂` |
 | `RCTRL-NUMPAD7` | target死神的抚摩 | `/cast [@target] 死神的抚摩` |
-| `RCTRL-NUMPAD8` | 圣光潜力 | `/cast item:241308\n/cast item:241309` |
+| `RCTRL-NUMPAD8` | 圣光潜力 | `/cast item:271886\n/cast item:271887\n/cast item:241308\n/cast item:241309` |
 | `RCTRL-NUMPAD9` | 血液沸腾 | `/cast 血液沸腾` |
 | `RCTRL-NUMPAD0` | 枯萎凋零 | `/cast [@player] 枯萎凋零` |
 | `RSHIFT-NUMPAD1` | target心脏打击 | `/cast [@target] 心脏打击` |
@@ -35,4 +35,4 @@
 
 循环条件见 [rotation.md](rotation.md)，像素字段见 [layout.md](layout.md)。
 
-圣光潜力宏保留 241308 和 241309 两个品阶；第 054 格分别检查两者的非银行库存与冷却，任一就绪即可触发宏。共享冷却不意味着 GetItemCount 会合并两个物品 ID 的库存。
+共用爆发药水宏沿用“圣光潜力”动作名和原键位，按 271886→271887→241308→241309 尝试；第 054 格分别检查四个 ID 的非银行库存与冷却，任一就绪即可触发宏。旧圣光潜力两个品阶的相对顺序不变；共享冷却不意味着 GetItemCount 会合并不同物品 ID 的库存。
