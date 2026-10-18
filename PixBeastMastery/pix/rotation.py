@@ -407,6 +407,10 @@ class Rotation:
         elif ctx.finishing == 20:
             is_finishing = True
 
+        # 如果 宠物存在且存活、生命严格低于 70%，治疗宠物冷却为 0；前序动作未命中且已通过战斗／主目标门控
+        # => 施放治疗宠物
+        if ctx.pet_is_exists and ctx.pet_is_alive and ctx.pet_health_pct < 70 and ctx.spell_cd_mend_pet == 0:
+            return Cast("治疗宠物")
         # debug区域
         # return Idle(f"野兽顺劈剩余{ctx.player_buff_beast_cleave_remaining=}")
         # return Idle(f"野性怒火冷却{ctx.spell_cd_bestial_wrath=}, 倒刺层数{ctx.spell_charges_barbed_shot=},倒刺恢复{ctx.spell_recharge_barbed_shot=}")
@@ -420,8 +424,4 @@ class Rotation:
         if action is not None:
             return action
 
-        # 如果 宠物存在且存活、生命严格低于 70%，治疗宠物冷却为 0；前序动作未命中且已通过战斗／主目标门控
-        # => 施放治疗宠物
-        if ctx.pet_is_exists and ctx.pet_is_alive and ctx.pet_health_pct < 70 and ctx.spell_cd_mend_pet == 0:
-            return Cast("治疗宠物")
         return Idle("没有满足条件的动作")
