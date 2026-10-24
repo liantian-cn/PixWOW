@@ -233,6 +233,14 @@ class Rotation:
                 and ctx.player_has_buff_natures_ally):
             return Cast(f"{main_target}杀戮命令", "自然之友高亮")
 
+        # 如果 杀戮命令充能至少 1 层，且并非“怒火即将就绪且杀戮仅剩 1 层”
+        # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且狂野怒火增益存在
+        # => 在两条高亮杀戮之后、兜底倒刺之前，对主目标施放杀戮命令
+        if (kill_charges >= 1 and not (wrath_soon and kill_charges == 1)
+                and focus >= 35 and cleave_remaining >= 1
+                and ctx.player_has_buff_bestial_wrath):
+            return Cast(f"{main_target}杀戮命令", "狂野怒火增益存在")
+
         # # 如果 集中值至少 35 点、野兽顺劈剩余至少 1 秒，且利牙层数大于 3
         # # => 在顺劈期间施放 4 层利牙眼镜蛇射击
         # if focus >= 35 and cleave_remaining >= 1 and ctx.player_buff_stacks_cobra_fangs > 3:
@@ -313,6 +321,14 @@ class Rotation:
                 and focus >= 35
                 and ctx.player_has_buff_natures_ally):
             return Cast(f"{main_target}杀戮命令", "自然之友高亮")
+
+        # 如果 杀戮命令充能至少 1 层，且并非“怒火即将就绪且杀戮仅剩 1 层”
+        # 如果 集中值至少 35 点，且狂野怒火增益存在；单体不要求顺劈
+        # => 在两条高亮杀戮之后、兜底倒刺之前，对主目标施放杀戮命令
+        if (kill_charges >= 1 and not (wrath_soon and kill_charges == 1)
+                and focus >= 35
+                and ctx.player_has_buff_bestial_wrath):
+            return Cast(f"{main_target}杀戮命令", "狂野怒火增益存在")
 
         # # 如果 集中值至少 35 点，且利牙层数大于 3
         # # => 施放 4 层利牙眼镜蛇射击；单体不要求顺劈

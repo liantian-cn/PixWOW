@@ -393,6 +393,10 @@ class Context:
         return int(self.readNumberCell(84) + 0.5) / 10
 
     @property
+    def player_has_buff_bestial_wrath(self) -> bool:
+        return self.readBooleanCell(85)
+
+    @property
     def target_cast_icon(self) -> str | None:
         return self.readIconTile(3)
 
