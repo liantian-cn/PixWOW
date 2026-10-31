@@ -300,6 +300,10 @@ class Context:
         return value if 10 <= value <= 90 else 30
 
     @property
+    def trinket_13_enabled(self) -> bool:
+        return self.readBooleanCell(65)
+
+    @property
     def player_cast_icon(self) -> str | None:
         return self.readIconTile(1)
 

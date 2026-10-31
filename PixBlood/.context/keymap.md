@@ -26,6 +26,7 @@
 | `RSHIFT-NUMPAD5` | focus精髓分裂 | `/cast [@focus] 精髓分裂` |
 | `RSHIFT-NUMPAD6` | focus心脏打击 | `/cast [@focus] 心脏打击` |
 | `RSHIFT-NUMPAD7` | focus死神的抚摩 | `/cast [@focus] 死神的抚摩` |
+| `RSHIFT-NUMPAD8` | 13号饰品 | `/use 13` |
 
 ## 维护规则
 

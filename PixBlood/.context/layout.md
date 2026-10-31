@@ -1,6 +1,6 @@
 # PixBlood 像素布局
 
-Lua cell、TOC、Context 与本表配套使用。普通格为 001–064，IconTile 为 I01–I19。
+Lua cell、TOC、Context 与本表配套使用。普通格为 001–065，IconTile 为 I01–I19。
 
 ## 编码约定
 
@@ -79,6 +79,7 @@ Lua cell、TOC、Context 与本表配套使用。普通格为 001–064，IconTi
 | 062 | `burst_potion_enabled` | Cell / 布尔 | 独立爆发药水开关，现有面板combo控制、默认关闭；白色开启、黑色关闭 |
 | 063 | `player_melee_enemies_count` | Cell / 整数灰度 | nameplate1–40中存在、可攻击、存活且灵界打击49998射程为普通true的单位数；COMBAT_ONLY=false，秘密/nil射程不计；仅可观察姓名板；初始化、事件延后刷新及0.2秒轮询，RGB=count/40，Python int(ratio×40+0.5)还原0–40 |
 | 064 | `interrupt_progress_threshold` | Cell / 整数灰度 | 打断进度阈值；面板滑块10%–90%，步长1%，默认30%；RGB=阈值/255，Python int(mean+0.5)，范围外回退30；初始化、配置变化及每秒兜底刷新；目标和焦点的施法/引导已经过进度严格大于阈值才允许心灵冰冻 |
+| 065 | `trinket_13_enabled` | Cell / 布尔 | 独立13号饰品开关，现有面板combo控制、默认开启，保存于PixBloodDB；白色开启、黑色关闭；初始化、配置回调及每秒兜底刷新 |
 
 ## IconTile
 

@@ -28,6 +28,7 @@ insert(macroList, { title = "focus死神印记", key = "RSHIFT-NUMPAD4", text = 
 insert(macroList, { title = "focus精髓分裂", key = "RSHIFT-NUMPAD5", text = "/cast [@focus] 精髓分裂" })
 insert(macroList, { title = "focus心脏打击", key = "RSHIFT-NUMPAD6", text = "/cast [@focus] 心脏打击" })
 insert(macroList, { title = "focus死神的抚摩", key = "RSHIFT-NUMPAD7", text = "/cast [@focus] 死神的抚摩" })
+insert(macroList, { title = "13号饰品", key = "RSHIFT-NUMPAD8", text = "/use 13" })
 -- insert(macroList, { title = "target灵界打击", key = "ALT-NUMPAD1", text = "/cast [@target] 灵界打击" })
 -- insert(macroList, { title = "focus灵界打击", key = "ALT-NUMPAD2", text = "/cast [@focus] 灵界打击" })
 -- insert(macroList, { title = "target精髓分裂", key = "ALT-NUMPAD3", text = "/cast [@target] 精髓分裂" })
