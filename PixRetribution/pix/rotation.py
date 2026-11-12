@@ -64,49 +64,19 @@ class Rotation:
         if not (ctx.target_is_exists and ctx.target_is_alive and ctx.target_can_attack):
             return Idle("目标不可攻击")
 
-        # 如果 责难冷却就绪
-        # => 优先检查焦点打断，再检查目标打断
-        if ctx.spell_cd_rebuke == 0:
-            # 如果 焦点存在且存活、可攻击且不可被援助
-            # 如果 焦点在打断范围内，且施法满足打断条件
-            # => 对焦点施放 责难
-            if (ctx.focus_is_exists and ctx.focus_is_alive and ctx.focus_can_attack
-                    and not ctx.focus_can_assist and ctx.focus_in_interrupt_range
-                    and ctx.focus_cast_interruptible):
-                return Cast("焦点责难")
+        # 如果 打断规则命中
+        # => 执行焦点或目标责难
+        interrupt = self.interrupt_rotation(ctx)
+        if interrupt is not None:
+            return interrupt
 
-            # 如果 目标不可被援助，在打断范围内且施法满足打断条件
-            # => 对目标施放 责难
-            if (not ctx.target_can_assist and ctx.target_in_interrupt_range
-                    and ctx.target_cast_interruptible):
-                return Cast("目标责难")
+        # 如果 自保规则命中
+        # => 按原优先级执行保命技能或物品
+        defensive = self.defensive_rotation(ctx)
+        if defensive is not None:
+            return defensive
 
         holy_power = ctx.power_holy_power
-
-        # 如果 玩家生命值不高于 20%，且圣疗术冷却就绪
-        # => 施放 圣疗术
-        if ctx.player_health_pct <= 20 and ctx.spell_cd_lay_on_hands == 0:
-            return Cast("圣疗术")
-
-        # 如果 玩家生命值不高于 15%，且圣盾术冷却就绪
-        # => 施放 圣盾术
-        if ctx.player_health_pct <= 15 and ctx.spell_cd_divine_shield == 0:
-            return Cast("圣盾术")
-
-        # 如果 玩家生命值不高于 60%，且圣能不少于 3 点
-        # => 施放 荣耀圣令
-        if ctx.player_health_pct <= 60 and holy_power >= 3:
-            return Cast("荣耀圣令")
-
-        # 如果 玩家生命值不高于 30%，且治疗石可用
-        # => 使用 治疗石
-        if ctx.player_health_pct <= 30 and ctx.healthstone_ready:
-            return Use("治疗石")
-
-        # 如果 玩家生命值不高于 30%，且治疗药水可用
-        # => 使用 银月城生命药水
-        if ctx.player_health_pct <= 30 and ctx.heal_potion_ready:
-            return Use("银月城生命药水")
 
         # 如果 自动清毒开启，玩家有可驱散的中毒或疾病效果
         # 如果 清毒术冷却就绪
@@ -277,3 +247,64 @@ class Rotation:
         # 如果 以上规则均未满足
         # => 不执行动作
         return Idle("没有满足条件的动作")
+
+    def interrupt_rotation(self, ctx: Context) -> Cast | None:
+        # 如果 责难冷却就绪（入口已保证当前目标存在、存活且可攻击）
+        # => 优先检查焦点打断，再检查已开启的目标打断
+        if ctx.spell_cd_rebuke == 0:
+            threshold = ctx.interrupt_progress_threshold
+            # 如果 焦点存在且存活、可攻击且不可被援助
+            # 如果 焦点在责难射程内、施法通过打断过滤且已经过进度严格大于配置百分比
+            # => 对焦点施放 责难，不受目标打断开关影响
+            if (ctx.focus_is_exists and ctx.focus_is_alive and ctx.focus_can_attack
+                    and not ctx.focus_can_assist and ctx.focus_in_interrupt_range
+                    and ctx.focus_cast_interruptible and ctx.focus_cast_progress > threshold):
+                return Cast("焦点责难")
+
+            # 如果 目标打断开启、目标不可被援助且在责难射程内
+            # 如果 目标施法通过打断过滤且已经过进度严格大于配置百分比
+            # => 对目标施放 责难
+            if (ctx.target_interrupt_enabled and not ctx.target_can_assist
+                    and ctx.target_in_interrupt_range and ctx.target_cast_interruptible
+                    and ctx.target_cast_progress > threshold):
+                return Cast("目标责难")
+
+        return None
+
+    def defensive_rotation(self, ctx: Context) -> Cast | Use | None:
+        health = ctx.player_health_pct
+        lay_on_hands_threshold = ctx.lay_on_hands_health_threshold
+        divine_shield_threshold = ctx.divine_shield_health_threshold
+        word_of_glory_threshold = ctx.word_of_glory_health_threshold
+        healthstone_threshold = ctx.healthstone_health_threshold
+        heal_potion_threshold = ctx.heal_potion_health_threshold
+
+        # 如果 圣疗术阈值大于0、玩家预测生命百分比不高于阈值且技能就绪
+        # => 施放 圣疗术；阈值0时关闭此项自动使用
+        if (lay_on_hands_threshold > 0 and health <= lay_on_hands_threshold
+                and ctx.spell_cd_lay_on_hands == 0):
+            return Cast("圣疗术")
+
+        # 如果 圣盾术阈值大于0、玩家预测生命百分比不高于阈值且技能就绪
+        # => 施放 圣盾术；阈值0时关闭此项自动使用
+        if (divine_shield_threshold > 0 and health <= divine_shield_threshold
+                and ctx.spell_cd_divine_shield == 0):
+            return Cast("圣盾术")
+
+        # 如果 荣耀圣令阈值大于0、玩家预测生命百分比不高于阈值且圣能不少于3点
+        # => 施放 荣耀圣令；阈值0时关闭此项自动使用
+        if (word_of_glory_threshold > 0 and health <= word_of_glory_threshold
+                and ctx.power_holy_power >= 3):
+            return Cast("荣耀圣令")
+
+        # 如果 治疗石阈值大于0、玩家预测生命百分比不高于阈值且物品可用
+        # => 使用 治疗石；阈值0时关闭此项自动使用
+        if healthstone_threshold > 0 and health <= healthstone_threshold and ctx.healthstone_ready:
+            return Use("治疗石")
+
+        # 如果 生命药水阈值大于0、玩家预测生命百分比不高于阈值且物品可用
+        # => 使用 银月城生命药水；阈值0时关闭此项自动使用
+        if heal_potion_threshold > 0 and health <= heal_potion_threshold and ctx.heal_potion_ready:
+            return Use("银月城生命药水")
+
+        return None
