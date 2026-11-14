@@ -55,8 +55,8 @@ class Context:
         return int(self.readNumberCell(6) + 0.5)
 
     @property
-    def force_single_target(self) -> bool:
-        return self.readBooleanCell(7)
+    def attack_mode(self) -> int:
+        return int(self.readNumberCell(7) + 0.5)
 
     @property
     def player_in_combat(self) -> bool:

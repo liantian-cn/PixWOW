@@ -49,9 +49,9 @@ class Rotation:
         if action is not None:
             return action
 
-        # 如果 未强制单体且制裁之锤范围内可观察敌人数至少2个
+        # 如果 强制AOE，或自动模式下制裁之锤范围内可观察入战敌人数至少2个
         # => 执行AOE；否则（包括0人）执行单体
-        is_aoe = not ctx.force_single_target and ctx.player_melee_enemies_count >= 2
+        is_aoe = ctx.attack_mode == 20 or (ctx.attack_mode != 10 and ctx.player_melee_enemies_count >= 2)
         if is_aoe:
             action = self.aoe_rotation(ctx)
         else:
@@ -117,9 +117,9 @@ class Rotation:
         # 以下进攻规则使用制裁之锤射程判断目标是否在攻击范围内。
         attack_range = ctx.target_in_hammer_of_justice_range
 
-        # 如果 自动饰品开启、爆发窗口有效且目标在制裁之锤射程
+        # 如果 自动饰品开启、爆发窗口有效、有复仇之怒增益且目标在制裁之锤射程
         # => 先检查上饰品，再检查下饰品
-        if ctx.auto_trinket_enabled and ctx.in_burst and attack_range:
+        if ctx.auto_trinket_enabled and ctx.in_burst and ctx.player_has_buff_avenging_wrath and attack_range:
             # 如果 上饰品可用
             # => 使用 上饰品
             if ctx.ticket_13_ready:
@@ -196,10 +196,11 @@ class Rotation:
         if not ctx.player_has_buff_art_of_war and blade_ready and attack_range:
             return Cast("公正之剑", "无战争艺术")
 
-        # 如果 审判充能为 2 层，且圣能不多于 2 点
+        # 如果 有复仇之怒增益、审判充能为 2 层，且圣能不多于 2 点
         # 如果 处于单体条件，且目标在攻击范围内
         # => 施放 审判
-        if judgment_ready == 2 and holy_power <= 2 and attack_range:
+        # 复仇之怒期间，审判20271会变成愤怒之锤24275；仅此时启用高优先级填充。
+        if wings and judgment_ready == 2 and holy_power <= 2 and attack_range:
             return Cast("审判", "单体满充能")
 
         # 如果 满足四件套触发条件，处于单体条件且目标在攻击范围内
@@ -212,9 +213,10 @@ class Rotation:
         if holy_power == 4 and attack_range:
             return Cast("最终审判", "4圣能")
 
-        # 如果 审判充能不少于 1 层，圣能不多于 2 点且目标在攻击范围内
+        # 如果 有复仇之怒增益、审判充能不少于 1 层，圣能不多于 2 点且目标在攻击范围内
         # => 施放 审判
-        if judgment_ready >= 1 and holy_power <= 2 and attack_range:
+        # 复仇之怒期间，审判20271会变成愤怒之锤24275；普通审判留给后续低优先级分支。
+        if wings and judgment_ready >= 1 and holy_power <= 2 and attack_range:
             return Cast("审判", "低圣能")
 
         # 如果 公正之剑冷却就绪，圣能不多于 3 点且目标在攻击范围内
@@ -285,10 +287,11 @@ class Rotation:
         # => 标记就绪，供后续资源分支检查
         blade_ready = ctx.spell_cd_blade_of_justice == 0
 
-        # 如果 审判充能为 2 层，且圣能不多于 2 点
+        # 如果 有复仇之怒增益、审判充能为 2 层，且圣能不多于 2 点
         # 如果 处于多目标条件，且目标在攻击范围内
         # => 施放 审判
-        if judgment_ready == 2 and holy_power <= 2 and attack_range:
+        # 复仇之怒期间，审判20271会变成愤怒之锤24275；仅此时启用高优先级填充。
+        if wings and judgment_ready == 2 and holy_power <= 2 and attack_range:
             return Cast("审判", "多目标满充能")
 
         # 如果 玩家没有战争艺术增益，公正之剑冷却就绪且目标在攻击范围内
@@ -306,9 +309,10 @@ class Rotation:
         if holy_power == 4 and attack_range:
             return Cast("神圣风暴", "4圣能")
 
-        # 如果 审判充能不少于 1 层，圣能不多于 2 点且目标在攻击范围内
+        # 如果 有复仇之怒增益、审判充能不少于 1 层，圣能不多于 2 点且目标在攻击范围内
         # => 施放 审判
-        if judgment_ready >= 1 and holy_power <= 2 and attack_range:
+        # 复仇之怒期间，审判20271会变成愤怒之锤24275；普通审判留给后续低优先级分支。
+        if wings and judgment_ready >= 1 and holy_power <= 2 and attack_range:
             return Cast("审判", "低圣能")
 
         # 如果 公正之剑冷却就绪，圣能不多于 3 点且目标在攻击范围内

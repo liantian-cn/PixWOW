@@ -22,7 +22,7 @@ cells\003_delaying.lua
 cells\004_player_is_alive.lua
 cells\005_player_health_pct.lua
 cells\006_power_holy_power.lua
-cells\007_force_single_target.lua
+cells\007_attack_mode.lua
 cells\008_player_in_combat.lua
 cells\009_player_is_player_target.lua
 cells\010_player_is_moving.lua

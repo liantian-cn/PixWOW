@@ -23,7 +23,7 @@ local UIInitFuncs = addonTable.UIInitFuncs
 -- 本地配置
 local X = 68
 local SPELL_ID = 853
-local COMBAT_ONLY = false
+local COMBAT_ONLY = true
 local NAMEPLATE_LIMIT = 40
 local UPDATE_INTERVAL = 0.2
 local cell
