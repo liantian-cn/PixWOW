@@ -127,6 +127,11 @@ class Rotation:
 
         wings = ctx.player_has_buff_avenging_wrath
 
+        # 如果 处于爆发状态、灰烬觉醒冷却就绪且目标在攻击范围内，不限制圣能
+        # => 在复仇之怒之前施放 灰烬觉醒
+        if ctx.in_burst and ctx.spell_cd_wake_of_ashes == 0 and attack_range:
+            return Cast("灰烬觉醒")
+
         # 如果 复仇之怒冷却就绪，且处于爆发状态
         # => 施放 复仇之怒
         if ctx.spell_cd_avenging_wrath == 0 and ctx.in_burst:
@@ -160,9 +165,10 @@ class Rotation:
             if attack_range:
                 return Cast("最终审判", "至少4圣能")
 
-        # 如果 灰烬觉醒冷却就绪，圣能不多于 2 点且目标在攻击范围内
+        # 如果 复仇之怒冷却大于 0、灰烬觉醒冷却就绪，圣能不多于 2 点且目标在攻击范围内
         # => 施放 灰烬觉醒
-        if ctx.spell_cd_wake_of_ashes == 0 and holy_power <= 2 and attack_range:
+        if (ctx.spell_cd_avenging_wrath > 0 and ctx.spell_cd_wake_of_ashes == 0
+                and holy_power <= 2 and attack_range):
             return Cast("灰烬觉醒")
 
         # 如果 圣能至少 3 点且有晨光
@@ -253,6 +259,11 @@ class Rotation:
 
         wings = ctx.player_has_buff_avenging_wrath
 
+        # 如果 处于爆发状态、灰烬觉醒冷却就绪且目标在攻击范围内，不限制圣能
+        # => 在复仇之怒之前施放 灰烬觉醒
+        if ctx.in_burst and ctx.spell_cd_wake_of_ashes == 0 and attack_range:
+            return Cast("灰烬觉醒")
+
         # 如果 复仇之怒冷却就绪，且处于爆发状态
         # => 施放 复仇之怒
         if ctx.spell_cd_avenging_wrath == 0 and ctx.in_burst:
@@ -286,9 +297,10 @@ class Rotation:
             if attack_range:
                 return Cast("神圣风暴", "至少4圣能")
 
-        # 如果 灰烬觉醒冷却就绪，圣能不多于 2 点且目标在攻击范围内
+        # 如果 复仇之怒冷却大于 0、灰烬觉醒冷却就绪，圣能不多于 2 点且目标在攻击范围内
         # => 施放 灰烬觉醒
-        if ctx.spell_cd_wake_of_ashes == 0 and holy_power <= 2 and attack_range:
+        if (ctx.spell_cd_avenging_wrath > 0 and ctx.spell_cd_wake_of_ashes == 0
+                and holy_power <= 2 and attack_range):
             return Cast("灰烬觉醒")
 
         # 如果 圣能至少 3 点且有晨光
