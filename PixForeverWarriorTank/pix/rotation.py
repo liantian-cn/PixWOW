@@ -152,7 +152,7 @@ class Rotation:
     def aoe_rotation(self, ctx: Context, rage: float) -> Cast | None:
         # 如果 目标在近战范围，且目标雷霆剩余≤1秒且怒气≥20
         # => 施放雷霆一击
-        if ctx.target_in_melee_range and (ctx.target_thunder_clap_remaining <= 1 and rage >= 20):
+        if ctx.target_in_melee_range and (ctx.target_thunder_clap_remaining <= 1 and rage >= 18):
             return Cast("雷霆一击")
         # 如果 目标在近战范围，且盾牌格挡冷却为0、怒气≥10且自身无盾牌格挡
         # => 施放盾牌格挡
@@ -162,6 +162,14 @@ class Rotation:
         # => 施放复仇
         if ctx.target_in_melee_range and (ctx.spell_usable_revenge and ctx.spell_cd_revenge == 0):
             return Cast("复仇")
+        # 如果 自身战斗怒吼剩余≤5秒且怒气≥20；不要求近战射程
+        # => 施放战斗怒吼
+        if ctx.player_battle_shout_remaining <= 5 and rage >= 20:
+            return Cast("战斗怒吼")
+        # 如果 目标在近战范围，且目标挫志剩余≤1秒且怒气≥20
+        # => 施放挫志怒吼
+        if ctx.target_in_melee_range and (ctx.target_demoralizing_shout_remaining <= 1 and rage >= 20):
+            return Cast("挫志怒吼")
         # 如果 目标在近战范围，且破甲层数≤2或剩余≤5秒，且怒气≥配置破甲成本
         # => 施放破甲攻击
         if ctx.target_in_melee_range and ((ctx.target_sunder_armor_stacks <= 2 or ctx.target_sunder_armor_remaining <= 5) and rage >= ctx.sunder_rage_cost):
