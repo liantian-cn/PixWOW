@@ -25,6 +25,7 @@ pythonPlatform = "Windows"
 venvPath = "."
 venv = ".venv"
 include = [
+    "PixForeverWarriorTank/pix",
     "PixBlood/pix",
     "PixBeastMastery/pix",
     "PixHoly/pix",
@@ -32,6 +33,7 @@ include = [
     "PixRetribution/pix",
 ]
 executionEnvironments = [
+    { root = "PixForeverWarriorTank" },
     { root = "PixBlood" },
     { root = "PixBeastMastery" },
     { root = "PixHoly" },

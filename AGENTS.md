@@ -34,7 +34,7 @@ In a Git repository, before editing a file, make a backup commit of that file's 
 
 ## Architecture & Project Structure
 
-PixWOW contains five independent applications: `PixBlood`, `PixBeastMastery`, `PixHoly`, `PixProtection`, and `PixRetribution`. Each has its own `pix` Python package and WoW addon. Keep one rotation and one configuration per application; do not merge their code or introduce multiple rotation/configuration profiles within an application.
+PixWOW contains six independent applications: `PixBlood`, `PixBeastMastery`, `PixHoly`, `PixProtection`, `PixRetribution`, and `PixForeverWarriorTank`. Each has its own `pix` Python package and WoW addon. Keep one rotation and one configuration per application; do not merge their code or introduce multiple rotation/configuration profiles within an application.
 
 Paths below are relative to the selected application directory:
 
@@ -61,6 +61,7 @@ Each application keeps `README.md`, `CHANGELOG.md`, and `banner.png` at its root
 
 | Application | Specialization | Documentation |
 | --- | --- | --- |
+| PixForeverWarriorTank | Forever Protection Warrior | [Layout](PixForeverWarriorTank/.context/layout.md), [keymap](PixForeverWarriorTank/.context/keymap.md), [rotation](PixForeverWarriorTank/.context/rotation.md) |
 | PixBlood | Deathbringer Blood Death Knight | [Layout](PixBlood/.context/layout.md), [keymap](PixBlood/.context/keymap.md), [rotation](PixBlood/.context/rotation.md) |
 | PixBeastMastery | Pack Leader Beast Mastery Hunter | [Layout](PixBeastMastery/.context/layout.md), [keymap](PixBeastMastery/.context/keymap.md), [rotation](PixBeastMastery/.context/rotation.md) |
 | PixHoly | Herald of the Sun Holy Paladin | [Layout](PixHoly/.context/layout.md), [keymap](PixHoly/.context/keymap.md), [rotation](PixHoly/.context/rotation.md) |

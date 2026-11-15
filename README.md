@@ -1,9 +1,10 @@
 # PixWOW
 
-五个独立的魔兽世界像素项目，共用 Python 3.13 开发环境与仓库规范。各项目的 Python、Lua、配图和使用说明保留在自己的目录内。
+六个独立的魔兽世界像素项目，共用 Python 3.13 开发环境与仓库规范。各项目的 Python、Lua、配图和使用说明保留在自己的目录内。
 
 | 项目 | 专精 | 像素布局 |
 | --- | --- | --- |
+| [PixForeverWarriorTank](PixForeverWarriorTank/README.md) | Forever 防战 | [layout](PixForeverWarriorTank/.context/layout.md) |
 | [PixBlood](PixBlood/README.md) | 鲜血死亡骑士 | [layout](PixBlood/.context/layout.md) |
 | [PixBeastMastery](PixBeastMastery/README.md) | 兽王猎人 · 群兽领袖 | [layout](PixBeastMastery/.context/layout.md) |
 | [PixHoly](PixHoly/README.md) | 神圣圣骑士 · 烈日先驱 | [layout](PixHoly/.context/layout.md) |
@@ -35,11 +36,11 @@ cd PixBlood
 uv run --locked pythonw -m pix
 ```
 
-五个项目的 Python 包都叫 `pix`，工作目录决定运行哪个项目。不要直接在仓库根目录执行 `pythonw -m pix`。游戏插件安装、专精设置和截图诊断见各项目 README。
+六个项目的 Python 包都叫 `pix`，工作目录决定运行哪个项目。不要直接在仓库根目录执行 `pythonw -m pix`。游戏插件安装、专精设置和截图诊断见各项目 README。
 
 ### BAT 与桌面快捷方式
 
-`scripts/` 目录提供五个启动脚本：`PixBlood.bat`、`PixBeastMastery.bat`、`PixHoly.bat`、`PixProtection.bat`、`PixRetribution.bat`。
+`scripts/` 目录提供五个既有项目启动脚本：`PixBlood.bat`、`PixBeastMastery.bat`、`PixHoly.bat`、`PixProtection.bat`、`PixRetribution.bat`。
 
 安装 uv 并确保其位于 PATH 后，右键对应 BAT，选择“以管理员身份运行”。脚本通过自身所在目录的上一级定位仓库，使用根目录共享环境执行 `uv run --locked --directory <应用名> pythonw -m pix`，不包含本机绝对路径。
 
@@ -62,7 +63,7 @@ uv run --locked --directory PixBlood python -m compileall -q pix
 git diff --check
 ```
 
-替换目录名即可检查其他项目。根 Pyright 配置为五份 `pix` 设置了独立的导入根。
+替换目录名即可检查其他项目。根 Pyright 配置为六份 `pix` 设置了独立的导入根。
 
 ## 构建全部项目
 
