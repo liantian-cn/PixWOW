@@ -16,6 +16,14 @@ local SlashCmdList = SlashCmdList -- 注册插件聊天命令处理函数
 addonTable.ENABLE = not addonTable.RELOAD_REQUIRED -- 待重载时保持关闭
 
 
+addonTable.BurstTime = GetTime() + 60                          -- 初始化共享爆发截止时间，默认从加载时起持续 60 秒
+addonTable.InBurst = function()                                -- 供其他文件查询当前是否处于爆发期
+    return addonTable.BurstTime > GetTime()                    -- 截止时间晚于当前时间时仍处于爆发期
+end
+addonTable.BurstRemaining = function()                         -- 供其他文件查询爆发剩余秒数
+    return min(60.0, max(0, addonTable.BurstTime - GetTime())) -- 实时读取共享截止时间，将剩余秒数限制在 0 至 60 秒之间
+end
+
 addonTable.DelayTime = GetTime()                    -- 默认不延迟，截止时间等于当前时间
 addonTable.Delaying = function()                    -- 供其他文件查询当前是否正在延迟
     return addonTable.DelayTime > GetTime()         -- 截止时间到达时立即结束延迟
@@ -35,6 +43,7 @@ function addonTable.PrintCommandHelp()
     print("PixForeverWarriorTank 命令:")
     print("/pix toggle — 切换启停")
     print("/pix disable — 关闭插件")
+    print("/pix burst [秒数] — 爆发窗口，默认 15 秒，0 结束")
     print("/pix delay [秒数] — 暂停所有自动动作，默认 0.4 秒")
 end
 
@@ -111,4 +120,15 @@ function CommandHandler:delay(arguments)
     end
 
     addonTable.DelayTime = GetTime() + duration
+end
+
+function CommandHandler:burst(arguments)
+    local duration = ParseDuration(arguments, 15)
+
+    if not duration then
+        addonTable.PrintCommandHelp()
+        return
+    end
+
+    addonTable.BurstTime = GetTime() + duration
 end

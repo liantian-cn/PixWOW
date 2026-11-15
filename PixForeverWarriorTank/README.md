@@ -29,3 +29,5 @@ uv run --locked --directory PixForeverWarriorTank pythonw -m pix
 [像素布局](.context/layout.md)、[键位宏](.context/keymap.md)、[循环规则](.context/rotation.md)、[配图来源](.context/banner.prompt.md)。运行Pyright和compileall检查本应用；游戏内需验证新布局、光环、姿态、类型及技能等级切换。
 
 共用根目录Python 3.13、uv环境及build.ps1；构建自动发现本项目，产物为dist/PixForeverWarriorTank/，分发整个目录。许可证为GPLv3。
+
+爆发状态预留：加载或重载时开启60秒窗口，`/pix burst`默认15秒，`/pix burst 30`设置30秒，`/pix burst 0`结束。脱战不重置，面板显示剩余时间（最多60秒），044格与`Context.in_burst`提供状态，当前防战循环不使用。更新后重新拷贝插件、`/reload`并重启桌面程序重新定位184×12布局。

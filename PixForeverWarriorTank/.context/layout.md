@@ -1,6 +1,6 @@
 # PixForeverWarriorTank 像素布局
 
-普通格001–043连续占用，基板180×12物理像素；IconTile保持旧项目的槽位含义。
+普通格001–044连续占用，基板184×12物理像素；IconTile保持旧项目的槽位含义。
 
 ## 编码约定
 
@@ -55,6 +55,8 @@
 | 041 | `player_battle_shout_remaining` | duration | 25289,11551,11550,11549,6192,5242,6673；原生光环多ID筛选 |
 | 042 | `target_demoralizing_shout_remaining` | duration | 11556,11555,11554,6190,1160；原生光环多ID筛选；目标不限来源 |
 | 043 | `target_rend_remaining` | duration | 11574,11573,11572,6548,6547,6546,772；原生光环多ID筛选；目标仅自身撕裂 |
+
+| 044 | `in_burst` | bool | 爆发窗口中为白色，否则黑色；每0.1秒刷新；当前循环不使用 |
 
 ## IconTile
 

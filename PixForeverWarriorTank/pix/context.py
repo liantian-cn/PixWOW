@@ -31,6 +31,10 @@ class Context:
         return self.matrix.getIconTile(x).hash
 
     @property
+    def in_burst(self) -> bool:
+        return self.readBooleanCell(44)
+
+    @property
     def enable(self) -> bool:
         return self.readBooleanCell(1)
 
