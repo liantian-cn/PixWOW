@@ -31,6 +31,10 @@ class Context:
         return self.matrix.getIconTile(x).hash
 
     @property
+    def spell_cd_revenge(self) -> float:
+        return self.readSpellCDCell(45)
+
+    @property
     def in_burst(self) -> bool:
         return self.readBooleanCell(44)
 

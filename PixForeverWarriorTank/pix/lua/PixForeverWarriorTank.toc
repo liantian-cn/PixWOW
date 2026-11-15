@@ -59,6 +59,7 @@ cells\041_player_battle_shout_remaining.lua
 cells\042_target_demoralizing_shout_remaining.lua
 cells\043_target_rend_remaining.lua
 cells\044_in_burst.lua
+cells\045_spell_cd_revenge.lua
 cells\I03_target_cast_icon.lua
 cells\I04_focus_cast_icon.lua
 cells\I05_interrupt_blacklist.lua

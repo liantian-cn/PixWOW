@@ -111,9 +111,9 @@ class Rotation:
         # => 施放盾牌格挡
         if ctx.target_in_melee_range and (ctx.spell_cd_shield_block == 0 and rage >= 10 and not ctx.player_has_buff_shield_block):
             return Cast("盾牌格挡")
-        # 如果 目标在近战范围，且最高已学复仇usable为真
+        # 如果 目标在近战范围，且最高已学复仇usable为真且复仇冷却为0
         # => 施放复仇
-        if ctx.target_in_melee_range and (ctx.spell_usable_revenge):
+        if ctx.target_in_melee_range and (ctx.spell_usable_revenge and ctx.spell_cd_revenge == 0):
             return Cast("复仇")
         # 如果 目标在近战范围，且破甲层数≤2或剩余≤5秒，且怒气≥配置破甲成本
         # => 施放破甲攻击
@@ -158,9 +158,9 @@ class Rotation:
         # => 施放盾牌格挡
         if ctx.target_in_melee_range and (ctx.spell_cd_shield_block == 0 and rage >= 10 and not ctx.player_has_buff_shield_block):
             return Cast("盾牌格挡")
-        # 如果 目标在近战范围，且最高已学复仇usable为真
+        # 如果 目标在近战范围，且最高已学复仇usable为真且复仇冷却为0
         # => 施放复仇
-        if ctx.target_in_melee_range and (ctx.spell_usable_revenge):
+        if ctx.target_in_melee_range and (ctx.spell_usable_revenge and ctx.spell_cd_revenge == 0):
             return Cast("复仇")
         # 如果 目标在近战范围，且破甲层数≤2或剩余≤5秒，且怒气≥配置破甲成本
         # => 施放破甲攻击
