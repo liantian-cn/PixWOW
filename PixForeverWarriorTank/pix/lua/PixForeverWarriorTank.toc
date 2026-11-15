@@ -1,4 +1,4 @@
-## Interface: 120100
+## Interface: 120100, 120105, 16001, 50504, 38001, 20506, 11509
 ## Title: Forever 防护战士
 ## Version: 12.1.0.69933
 ## Category: Tools
