@@ -45,10 +45,6 @@ class Rotation:
         if action is not None:
             return action
 
-        action = self.burst_rotation(ctx)
-        if action is not None:
-            return action
-
         # 如果 强制AOE，或自动模式下制裁之锤范围内可观察入战敌人数至少2个
         # => 执行AOE；否则（包括0人）执行单体
         is_aoe = ctx.attack_mode == 20 or (ctx.attack_mode != 10 and ctx.player_melee_enemies_count >= 2)
@@ -108,7 +104,7 @@ class Rotation:
 
         return None
 
-    def burst_rotation(self, ctx: Context) -> Cast | Use | None:
+    def single_target_rotation(self, ctx: Context) -> Cast | Use | None:
         # 如果 独立爆发药水开关开启，且新爆发药水或圣光潜力任一可用
         # => 通过原圣光潜力宏优先尝试新爆发药水
         if ctx.burst_potion_enabled and ctx.item_cd_lights_potential:
@@ -141,12 +137,7 @@ class Rotation:
         if ctx.spell_cd_execution_sentence == 0 and wings and attack_range:
             return Cast("处决宣判")
 
-        return None
-
-    def single_target_rotation(self, ctx: Context) -> Cast | None:
         holy_power = ctx.power_holy_power
-        attack_range = ctx.target_in_hammer_of_justice_range
-        wings = ctx.player_has_buff_avenging_wrath
 
         # 如果 四件套开启、有神圣意志且没有神圣仲裁风暴
         # => 启用四件套特殊反向消耗规则
@@ -239,10 +230,40 @@ class Rotation:
 
         return None
 
-    def aoe_rotation(self, ctx: Context) -> Cast | None:
-        holy_power = ctx.power_holy_power
+    def aoe_rotation(self, ctx: Context) -> Cast | Use | None:
+        # 如果 独立爆发药水开关开启，且新爆发药水或圣光潜力任一可用
+        # => 通过原圣光潜力宏优先尝试新爆发药水
+        if ctx.burst_potion_enabled and ctx.item_cd_lights_potential:
+            return Use("圣光潜力")
+
+        # 以下进攻规则使用制裁之锤射程判断目标是否在攻击范围内。
         attack_range = ctx.target_in_hammer_of_justice_range
+
+        # 如果 自动饰品开启、爆发窗口有效、有复仇之怒增益且目标在制裁之锤射程
+        # => 先检查上饰品，再检查下饰品
+        if ctx.auto_trinket_enabled and ctx.in_burst and ctx.player_has_buff_avenging_wrath and attack_range:
+            # 如果 上饰品可用
+            # => 使用 上饰品
+            if ctx.ticket_13_ready:
+                return Use("上饰品")
+            # 如果 下饰品可用
+            # => 使用 下饰品
+            if ctx.ticket_14_ready:
+                return Use("下饰品")
+
         wings = ctx.player_has_buff_avenging_wrath
+
+        # 如果 复仇之怒冷却就绪，且处于爆发状态
+        # => 施放 复仇之怒
+        if ctx.spell_cd_avenging_wrath == 0 and ctx.in_burst:
+            return Cast("复仇之怒")
+
+        # 如果 处决宣判冷却就绪，玩家有复仇之怒增益且目标在攻击范围内
+        # => 施放 处决宣判
+        if ctx.spell_cd_execution_sentence == 0 and wings and attack_range:
+            return Cast("处决宣判")
+
+        holy_power = ctx.power_holy_power
 
         # 如果 四件套开启、有神圣意志且没有神圣仲裁风暴
         # => 启用四件套特殊反向消耗规则

@@ -6,7 +6,7 @@
 
 先打断与自保，再处理爆发、四件套触发、圣能消耗和资源生成。单体与AOE分别由 single_target_rotation 和 aoe_rotation 维护，均从上到下执行首个满足条件的动作。
 
-入口依次调用 check_pause、interrupt_rotation、defensive_rotation、dispel_rotation、burst_rotation，然后计算模式并调用单体或AOE函数。辅助函数未命中返回 None，返回任何动作立即结束本轮；全部未命中返回 Idle。爆发辅助依次处理药水、饰品、复仇之怒、处决宣判，各自门槛保持如下表。
+入口依次调用 check_pause、interrupt_rotation、defensive_rotation、dispel_rotation，然后计算模式并调用 single_target_rotation 或 aoe_rotation。辅助函数未命中返回 None，返回任何动作立即结束本轮；全部未命中返回 Idle。单体和AOE函数各自在开头依次处理爆发药水、上饰品、下饰品、复仇之怒、处决宣判，再处理四件套与常规输出，各自门槛保持如下表。
 
 ## 状态与门控
 
