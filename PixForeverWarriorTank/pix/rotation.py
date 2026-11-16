@@ -176,7 +176,7 @@ class Rotation:
             return Cast("破甲攻击")
         # 如果 自身战斗怒吼剩余≤5秒且怒气≥20；不要求近战射程
         # => 施放战斗怒吼
-        if ctx.player_battle_shout_remaining <= 5 and rage >= 20:
+        if ctx.player_battle_shout_remaining <= 5 and rage >= 10:
             return Cast("战斗怒吼")
         # 如果 非练级模式，且目标在近战范围，且目标挫志剩余≤1秒且怒气≥20
         # => 施放挫志怒吼
