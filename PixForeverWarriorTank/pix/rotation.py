@@ -17,6 +17,7 @@ class Rotation:
             "焦点盾击": "RCTRL-NUMPAD9",
             "目标盾击": "RCTRL-NUMPAD0",
             "雷霆一击": "RSHIFT-NUMPAD1",
+            "顺劈斩": "RSHIFT-NUMPAD2",
         }
 
     def check_pause(self, ctx: Context) -> Idle | None:
@@ -191,7 +192,7 @@ class Rotation:
         if ctx.target_in_melee_range and ((not ctx.target_has_debuff_rend if ctx.leveling_enabled else ctx.target_rend_remaining <= 1) and rage >= 20 and ctx.target_creature_type not in (0, 4, 9) and ctx.rend_enabled):
             return Cast("撕裂")
         # 如果 目标在近战范围，且怒气≥45
-        # => 施放英勇打击
+        # => 施放顺劈斩
         if ctx.target_in_melee_range and (rage >= 45):
-            return Cast("英勇打击")
+            return Cast("顺劈斩")
         return None

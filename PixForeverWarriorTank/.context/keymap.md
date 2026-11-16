@@ -16,5 +16,6 @@
 | `RCTRL-NUMPAD9` | 焦点盾击 | `/startattack\n/cast [@focus,harm,nodead] 盾击` |
 | `RCTRL-NUMPAD0` | 目标盾击 | `/startattack\n/cast [@target,harm,nodead] 盾击` |
 | `RSHIFT-NUMPAD1` | 雷霆一击 | `/cast 雷霆一击` |
+| `RSHIFT-NUMPAD2` | 顺劈斩 | `/startattack\n/cast 顺劈斩` |
 
 普通输出使用当前目标；焦点只用于优先盾击，不切目标、不自动设置焦点。宏中的startattack按用户原文保留。
