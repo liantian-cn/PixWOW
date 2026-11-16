@@ -1,52 +1,47 @@
--- 输出模式：使用现有配置面板并持久化。
+-- 灰度字节直接表示打断进度阈值，默认30%，范围10%至90%。
 local addonName, addonTable = ...
 
 -- Lua 内置方法
+local floor = math.floor
+local max = math.max
+local min = math.min
 local insert = table.insert
 local random = math.random
+local tonumber = tonumber
 
 -- WoW API
 local CreateFrame = CreateFrame
 
 -- 项目引用
-local Cell = addonTable.Cell
-local COLOR = addonTable.COLOR
 local Config = addonTable.Config
 local ConfigRows = addonTable.ConfigRows
 local UIInitFuncs = addonTable.UIInitFuncs
+local Cell = addonTable.Cell
 
 -- 本地配置
-local X = 7
-local config = Config("force_single_target")
+local config = Config("interrupt_progress_threshold")
 local cell
 local eventFrame
 
-config:set_default(false)
-
-insert(ConfigRows, {
-    type = "combo",
-    name = "输出模式",
-    tooltip = "自动按制裁之锤范围内可观察敌人数分支；单体模式仍保留四件套特殊规则。",
-    bind_config = config,
-    default_value = false,
-    options = {
-        { k = false, v = "自动" },
-        { k = true, v = "强制单体" },
-    },
-})
+config:set_default(30)
 
 local function Refresh()
     if not cell then return end
-    cell:setCell(config:get_value() == true and COLOR.WHITE or COLOR.BLACK)
+    local value = floor(max(10, min(90, tonumber(config:get_value()) or 30)) + 0.5)
+    local gray = value / 255
+    cell:setCellRGBA(gray, gray, gray)
 end
 
-local function Initialize()
-    cell = Cell:New({ x = X })
-    Refresh()
-end
-
+insert(ConfigRows, {
+    type = "slider", name = "打断进度（%）",
+    tooltip = "焦点和目标的施法或引导已经过进度严格超过此百分比后才允许打断。",
+    bind_config = config, default_value = 30, min_value = 10, max_value = 90, step = 10,
+})
 config:register_callback(Refresh)
-insert(UIInitFuncs, Initialize)
+insert(UIInitFuncs, function()
+    cell = Cell:New({ x = 30 })
+    Refresh()
+end)
 
 -- 保留原初始化时序；文件头只提前声明。
 eventFrame = CreateFrame("Frame")

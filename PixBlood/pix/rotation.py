@@ -24,6 +24,7 @@ class Rotation:
             "focus精髓分裂": "RSHIFT-NUMPAD5",
             "focus心脏打击": "RSHIFT-NUMPAD6",
             "focus死神的抚摩": "RSHIFT-NUMPAD7",
+            "13号饰品": "RSHIFT-NUMPAD8",
         }
 
     def main_rotation(self, ctx: Context) -> Cast | Use | Idle | Sleep:
@@ -107,6 +108,11 @@ class Rotation:
                 and ctx.spell_cd_mind_freeze == 0 and ctx.target_in_interrupt_range):
             return Cast("目标心灵冰冻")
 
+        # 如果 独立13号饰品开关开启，且13号装备槽的饰品可用并冷却就绪
+        # => 使用13号饰品，不依赖爆发窗口或额外射程条件
+        if ctx.trinket_13_enabled and ctx.ticket_13_ready:
+            return Use("13号饰品")
+
         # 如果 白骨之盾剩余时间不超过 5 秒或层数不超过 5 层
         # 如果 死神印记冷却就绪
         # => 施放 死神印记
@@ -153,9 +159,9 @@ class Rotation:
             if focus_ranged:
                 return Cast("focus死神的抚摩", "第1条：补充白骨之盾")
 
-        # 如果 圣光潜力药水可用
+        # 如果 新爆发药水或圣光潜力任一可用
         # 如果 独立爆发药水开关开启
-        # => 使用 圣光潜力药水
+        # => 通过原圣光潜力宏优先尝试新爆发药水
         if ctx.item_cd_lights_potential and ctx.burst_potion_enabled:
             return Use("圣光潜力")
 

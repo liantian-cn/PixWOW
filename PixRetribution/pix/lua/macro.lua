@@ -16,7 +16,7 @@ insert(macroList, { title = "复仇之怒", key = "RCTRL-NUMPAD4", text = "/cast
 insert(macroList, { title = "处决宣判", key = "RCTRL-NUMPAD5", text = "/cast [@target,harm,nodead] 处决宣判" })
 insert(macroList, { title = "灰烬觉醒", key = "RCTRL-NUMPAD6", text = "/cast 灰烬觉醒" })
 insert(macroList, { title = "公正之剑", key = "RCTRL-NUMPAD7", text = "/cast [@target,harm,nodead] 公正之剑" })
-insert(macroList, { title = "圣光潜力", key = "RCTRL-NUMPAD8", text = "/use item:241308\n/use item:241309" })
+insert(macroList, { title = "圣光潜力", key = "RCTRL-NUMPAD8", text = "/use item:271886\n/use item:271887\n/use item:241308\n/use item:241309" })
 insert(macroList, { title = "审判", key = "RCTRL-NUMPAD9", text = "/cast [@target,harm,nodead] 审判" })
 insert(macroList, { title = "神圣风暴", key = "RCTRL-NUMPAD0", text = "/cast 神圣风暴" })
 insert(macroList, { title = "圣洁鸣钟", key = "RSHIFT-NUMPAD1", text = "/cast [@target,harm,nodead] 圣洁鸣钟" })

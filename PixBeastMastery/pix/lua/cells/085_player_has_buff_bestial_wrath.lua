@@ -18,7 +18,7 @@ local FrameLevel              = addonTable.FrameLevel
 local UIInitFuncs             = addonTable.UIInitFuncs
 
 -- 本地配置
-local X = 84
+local X = 85
 local AURA_IDS = { 19574 }
 local eventFrame              = CreateFrame("Frame")
 local container

@@ -1,0 +1,69 @@
+## Interface: 120100, 120105, 16001, 50504, 38001, 20506, 11509
+## Title: Forever 防护战士
+## Version: 12.1.0.69933
+## Category: Tools
+## SavedVariables: PixForeverWarriorTankDB
+## LoadSavedVariablesFirst: 1
+## IconTexture: Interface\Icons\Ability_Warrior_DefensiveStance
+
+core\base.lua
+core\config.lua
+core\command.lua
+core\panel.lua
+ui\background.lua
+ui\cell.lua
+ui\valuebar.lua
+ui\icontile.lua
+ui\mask.lua
+cells\001_enable.lua
+cells\002_delaying.lua
+cells\003_player_is_alive.lua
+cells\004_player_in_combat.lua
+cells\005_player_is_player_target.lua
+cells\006_player_in_vehicle.lua
+cells\007_player_is_targeting_spell.lua
+cells\008_player_is_chatting.lua
+cells\009_player_cast_progress.lua
+cells\010_player_is_empowering.lua
+cells\011_target_is_exists.lua
+cells\012_target_is_alive.lua
+cells\013_target_can_attack.lua
+cells\014_target_cast_interruptible_raw.lua
+cells\015_target_cast_progress.lua
+cells\016_target_in_melee_range.lua
+cells\017_focus_is_exists.lua
+cells\018_focus_is_alive.lua
+cells\019_focus_can_attack.lua
+cells\020_focus_can_assist.lua
+cells\021_focus_cast_interruptible_raw.lua
+cells\022_focus_cast_progress.lua
+cells\023_focus_in_melee_range.lua
+cells\024_power_rage_ratio.lua
+cells\025_power_rage_max.lua
+cells\026_sunder_rage_cost.lua
+cells\028_attack_mode.lua
+cells\027_rend_enabled.lua
+cells\029_target_interrupt_enabled.lua
+cells\030_interrupt_progress_threshold.lua
+cells\031_player_enemies_count.lua
+cells\032_player_stance.lua
+cells\033_target_creature_type.lua
+cells\034_spell_cd_shield_bash.lua
+cells\035_spell_cd_shield_block.lua
+cells\036_spell_usable_revenge.lua
+cells\037_player_has_buff_shield_block.lua
+cells\038_target_sunder_armor_stacks.lua
+cells\039_target_sunder_armor_remaining.lua
+cells\040_target_thunder_clap_remaining.lua
+cells\041_player_battle_shout_remaining.lua
+cells\042_target_demoralizing_shout_remaining.lua
+cells\043_target_rend_remaining.lua
+cells\044_in_burst.lua
+cells\045_spell_cd_revenge.lua
+cells\I03_target_cast_icon.lua
+cells\I04_focus_cast_icon.lua
+cells\I05_interrupt_blacklist.lua
+macro.lua
+
+cells\046_leveling_enabled.lua
+cells\047_target_has_debuff_rend.lua

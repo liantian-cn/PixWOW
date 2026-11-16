@@ -55,8 +55,8 @@ class Context:
         return int(self.readNumberCell(6) + 0.5)
 
     @property
-    def force_single_target(self) -> bool:
-        return self.readBooleanCell(7)
+    def attack_mode(self) -> int:
+        return int(self.readNumberCell(7) + 0.5)
 
     @property
     def player_in_combat(self) -> bool:
@@ -309,6 +309,40 @@ class Context:
     def player_melee_enemies_count(self) -> int:
         """Observable living enemies within Hammer of Justice range (0–40)."""
         return int(self.matrix.getCell(68).ratio * 40 + 0.5)
+
+    @property
+    def interrupt_progress_threshold(self) -> int:
+        value = int(self.readNumberCell(69) + 0.5)
+        return value if 10 <= value <= 90 else 30
+
+    @property
+    def target_interrupt_enabled(self) -> bool:
+        return self.readBooleanCell(70)
+
+    @property
+    def lay_on_hands_health_threshold(self) -> int:
+        value = int(self.readNumberCell(71) + 0.5)
+        return value if 0 <= value <= 100 else 20
+
+    @property
+    def divine_shield_health_threshold(self) -> int:
+        value = int(self.readNumberCell(72) + 0.5)
+        return value if 0 <= value <= 100 else 15
+
+    @property
+    def word_of_glory_health_threshold(self) -> int:
+        value = int(self.readNumberCell(73) + 0.5)
+        return value if 0 <= value <= 100 else 60
+
+    @property
+    def healthstone_health_threshold(self) -> int:
+        value = int(self.readNumberCell(74) + 0.5)
+        return value if 0 <= value <= 100 else 30
+
+    @property
+    def heal_potion_health_threshold(self) -> int:
+        value = int(self.readNumberCell(75) + 0.5)
+        return value if 0 <= value <= 100 else 30
 
     @property
     def player_cast_icon(self) -> str | None:

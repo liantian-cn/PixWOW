@@ -1,4 +1,4 @@
--- 圣光潜力：分别检查两个品阶的非银行库存与冷却，任一就绪即为白色。
+-- 共用爆发药水检测：新药水与圣光潜力分别检查非银行库存及冷却，任一就绪即为白色。
 local addonName, addonTable = ...
 
 -- Lua 内置方法
@@ -21,7 +21,7 @@ local UIInitFuncs = addonTable.UIInitFuncs
 
 -- 本地配置
 local X = 54
-local ITEM_IDS = { 241308, 241309 }
+local ITEM_IDS = { 271886, 271887, 241308, 241309 }
 local cell
 local eventFrame = CreateFrame("Frame")
 

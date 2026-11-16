@@ -29,6 +29,34 @@ class Rotation:
         }
 
     def main_rotation(self, ctx: Context) -> Cast | Use | Idle:
+        action = self.check_pause(ctx)
+        if action is not None:
+            return action
+
+        action = self.interrupt_rotation(ctx)
+        if action is not None:
+            return action
+
+        action = self.defensive_rotation(ctx)
+        if action is not None:
+            return action
+
+        action = self.dispel_rotation(ctx)
+        if action is not None:
+            return action
+
+        # 如果 强制AOE，或自动模式下制裁之锤范围内可观察入战敌人数至少2个
+        # => 执行AOE；否则（包括0人）执行单体
+        is_aoe = ctx.attack_mode == 20 or (ctx.attack_mode != 10 and ctx.player_melee_enemies_count >= 2)
+        if is_aoe:
+            action = self.aoe_rotation(ctx)
+        else:
+            action = self.single_target_rotation(ctx)
+        if action is not None:
+            return action
+        return Idle("没有满足条件的动作")
+
+    def check_pause(self, ctx: Context) -> Idle | None:
         # 如果 插件未启用
         # => 不执行动作
         if not ctx.enable:
@@ -64,50 +92,9 @@ class Rotation:
         if not (ctx.target_is_exists and ctx.target_is_alive and ctx.target_can_attack):
             return Idle("目标不可攻击")
 
-        # 如果 责难冷却就绪
-        # => 优先检查焦点打断，再检查目标打断
-        if ctx.spell_cd_rebuke == 0:
-            # 如果 焦点存在且存活、可攻击且不可被援助
-            # 如果 焦点在打断范围内，且施法满足打断条件
-            # => 对焦点施放 责难
-            if (ctx.focus_is_exists and ctx.focus_is_alive and ctx.focus_can_attack
-                    and not ctx.focus_can_assist and ctx.focus_in_interrupt_range
-                    and ctx.focus_cast_interruptible):
-                return Cast("焦点责难")
+        return None
 
-            # 如果 目标不可被援助，在打断范围内且施法满足打断条件
-            # => 对目标施放 责难
-            if (not ctx.target_can_assist and ctx.target_in_interrupt_range
-                    and ctx.target_cast_interruptible):
-                return Cast("目标责难")
-
-        holy_power = ctx.power_holy_power
-
-        # 如果 玩家生命值不高于 20%，且圣疗术冷却就绪
-        # => 施放 圣疗术
-        if ctx.player_health_pct <= 20 and ctx.spell_cd_lay_on_hands == 0:
-            return Cast("圣疗术")
-
-        # 如果 玩家生命值不高于 15%，且圣盾术冷却就绪
-        # => 施放 圣盾术
-        if ctx.player_health_pct <= 15 and ctx.spell_cd_divine_shield == 0:
-            return Cast("圣盾术")
-
-        # 如果 玩家生命值不高于 60%，且圣能不少于 3 点
-        # => 施放 荣耀圣令
-        if ctx.player_health_pct <= 60 and holy_power >= 3:
-            return Cast("荣耀圣令")
-
-        # 如果 玩家生命值不高于 30%，且治疗石可用
-        # => 使用 治疗石
-        if ctx.player_health_pct <= 30 and ctx.healthstone_ready:
-            return Use("治疗石")
-
-        # 如果 玩家生命值不高于 30%，且治疗药水可用
-        # => 使用 银月城生命药水
-        if ctx.player_health_pct <= 30 and ctx.heal_potion_ready:
-            return Use("银月城生命药水")
-
+    def dispel_rotation(self, ctx: Context) -> Cast | None:
         # 如果 自动清毒开启，玩家有可驱散的中毒或疾病效果
         # 如果 清毒术冷却就绪
         # => 施放 清毒术
@@ -115,17 +102,20 @@ class Rotation:
                 and ctx.spell_cd_cleanse_toxins == 0):
             return Cast("清毒术")
 
-        # 如果 独立爆发药水开关开启，且圣光潜力药水可用
-        # => 使用 圣光潜力药水
+        return None
+
+    def single_target_rotation(self, ctx: Context) -> Cast | Use | None:
+        # 如果 独立爆发药水开关开启，且新爆发药水或圣光潜力任一可用
+        # => 通过原圣光潜力宏优先尝试新爆发药水
         if ctx.burst_potion_enabled and ctx.item_cd_lights_potential:
             return Use("圣光潜力")
 
         # 以下进攻规则使用制裁之锤射程判断目标是否在攻击范围内。
         attack_range = ctx.target_in_hammer_of_justice_range
 
-        # 如果 自动饰品开启、爆发窗口有效且目标在制裁之锤射程
+        # 如果 自动饰品开启、爆发窗口有效、有复仇之怒增益且目标在制裁之锤射程
         # => 先检查上饰品，再检查下饰品
-        if ctx.auto_trinket_enabled and ctx.in_burst and attack_range:
+        if ctx.auto_trinket_enabled and ctx.in_burst and ctx.player_has_buff_avenging_wrath and attack_range:
             # 如果 上饰品可用
             # => 使用 上饰品
             if ctx.ticket_13_ready:
@@ -137,6 +127,11 @@ class Rotation:
 
         wings = ctx.player_has_buff_avenging_wrath
 
+        # 如果 处于爆发状态、灰烬觉醒冷却就绪且目标在攻击范围内，不限制圣能
+        # => 在复仇之怒之前施放 灰烬觉醒
+        if ctx.in_burst and ctx.spell_cd_wake_of_ashes == 0 and attack_range:
+            return Cast("灰烬觉醒")
+
         # 如果 复仇之怒冷却就绪，且处于爆发状态
         # => 施放 复仇之怒
         if ctx.spell_cd_avenging_wrath == 0 and ctx.in_burst:
@@ -147,58 +142,41 @@ class Rotation:
         if ctx.spell_cd_execution_sentence == 0 and wings and attack_range:
             return Cast("处决宣判")
 
-        # 人数采用制裁之锤范围内可观察敌人数；自动模式 0 人时两种模式均为假。
-        enemies = ctx.player_melee_enemies_count
-        # 如果 未强制单体且可观察敌人数至少 2 个
-        # => 启用多目标分支
-        multi_target = not ctx.force_single_target and enemies >= 2
-        # 如果 已强制单体或可观察敌人数恰好 1 个
-        # => 启用单体分支
-        single_target = ctx.force_single_target or enemies == 1
+        holy_power = ctx.power_holy_power
+
         # 如果 四件套开启、有神圣意志且没有神圣仲裁风暴
         # => 启用四件套特殊反向消耗规则
         four_piece_proc = (ctx.four_piece_enabled and ctx.player_has_buff_divine_purpose
                            and not ctx.player_has_buff_divine_arbiter_storm)
 
         # 如果 四件套开启、有神圣意志且无神圣仲裁风暴
-        # => 在攻击射程内按特殊反向规则检查多目标最终审判、单体神圣风暴
+        # => 在攻击射程内按特殊反向规则检查单体神圣风暴
         if four_piece_proc:
-            # 如果 处于多目标条件，且目标在攻击范围内
-            # => 施放 最终审判
-            if multi_target and attack_range:
-                return Cast("最终审判", "四件套多目标触发")
             # 如果 处于单体条件，且目标在攻击范围内
             # => 施放 神圣风暴
-            if single_target and attack_range:
+            if attack_range:
                 return Cast("神圣风暴", "四件套单体触发")
 
         # 如果 圣能至少 4 点
-        # => 在攻击射程内按多目标神圣风暴、单体最终审判消耗
+        # => 在攻击射程内按单体最终审判消耗
         if holy_power >= 4:
-            # 如果 处于多目标条件，且目标在攻击范围内
-            # => 施放 神圣风暴
-            if multi_target and attack_range:
-                return Cast("神圣风暴", "至少4圣能")
             # 如果 处于单体条件，且目标在攻击范围内
             # => 施放 最终审判
-            if single_target and attack_range:
+            if attack_range:
                 return Cast("最终审判", "至少4圣能")
 
-        # 如果 灰烬觉醒冷却就绪，圣能不多于 2 点且目标在攻击范围内
+        # 如果 复仇之怒冷却大于 0、灰烬觉醒冷却就绪，圣能不多于 2 点且目标在攻击范围内
         # => 施放 灰烬觉醒
-        if ctx.spell_cd_wake_of_ashes == 0 and holy_power <= 2 and attack_range:
+        if (ctx.spell_cd_avenging_wrath > 0 and ctx.spell_cd_wake_of_ashes == 0
+                and holy_power <= 2 and attack_range):
             return Cast("灰烬觉醒")
 
         # 如果 圣能至少 3 点且有晨光
-        # => 在攻击射程内按多目标神圣风暴、单体最终审判消耗
+        # => 在攻击射程内按单体最终审判消耗
         if holy_power >= 3 and ctx.player_has_buff_dawnlight:
-            # 如果 处于多目标条件，且目标在攻击范围内
-            # => 施放 神圣风暴
-            if multi_target and attack_range:
-                return Cast("神圣风暴", "晨光")
             # 如果 处于单体条件，且目标在攻击范围内
             # => 施放 最终审判
-            if single_target and attack_range:
+            if attack_range:
                 return Cast("最终审判", "晨光")
 
         # 如果 圣洁鸣钟冷却就绪，玩家有复仇之怒增益且目标在攻击范围内
@@ -210,46 +188,32 @@ class Rotation:
         # => 标记就绪，供后续资源分支检查
         blade_ready = ctx.spell_cd_blade_of_justice == 0
 
-        # 如果 审判充能为 2 层，且圣能不多于 2 点
-        # 如果 处于多目标条件，且目标在攻击范围内
-        # => 施放 审判
-        if judgment_ready == 2 and holy_power <= 2 and multi_target and attack_range:
-            return Cast("审判", "多目标满充能")
-
         # 如果 玩家没有战争艺术增益，公正之剑冷却就绪且目标在攻击范围内
         # => 施放 公正之剑
         if not ctx.player_has_buff_art_of_war and blade_ready and attack_range:
             return Cast("公正之剑", "无战争艺术")
 
-        # 如果 审判充能为 2 层，且圣能不多于 2 点
+        # 如果 有复仇之怒增益、审判充能为 2 层，且圣能不多于 2 点
         # 如果 处于单体条件，且目标在攻击范围内
         # => 施放 审判
-        if judgment_ready == 2 and holy_power <= 2 and single_target and attack_range:
+        # 复仇之怒期间，审判20271会变成愤怒之锤24275；仅此时启用高优先级填充。
+        if wings and judgment_ready == 2 and holy_power <= 2 and attack_range:
             return Cast("审判", "单体满充能")
-
-        # 如果 满足四件套触发条件，处于多目标条件且目标在攻击范围内
-        # => 施放 最终审判
-        if four_piece_proc and multi_target and attack_range:
-            return Cast("最终审判", "四件套多目标触发")
-
-        # 如果 圣能为 4 点，处于多目标条件且目标在攻击范围内
-        # => 施放 神圣风暴
-        if holy_power == 4 and multi_target and attack_range:
-            return Cast("神圣风暴", "4圣能")
 
         # 如果 满足四件套触发条件，处于单体条件且目标在攻击范围内
         # => 施放 神圣风暴
-        if four_piece_proc and single_target and attack_range:
+        if four_piece_proc and attack_range:
             return Cast("神圣风暴", "四件套单体触发")
 
         # 如果 圣能为 4 点，处于单体条件且目标在攻击范围内
         # => 施放 最终审判
-        if holy_power == 4 and single_target and attack_range:
+        if holy_power == 4 and attack_range:
             return Cast("最终审判", "4圣能")
 
-        # 如果 审判充能不少于 1 层，圣能不多于 2 点且目标在攻击范围内
+        # 如果 有复仇之怒增益、审判充能不少于 1 层，圣能不多于 2 点且目标在攻击范围内
         # => 施放 审判
-        if judgment_ready >= 1 and holy_power <= 2 and attack_range:
+        # 复仇之怒期间，审判20271会变成愤怒之锤24275；普通审判留给后续低优先级分支。
+        if wings and judgment_ready >= 1 and holy_power <= 2 and attack_range:
             return Cast("审判", "低圣能")
 
         # 如果 公正之剑冷却就绪，圣能不多于 3 点且目标在攻击范围内
@@ -263,17 +227,204 @@ class Rotation:
             return Cast("审判")
 
         # 如果 圣能至少 3 点且前序规则未命中
-        # => 在攻击射程内按多目标神圣风暴、单体最终审判进行最后消耗
+        # => 在攻击射程内按单体最终审判进行最后消耗
+        if holy_power >= 3:
+            # 如果 处于单体条件，且目标在攻击范围内
+            # => 施放 最终审判
+            if attack_range:
+                return Cast("最终审判")
+
+        return None
+
+    def aoe_rotation(self, ctx: Context) -> Cast | Use | None:
+        # 如果 独立爆发药水开关开启，且新爆发药水或圣光潜力任一可用
+        # => 通过原圣光潜力宏优先尝试新爆发药水
+        if ctx.burst_potion_enabled and ctx.item_cd_lights_potential:
+            return Use("圣光潜力")
+
+        # 以下进攻规则使用制裁之锤射程判断目标是否在攻击范围内。
+        attack_range = ctx.target_in_hammer_of_justice_range
+
+        # 如果 自动饰品开启、爆发窗口有效、有复仇之怒增益且目标在制裁之锤射程
+        # => 先检查上饰品，再检查下饰品
+        if ctx.auto_trinket_enabled and ctx.in_burst and ctx.player_has_buff_avenging_wrath and attack_range:
+            # 如果 上饰品可用
+            # => 使用 上饰品
+            if ctx.ticket_13_ready:
+                return Use("上饰品")
+            # 如果 下饰品可用
+            # => 使用 下饰品
+            if ctx.ticket_14_ready:
+                return Use("下饰品")
+
+        wings = ctx.player_has_buff_avenging_wrath
+
+        # 如果 处于爆发状态、灰烬觉醒冷却就绪且目标在攻击范围内，不限制圣能
+        # => 在复仇之怒之前施放 灰烬觉醒
+        if ctx.in_burst and ctx.spell_cd_wake_of_ashes == 0 and attack_range:
+            return Cast("灰烬觉醒")
+
+        # 如果 复仇之怒冷却就绪，且处于爆发状态
+        # => 施放 复仇之怒
+        if ctx.spell_cd_avenging_wrath == 0 and ctx.in_burst:
+            return Cast("复仇之怒")
+
+        # 如果 处决宣判冷却就绪，玩家有复仇之怒增益且目标在攻击范围内
+        # => 施放 处决宣判
+        if ctx.spell_cd_execution_sentence == 0 and wings and attack_range:
+            return Cast("处决宣判")
+
+        holy_power = ctx.power_holy_power
+
+        # 如果 四件套开启、有神圣意志且没有神圣仲裁风暴
+        # => 启用四件套特殊反向消耗规则
+        four_piece_proc = (ctx.four_piece_enabled and ctx.player_has_buff_divine_purpose
+                           and not ctx.player_has_buff_divine_arbiter_storm)
+
+        # 如果 四件套开启、有神圣意志且无神圣仲裁风暴
+        # => 在攻击射程内按特殊反向规则检查多目标最终审判
+        if four_piece_proc:
+            # 如果 处于多目标条件，且目标在攻击范围内
+            # => 施放 最终审判
+            if attack_range:
+                return Cast("最终审判", "四件套多目标触发")
+
+        # 如果 圣能至少 4 点
+        # => 在攻击射程内按多目标神圣风暴消耗
+        if holy_power >= 4:
+            # 如果 处于多目标条件，且目标在攻击范围内
+            # => 施放 神圣风暴
+            if attack_range:
+                return Cast("神圣风暴", "至少4圣能")
+
+        # 如果 复仇之怒冷却大于 0、灰烬觉醒冷却就绪，圣能不多于 2 点且目标在攻击范围内
+        # => 施放 灰烬觉醒
+        if (ctx.spell_cd_avenging_wrath > 0 and ctx.spell_cd_wake_of_ashes == 0
+                and holy_power <= 2 and attack_range):
+            return Cast("灰烬觉醒")
+
+        # 如果 圣能至少 3 点且有晨光
+        # => 在攻击射程内按多目标神圣风暴消耗
+        if holy_power >= 3 and ctx.player_has_buff_dawnlight:
+            # 如果 处于多目标条件，且目标在攻击范围内
+            # => 施放 神圣风暴
+            if attack_range:
+                return Cast("神圣风暴", "晨光")
+
+        # 如果 圣洁鸣钟冷却就绪，玩家有复仇之怒增益且目标在攻击范围内
+        # => 施放 圣洁鸣钟
+        if ctx.spell_cd_divine_toll == 0 and wings and attack_range:
+            return Cast("圣洁鸣钟")
+        judgment_ready = ctx.spell_charges_judgment
+        # 如果 公正之剑冷却为 0
+        # => 标记就绪，供后续资源分支检查
+        blade_ready = ctx.spell_cd_blade_of_justice == 0
+
+        # 如果 有复仇之怒增益、审判充能为 2 层，且圣能不多于 2 点
+        # 如果 处于多目标条件，且目标在攻击范围内
+        # => 施放 审判
+        # 复仇之怒期间，审判20271会变成愤怒之锤24275；仅此时启用高优先级填充。
+        if wings and judgment_ready == 2 and holy_power <= 2 and attack_range:
+            return Cast("审判", "多目标满充能")
+
+        # 如果 玩家没有战争艺术增益，公正之剑冷却就绪且目标在攻击范围内
+        # => 施放 公正之剑
+        if not ctx.player_has_buff_art_of_war and blade_ready and attack_range:
+            return Cast("公正之剑", "无战争艺术")
+
+        # 如果 满足四件套触发条件，处于多目标条件且目标在攻击范围内
+        # => 施放 最终审判
+        if four_piece_proc and attack_range:
+            return Cast("最终审判", "四件套多目标触发")
+
+        # 如果 圣能为 4 点，处于多目标条件且目标在攻击范围内
+        # => 施放 神圣风暴
+        if holy_power == 4 and attack_range:
+            return Cast("神圣风暴", "4圣能")
+
+        # 如果 有复仇之怒增益、审判充能不少于 1 层，圣能不多于 2 点且目标在攻击范围内
+        # => 施放 审判
+        # 复仇之怒期间，审判20271会变成愤怒之锤24275；普通审判留给后续低优先级分支。
+        if wings and judgment_ready >= 1 and holy_power <= 2 and attack_range:
+            return Cast("审判", "低圣能")
+
+        # 如果 公正之剑冷却就绪，圣能不多于 3 点且目标在攻击范围内
+        # => 施放 公正之剑
+        if blade_ready and holy_power <= 3 and attack_range:
+            return Cast("公正之剑")
+
+        # 如果 审判充能不少于 1 层，圣能不多于 4 点且目标在攻击范围内
+        # => 施放 审判
+        if judgment_ready >= 1 and holy_power <= 4 and attack_range:
+            return Cast("审判")
+
+        # 如果 圣能至少 3 点且前序规则未命中
+        # => 在攻击射程内按多目标神圣风暴进行最后消耗
         if holy_power >= 3:
             # 如果 处于多目标条件，且目标在攻击范围内
             # => 施放 神圣风暴
-            if multi_target and attack_range:
+            if attack_range:
                 return Cast("神圣风暴")
-            # 如果 处于单体条件，且目标在攻击范围内
-            # => 施放 最终审判
-            if single_target and attack_range:
-                return Cast("最终审判")
 
-        # 如果 以上规则均未满足
-        # => 不执行动作
-        return Idle("没有满足条件的动作")
+        return None
+
+    def interrupt_rotation(self, ctx: Context) -> Cast | None:
+        # 如果 责难冷却就绪（入口已保证当前目标存在、存活且可攻击）
+        # => 优先检查焦点打断，再检查已开启的目标打断
+        if ctx.spell_cd_rebuke == 0:
+            threshold = ctx.interrupt_progress_threshold
+            # 如果 焦点存在且存活、可攻击且不可被援助
+            # 如果 焦点在责难射程内、施法通过打断过滤且已经过进度严格大于配置百分比
+            # => 对焦点施放 责难，不受目标打断开关影响
+            if (ctx.focus_is_exists and ctx.focus_is_alive and ctx.focus_can_attack
+                    and not ctx.focus_can_assist and ctx.focus_in_interrupt_range
+                    and ctx.focus_cast_interruptible and ctx.focus_cast_progress > threshold):
+                return Cast("焦点责难")
+
+            # 如果 目标打断开启、目标不可被援助且在责难射程内
+            # 如果 目标施法通过打断过滤且已经过进度严格大于配置百分比
+            # => 对目标施放 责难
+            if (ctx.target_interrupt_enabled and not ctx.target_can_assist
+                    and ctx.target_in_interrupt_range and ctx.target_cast_interruptible
+                    and ctx.target_cast_progress > threshold):
+                return Cast("目标责难")
+
+        return None
+
+    def defensive_rotation(self, ctx: Context) -> Cast | Use | None:
+        health = ctx.player_health_pct
+        lay_on_hands_threshold = ctx.lay_on_hands_health_threshold
+        divine_shield_threshold = ctx.divine_shield_health_threshold
+        word_of_glory_threshold = ctx.word_of_glory_health_threshold
+        healthstone_threshold = ctx.healthstone_health_threshold
+        heal_potion_threshold = ctx.heal_potion_health_threshold
+
+        # 如果 圣疗术阈值大于0、玩家预测生命百分比不高于阈值且技能就绪
+        # => 施放 圣疗术；阈值0时关闭此项自动使用
+        if (lay_on_hands_threshold > 0 and health <= lay_on_hands_threshold
+                and ctx.spell_cd_lay_on_hands == 0):
+            return Cast("圣疗术")
+
+        # 如果 圣盾术阈值大于0、玩家预测生命百分比不高于阈值且技能就绪
+        # => 施放 圣盾术；阈值0时关闭此项自动使用
+        if (divine_shield_threshold > 0 and health <= divine_shield_threshold
+                and ctx.spell_cd_divine_shield == 0):
+            return Cast("圣盾术")
+
+        # 如果 荣耀圣令阈值大于0、玩家预测生命百分比不高于阈值且圣能不少于3点
+        # => 施放 荣耀圣令；阈值0时关闭此项自动使用
+        if (word_of_glory_threshold > 0 and health <= word_of_glory_threshold
+                and ctx.power_holy_power >= 3):
+            return Cast("荣耀圣令")
+
+        # 如果 治疗石阈值大于0、玩家预测生命百分比不高于阈值且物品可用
+        # => 使用 治疗石；阈值0时关闭此项自动使用
+        if healthstone_threshold > 0 and health <= healthstone_threshold and ctx.healthstone_ready:
+            return Use("治疗石")
+
+        # 如果 生命药水阈值大于0、玩家预测生命百分比不高于阈值且物品可用
+        # => 使用 银月城生命药水；阈值0时关闭此项自动使用
+        if heal_potion_threshold > 0 and health <= heal_potion_threshold and ctx.heal_potion_ready:
+            return Use("银月城生命药水")
+
+        return None

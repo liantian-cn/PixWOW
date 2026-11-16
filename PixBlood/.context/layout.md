@@ -1,6 +1,6 @@
 # PixBlood 像素布局
 
-Lua cell、TOC、Context 与本表配套使用。普通格为 001–064，IconTile 为 I01–I19。
+Lua cell、TOC、Context 与本表配套使用。普通格为 001–065，IconTile 为 I01–I19。
 
 ## 编码约定
 
@@ -68,7 +68,7 @@ Lua cell、TOC、Context 与本表配套使用。普通格为 001–064，IconTi
 | 051 | `spell_charges_death_and_decay` | CellBackplate / 整数灰度 | 枯萎凋零 [43265] 充能0–2；秘密值经string.format生成灰度文字，无辅助StatusBar；RGB字节=计数；Python int(mean+0.5)；0含缺失 |
 | 052 | `player_buff_stacks_blood_debt` | CellBackplate / 整数灰度 | 血债 [1310372] 层数；RGB字节=计数；Python int(mean+0.5)；0含缺失，255表示至少255 |
 | 053 | `mouseover_in_melee_range` | Cell / 布尔 | 每0.1秒查询mouseover存在与灵界打击49998射程；不存在、普通nil或超出范围清黑 |
-| 054 | `item_cd_lights_potential` | Cell / 布尔 | 圣光潜力 241308／241309 分别查询非银行库存和冷却；任一有库存、冷却启用且结束即为真；不检查额外可用性 |
+| 054 | `item_cd_lights_potential` | Cell / 布尔 | 共用爆发药水 271886、271887、241308、241309 分别查询非银行库存和冷却；任一有库存、冷却启用且结束即为真；不检查额外可用性，保留原字段名；宏按此顺序尝试 |
 | 055 | `player_has_dance_of_midnight` | Cell / 原生AuraContainer | 玩家有午夜舞步buff, buff的spell id 有[1264351, 1264405, 1264568, 1264407] |
 | 056 | `player_has_buff_boiling_point` | Cell / 原生AuraContainer | 玩家有沸点buff, buff的spell id 有[1265790, 1265982, 1265968] |
 | 057 | `player_has_buff_death_and_decay` | Cell / 原生AuraContainer | 玩家有枯萎凋零buff, buff的spell id 有[188290] |
@@ -79,6 +79,7 @@ Lua cell、TOC、Context 与本表配套使用。普通格为 001–064，IconTi
 | 062 | `burst_potion_enabled` | Cell / 布尔 | 独立爆发药水开关，现有面板combo控制、默认关闭；白色开启、黑色关闭 |
 | 063 | `player_melee_enemies_count` | Cell / 整数灰度 | nameplate1–40中存在、可攻击、存活且灵界打击49998射程为普通true的单位数；COMBAT_ONLY=false，秘密/nil射程不计；仅可观察姓名板；初始化、事件延后刷新及0.2秒轮询，RGB=count/40，Python int(ratio×40+0.5)还原0–40 |
 | 064 | `interrupt_progress_threshold` | Cell / 整数灰度 | 打断进度阈值；面板滑块10%–90%，步长1%，默认30%；RGB=阈值/255，Python int(mean+0.5)，范围外回退30；初始化、配置变化及每秒兜底刷新；目标和焦点的施法/引导已经过进度严格大于阈值才允许心灵冰冻 |
+| 065 | `trinket_13_enabled` | Cell / 布尔 | 独立13号饰品开关，现有面板combo控制、默认开启，保存于PixBloodDB；白色开启、黑色关闭；初始化、配置回调及每秒兜底刷新 |
 
 ## IconTile
 
