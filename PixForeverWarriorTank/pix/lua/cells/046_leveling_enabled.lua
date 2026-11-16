@@ -29,7 +29,7 @@ end
 
 insert(ConfigRows, {
     type = "combo", name = "练级模式",
-    tooltip = "开启后不施放破甲和挫志怒吼，仅在目标没有自己的撕裂时补撕裂。",
+    tooltip = "开启后不施放破甲、挫志怒吼和雷霆一击，仅在目标没有自己的撕裂时补撕裂。",
     bind_config = config, default_value = false,
     options = { { k = false, v = "否" }, { k = true, v = "是" } },
 })

@@ -22,9 +22,8 @@ local events = CreateFrame("Frame")
 local function Refresh()
     if not cell then return end
     local value = 0
-    local ok, creatureName, id = pcall(UnitCreatureType, "target")
-    if ok and not issecretvalue(creatureName) and not issecretvalue(id)
-        and type(id) == "number" and id >= 1 and id <= 15 then
+    local name, id = UnitCreatureType("target")
+    if not issecretvalue(id) and type(id) == "number" and id >= 1 and id <= 15 then
         value = id
     end
     local gray = value / 255

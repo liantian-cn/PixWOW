@@ -44,7 +44,7 @@
 | 030 | `interrupt_progress_threshold` | threshold | 默认30%，10–90%，步进10；Context保留百分数 |
 | 031 | `player_enemies_count` | count | 姓名板1–40：存活、可攻击、在战斗及破甲7386范围；比例乘40舍入 |
 | 032 | `player_stance` | int | 姿态ID；0无姿态、17战斗、18防御 |
-| 033 | `target_creature_type` | int | UnitCreatureType目标普通ID 1–15；秘密、异常或缺失为0；无旧目标缓存 |
+| 033 | `target_creature_type` | int | 直接调用UnitCreatureType，取第二返回值目标类型ID 1–15；仅检查ID，类型名称不参与判断；ID为秘密、异常或缺失时为0；无旧目标缓存 |
 | 034 | `spell_cd_shield_bash` | cd | 1672,1671,72；最高已学等级盾击冷却 |
 | 035 | `spell_cd_shield_block` | cd | 2565；盾牌格挡冷却 |
 | 036 | `spell_usable_revenge` | bool | 25288,11601,11600,7379,6574,6572；最高已学等级复仇usable |
