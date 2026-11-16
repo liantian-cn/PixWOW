@@ -64,3 +64,6 @@ cells\I03_target_cast_icon.lua
 cells\I04_focus_cast_icon.lua
 cells\I05_interrupt_blacklist.lua
 macro.lua
+
+cells\046_leveling_enabled.lua
+cells\047_target_has_debuff_rend.lua

@@ -31,6 +31,14 @@ class Context:
         return self.matrix.getIconTile(x).hash
 
     @property
+    def leveling_enabled(self) -> bool:
+        return self.readBooleanCell(46)
+
+    @property
+    def target_has_debuff_rend(self) -> bool:
+        return self.readBooleanCell(47)
+
+    @property
     def spell_cd_revenge(self) -> float:
         return self.readSpellCDCell(45)
 
