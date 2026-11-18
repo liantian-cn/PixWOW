@@ -27,14 +27,14 @@
 | 013 | `target_can_attack` | bool | 当前目标可攻击 |
 | 014 | `target_cast_interruptible_raw` | bool | 目标施法/引导原始可打断布尔，Context另检查图标黑名单 |
 | 015 | `target_cast_progress` | percent | 目标施法/引导已过百分数0–100 |
-| 016 | `target_in_melee_range` | bool | 破甲7386对当前目标的射程 |
+| 016 | `target_in_melee_range` | bool | 最高已学等级破甲（11597,11596,8380,7405,7386）对当前目标的射程 |
 | 017 | `focus_is_exists` | bool | 焦点存在 |
 | 018 | `focus_is_alive` | bool | 焦点存活 |
 | 019 | `focus_can_attack` | bool | 焦点可攻击 |
 | 020 | `focus_can_assist` | bool | 焦点可协助 |
 | 021 | `focus_cast_interruptible_raw` | bool | 焦点施法/引导原始可打断布尔，Context另检查图标黑名单 |
 | 022 | `focus_cast_progress` | percent | 焦点施法/引导已过百分数0–100 |
-| 023 | `focus_in_melee_range` | bool | 破甲7386对焦点的射程 |
+| 023 | `focus_in_melee_range` | bool | 最高已学等级破甲（11597,11596,8380,7405,7386）对焦点的射程 |
 | 024 | `power_rage_ratio` | ratio | 怒气比例0–1；rotation乘025配置上限 |
 | 025 | `power_rage_max` | int | 默认100，100–130，步进5 |
 | 026 | `sunder_rage_cost` | int | 默认15，12–15，步进1 |
@@ -42,7 +42,7 @@
 | 028 | `attack_mode` | int | 0自动、10单体、20AOE；脱战和重载回0 |
 | 029 | `target_interrupt_enabled` | bool | 默认开启，保存 |
 | 030 | `interrupt_progress_threshold` | threshold | 默认30%，10–90%，步进10；Context保留百分数 |
-| 031 | `player_enemies_count` | count | 姓名板1–40：存活、可攻击、在战斗及破甲7386范围；比例乘40舍入 |
+| 031 | `player_enemies_count` | count | 姓名板1–40：存活、可攻击、在战斗及最高已学等级破甲（11597,11596,8380,7405,7386）范围；比例乘40舍入 |
 | 032 | `player_stance` | int | 姿态ID；0无姿态、17战斗、18防御 |
 | 033 | `target_creature_type` | int | 直接调用UnitCreatureType，取第二返回值目标类型ID 1–15；仅检查ID，类型名称不参与判断；ID为秘密、异常或缺失时为0；无旧目标缓存 |
 | 034 | `spell_cd_shield_bash` | cd | 1672,1671,72；最高已学等级盾击冷却 |
@@ -72,7 +72,7 @@
 
 ## 刷新与解析约定
 
-冷却与usable每0.1秒刷新，等级在进入世界及SPELLS_CHANGED重新选择。姿态监听UPDATE_SHAPESHIFT_FORM、UPDATE_SHAPESHIFT_FORMS；类型监听目标变化，二者每秒兜底。
+冷却与usable每0.1秒刷新，等级在进入世界及SPELLS_CHANGED重新选择。目标、焦点射程每0.1秒刷新，敌人数每秒刷新；三者在初始化、进入世界及SPELLS_CHANGED时重新选择最高已学等级破甲，未学会时射程为假、敌人数为0。姿态监听UPDATE_SHAPESHIFT_FORM、UPDATE_SHAPESHIFT_FORMS；类型监听目标变化，二者每秒兜底。
 配置、资源、敌人数、普通状态均保留不超过1秒兜底。AuraContainer及DurationText原生更新豁免轮询；目标变化事件重刷目标光环。
-技能范围统一以破甲7386检测；秘密射程交原生布尔颜色，姓名板计数仅纳入可读取的范围结果。秘密怒气、光环、层数不在Lua中比较。
+技能范围统一以最高已学等级破甲（11597,11596,8380,7405,7386）检测；秘密射程交原生布尔颜色，姓名板计数仅纳入可读取的范围结果。秘密怒气、光环、层数不在Lua中比较。
 类型0、4、9禁止撕裂；生物类型异常直接清0。修改插件后执行/reload并重启桌面程序重新定位。
