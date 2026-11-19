@@ -67,3 +67,5 @@ macro.lua
 
 cells\046_leveling_enabled.lua
 cells\047_target_has_debuff_rend.lua
+cells\048_spell_cd_victory_rush.lua
+cells\049_spell_usable_victory_rush.lua

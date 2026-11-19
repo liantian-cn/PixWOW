@@ -8,6 +8,7 @@ class Rotation:
         self.keymap: dict[str, str] = {
             "英勇打击": "RCTRL-NUMPAD1",
             "撕裂": "RCTRL-NUMPAD2",
+            "乘胜追击": "RSHIFT-NUMPAD3",
             "复仇": "RCTRL-NUMPAD3",
             "挫志怒吼": "RCTRL-NUMPAD4",
             "战斗怒吼": "RCTRL-NUMPAD5",
@@ -112,6 +113,10 @@ class Rotation:
         # => 施放盾牌格挡
         if ctx.target_in_melee_range and (ctx.spell_cd_shield_block == 0 and rage >= 10 and not ctx.player_has_buff_shield_block):
             return Cast("盾牌格挡")
+        # 如果 当前目标在近战范围、乘胜追击可用且冷却为0
+        # => 施放乘胜追击
+        if ctx.target_in_melee_range and ctx.spell_usable_victory_rush and ctx.spell_cd_victory_rush == 0:
+            return Cast("乘胜追击")
         # 如果 目标在近战范围，且最高已学复仇usable为真且复仇冷却为0
         # => 施放复仇
         if ctx.target_in_melee_range and (ctx.spell_usable_revenge and ctx.spell_cd_revenge == 0):
@@ -159,6 +164,10 @@ class Rotation:
         # => 施放盾牌格挡
         if ctx.target_in_melee_range and (ctx.spell_cd_shield_block == 0 and rage >= 10 and not ctx.player_has_buff_shield_block):
             return Cast("盾牌格挡")
+        # 如果 当前目标在近战范围、乘胜追击可用且冷却为0
+        # => 施放乘胜追击
+        if ctx.target_in_melee_range and ctx.spell_usable_victory_rush and ctx.spell_cd_victory_rush == 0:
+            return Cast("乘胜追击")
         # 如果 目标在近战范围，且最高已学复仇usable为真且复仇冷却为0
         # => 施放复仇
         if ctx.target_in_melee_range and (ctx.spell_usable_revenge and ctx.spell_cd_revenge == 0):

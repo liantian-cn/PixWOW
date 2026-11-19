@@ -39,6 +39,14 @@ class Context:
         return self.readBooleanCell(47)
 
     @property
+    def spell_cd_victory_rush(self) -> float:
+        return self.readSpellCDCell(48)
+
+    @property
+    def spell_usable_victory_rush(self) -> bool:
+        return self.readBooleanCell(49)
+
+    @property
     def spell_cd_revenge(self) -> float:
         return self.readSpellCDCell(45)
 

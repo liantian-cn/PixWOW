@@ -1,6 +1,6 @@
 # PixForeverWarriorTank 像素布局
 
-普通格001–047连续占用，基板196×12物理像素；IconTile保持旧项目的槽位含义。
+普通格001–049连续占用，基板204×12物理像素；IconTile保持旧项目的槽位含义。
 
 ## 编码约定
 
@@ -60,6 +60,8 @@
 
 | 046 | `leveling_enabled` | bool | 练级模式，默认关，持久保存；面板设置，无icon |
 | 047 | `target_has_debuff_rend` | bool | 目标自身来源撕裂存在；ID同043；原生光环绑定 |
+| 048 | `spell_cd_victory_rush` | cd | 乘胜追击（402927）冷却，同045 |
+| 049 | `spell_usable_victory_rush` | bool | 乘胜追击（402927）当前可用 |
 
 ## IconTile
 
