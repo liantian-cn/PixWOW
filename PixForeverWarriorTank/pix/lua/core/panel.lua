@@ -196,7 +196,7 @@ local function CreatePanelFrame()
     local areaWidth = (SIZE.PANEL.MainFrame.Width - spacing * 4) / 3
 
     local controlFrame = CreateFrame("Frame", addonName .. "controlFrame", UIParent)
-    controlFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 0)
+    controlFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, 0)
     controlFrame:SetSize(SIZE.PANEL.MainFrame.Width, SIZE.PANEL.MainFrame.Height)
     controlFrame:SetFrameStrata("TOOLTIP")
     controlFrame:SetFrameLevel(900)
